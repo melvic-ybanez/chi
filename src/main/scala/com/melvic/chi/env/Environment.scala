@@ -30,7 +30,7 @@ object Environment {
             val (identifier, newEnv) = register(component)(env)
             (identifier :: ids, newEnv)
         }
-        (Group(ids), newEnv)
+        (Group(ids.reverse), newEnv)
       case Disjunction(_, _) => registerSingle("e", proposition)
       case Implication(_, _) => registerSingle("f", proposition)
     }

@@ -22,7 +22,7 @@ object Parser extends RegexParsers with PackratParsers {
     (opt("(") ~> implication <~ opt(")")) | implication | conjunction | disjunction | atom
 
   def functionCode: Parser[FunctionCode] =
-    "def" ~> "[a-zA-Z]+".r ~ ("[" ~> rep1(atom) <~ "]") ~ (":" ~> proposition) ^^ {
+    "def" ~> "[a-zA-Z]+".r ~ ("[" ~> rep1sep(atom, ",") <~ "]") ~ (":" ~> proposition) ^^ {
       case name ~ typeParams ~ proposition =>
         FunctionCode(name, typeParams.map(_.value), proposition)
     }
