@@ -31,3 +31,5 @@ org.scala-ide.sdt.update-site/site.xml
 *.png
 
 *.sc
+
+Main.scala

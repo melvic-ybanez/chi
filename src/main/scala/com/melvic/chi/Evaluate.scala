@@ -12,14 +12,14 @@ object Evaluate {
       case atom: Atom =>
         Environment
           .findAtom(atom)
-          .map {
-            case Variable(name, `atom`) => name
-            case Variable(name, Implication(atom: Atom, _)) =>
-              s"$name(${Evaluate(atom)})"
-            case Variable(name, Implication(conjunction: Conjunction, _)) =>
-              s"$name${Evaluate(conjunction)}"
-          }
           .toRight(Error(atom))
+          .flatMap {
+            case Variable(name, `atom`) => Right(name)
+            case Variable(f, Implication(atom: Atom, _)) =>
+              Evaluate(atom).map(param => s"$f($param)")
+            case Variable(name, Implication(f: Conjunction, _)) =>
+              Evaluate(f).map(param => s"$f($param)")
+          }
       case Conjunction(left, right) =>
         for {
           l <- Evaluate(left)
