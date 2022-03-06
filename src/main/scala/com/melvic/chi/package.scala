@@ -1,5 +1,5 @@
 package com.melvic
 
 package object chi {
-  type Result[A] = Either[Error, A]
+  type Result[A] = Either[Fault, A]
 }

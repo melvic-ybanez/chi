@@ -12,7 +12,7 @@ object Evaluate {
       case atom: Atom =>
         Environment
           .findAtom(atom)
-          .toRight(Error.cannotProve(atom))
+          .toRight(Fault.cannotProve(atom))
           .flatMap {
             case Variable(name, `atom`) => Right(name)
             case Variable(f, Implication(atom: Atom, _)) =>

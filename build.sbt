@@ -6,6 +6,6 @@ lazy val root = (project in file("."))
   .settings(
     name := "chi",
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %% "fastparse" % "2.2.2" // SBT
+        "org.scala-lang.modules" % "scala-parser-combinators_2.13" % "2.1.1"
     )
   )
