@@ -10,7 +10,7 @@ object Result {
       case Left(CannotProve(proposition)) =>
         val propositionString = Proposition.show(proposition)
         s"Can not prove the following proposition: $propositionString"
-      case Left(ParseError(msg)) => "Parse Error: $msg"
+      case Left(ParseError(msg)) => s"Parse Error: $msg"
       case Right(code) => code
     }
 }
