@@ -15,7 +15,7 @@ object Environment {
     env.find {
       case Variable(_, `atom`)                 => true
       case Variable(_, Implication(_, `atom`)) => true
-      case _ => false
+      case _                                   => false
     }
 
   /**
@@ -24,12 +24,14 @@ object Environment {
   def register(proposition: Proposition)(implicit env: Environment): (Identifier, Environment) =
     proposition match {
       case Atom(value) => registerSingle(value.toLowerCase.head.toString, proposition)
-      case Conjunction(left, right) =>
-        val (leftVar, lEnv)  = register(left)
-        val (rightVar, rEnv) = register(right)(lEnv)
-        val variable         = Group(List(leftVar, rightVar))
-        (variable, rEnv)
-      case Disjunction(_, _)            => registerSingle("e", proposition)
+      case Conjunction(components) =>
+        val (ids, newEnv) = components.foldLeft(List.empty[Identifier], env) {
+          case ((ids, env), component) =>
+            val (identifier, newEnv) = register(component)(env)
+            (identifier :: ids, newEnv)
+        }
+        (Group(ids), newEnv)
+      case Disjunction(_, _) => registerSingle("e", proposition)
       case Implication(_, _) => registerSingle("f", proposition)
     }
 

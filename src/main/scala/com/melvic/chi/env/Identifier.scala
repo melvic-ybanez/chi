@@ -1,7 +1,5 @@
 package com.melvic.chi.env
 
-import com.melvic.chi.Proposition
-
 sealed trait Identifier
 
 object Identifier {
@@ -13,6 +11,6 @@ object Identifier {
     variable match {
       case Single(name) => name
       case Group(identifiers) =>
-        "(" + identifiers.map(show).mkString(",") + ")"
+        "(" + identifiers.map(show).mkString(", ") + ")"
     }
 }

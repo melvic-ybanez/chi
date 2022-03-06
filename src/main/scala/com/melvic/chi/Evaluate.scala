@@ -6,8 +6,10 @@ import com.melvic.chi.env.Identifier.Single
 import com.melvic.chi.env.{Environment, Identifier}
 
 object Evaluate {
+  type Result = Either[Error, String]
+
   //noinspection SpellCheckingInspection
-  def apply(proposition: Proposition)(implicit env: Environment): Either[Error, String] =
+  def apply(proposition: Proposition)(implicit env: Environment): Result =
     proposition match {
       case atom: Atom =>
         Environment
@@ -20,11 +22,17 @@ object Evaluate {
             case Variable(name, Implication(f: Conjunction, _)) =>
               Evaluate(f).map(param => s"$f($param)")
           }
-      case Conjunction(left, right) =>
-        for {
-          l <- Evaluate(left)
-          r <- Evaluate(right)
-        } yield s"($l, $r)"
+      case Conjunction(components) =>
+        def recurse(result: List[String], components: List[Proposition]): Either[Error, List[String]] =
+          components match {
+            case Nil => Right(result)
+            case component :: rest =>
+              Evaluate(component).flatMap(str => recurse(str :: result, rest))
+          }
+
+        val evaluatedComponents = recurse(Nil, components)
+
+        evaluatedComponents.map(strs => "(" + strs.mkString(", ") + ")")
       case Disjunction(left, right) =>
         Evaluate(left)
           .map(l => s"Left($l)")
