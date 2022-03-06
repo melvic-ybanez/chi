@@ -48,4 +48,15 @@ object Evaluate {
           }
         }
     }
+
+  def functionCode(functionCode: FunctionCode): Result = {
+    val FunctionCode(name, typeParams, proposition) = functionCode
+    Evaluate
+      .proposition(proposition)(Environment.empty)
+      .map { body =>
+        val propositionString = Proposition.show(proposition)
+        val signature = s"def ${name}[${typeParams.mkString(", ")}]: $propositionString"
+        s"$signature =\n  $body"
+      }
+  }
 }
