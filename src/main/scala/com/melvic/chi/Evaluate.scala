@@ -6,15 +6,13 @@ import com.melvic.chi.env.Identifier.Single
 import com.melvic.chi.env.{Environment, Identifier}
 
 object Evaluate {
-  type Result = Either[Error, String]
-
   //noinspection SpellCheckingInspection
-  def proposition(proposition: Proposition)(implicit env: Environment): Result =
+  def proposition(proposition: Proposition)(implicit env: Environment): Result[String] =
     proposition match {
       case atom: Atom =>
         Environment
           .findAtom(atom)
-          .toRight(Error(atom))
+          .toRight(Error.cannotProve(atom))
           .flatMap {
             case Variable(name, `atom`) => Right(name)
             case Variable(f, Implication(atom: Atom, _)) =>
@@ -23,7 +21,7 @@ object Evaluate {
               Evaluate.proposition(f).map(param => s"$f($param)")
           }
       case Conjunction(components) =>
-        def recurse(result: List[String], components: List[Proposition]): Either[Error, List[String]] =
+        def recurse(result: List[String], components: List[Proposition]): Result[List[String]] =
           components match {
             case Nil => Right(result)
             case component :: rest =>
@@ -49,7 +47,7 @@ object Evaluate {
         }
     }
 
-  def functionCode(functionCode: FunctionCode): Result = {
+  def functionCode(functionCode: FunctionCode): Result[String] = {
     val FunctionCode(name, typeParams, proposition) = functionCode
     Evaluate
       .proposition(proposition)(Environment.empty)
@@ -59,4 +57,7 @@ object Evaluate {
         s"$signature =\n  $body"
       }
   }
+
+  def functionString(functionCode: String): Result[String] =
+    Parser.parseFunctionCode(functionCode).flatMap(Evaluate.functionCode)
 }
