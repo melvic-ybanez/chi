@@ -13,6 +13,6 @@ object Proposition {
       case Atom(value) => value
       case Conjunction(components) => "(" + components.map(show).mkString(", ") + ")"
       case Disjunction(left, right) => s"Either[${show(left)}, ${show(right)}]"
-      case Implication(antecedent, consequent) => s"${show(antecedent)} => ${show(consequent)}"
+      case Implication(antecedent, consequent) => s"(${show(antecedent)} => ${show(consequent)})"
     }
 }
