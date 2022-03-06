@@ -3,6 +3,9 @@ A code generator based on the Curry-Howard Isomorphism
 
 Chi takes in a function signature as a string and generates the function implementation.
 
+The following examples illustrate how to get an output string using the convenience function
+`generateAndShow`:
+
 ```scala
 scala> generateAndShow("def identity[A]: A => A")
 val res0: String =
