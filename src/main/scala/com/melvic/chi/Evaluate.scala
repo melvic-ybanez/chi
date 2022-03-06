@@ -42,7 +42,9 @@ object Evaluate {
         Evaluate.proposition(consequent)(newEnv).map { codomain =>
           identifier match {
             case single: Single => s"${Identifier.show(identifier)} => $codomain"
-            case _              => s"{ case ${Identifier.show(identifier)} => $codomain\n  }"
+            case _              =>
+              // TODO: Pretty-printing
+              s"{ case ${Identifier.show(identifier)} =>\n    $codomain\n  }"
           }
         }
     }
