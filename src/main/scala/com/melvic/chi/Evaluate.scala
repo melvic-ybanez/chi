@@ -17,8 +17,8 @@ object Evaluate {
           .toRight(Fault.cannotProve(atom))
           .flatMap {
             case variable @ Variable(name, `atom`) => Result.success(variable)
-            case Variable(f, Implication(antecedent, _)) =>
-              Evaluate.proposition(antecedent).map {
+            case variable @ Variable(f, Implication(antecedent, _)) =>
+              Evaluate.proposition(antecedent)(env.filterNot(_ == variable)).map {
                 case Proof.Conjunction(terms) => Application(f, terms)
                 case param => Application(f, List(param))
               }
