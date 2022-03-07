@@ -1,5 +1,7 @@
 package com.melvic.chi
 
+import com.melvic.chi.ast.Proposition
+
 sealed trait Fault
 
 object Fault {

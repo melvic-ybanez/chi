@@ -1,6 +1,7 @@
 package com.melvic.chi
 
 import com.melvic.chi.Fault.{CannotProve, ParseError}
+import com.melvic.chi.ast.Proposition
 
 object Result {
   type Result[A] = Either[Fault, A]
@@ -13,4 +14,8 @@ object Result {
       case Left(ParseError(msg)) => s"Parse Error: $msg"
       case Right(code) => code
     }
+
+  def success[A](value: A): Result[A] = Right(value)
+
+  def fail[A](fault: Fault): Result[A] = Left(fault)
 }

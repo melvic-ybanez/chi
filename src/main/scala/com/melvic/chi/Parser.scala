@@ -1,16 +1,19 @@
 package com.melvic.chi
 
-import com.melvic.chi.Proposition.{Atom, Conjunction, Disjunction, Implication}
+import com.melvic.chi.ast.Proposition._
+import com.melvic.chi.ast.Proposition
 
 import scala.util.parsing.combinator.RegexParsers
 import scala.util.parsing.combinator._
 import scala.util.parsing.input.CharSequenceReader
 
 object Parser extends RegexParsers with PackratParsers {
+  val pUnit: Parser[PUnit] = (("(" ~ ")") | "Unit") ^^ { _ => PUnit }
+
   val atom: Parser[Atom] = "[a-zA-Z]+".r ^^ { Atom }
 
   val conjunction: Parser[Conjunction] =
-    "(" ~> repsep(proposition, ",") <~ ")" ^^ { Conjunction }
+    "(" ~> rep1sep(proposition, ",") <~ ")" ^^ { Conjunction }
 
   val disjunction: Parser[Disjunction] =
     "Either[" ~> proposition ~ ("," ~> proposition <~ "]") ^^ { case left ~ right => Disjunction(left, right) }
@@ -19,7 +22,7 @@ object Parser extends RegexParsers with PackratParsers {
     proposition ~ ("=>" ~> proposition) ^^ { case antecedent ~ consequent => Implication(antecedent, consequent) }
 
   lazy val proposition: PackratParser[Proposition] =
-    (opt("(") ~> implication <~ opt(")")) | implication | conjunction | disjunction | atom
+    (opt("(") ~> implication <~ opt(")")) | implication | conjunction | disjunction | atom | pUnit
 
   def functionCode: Parser[FunctionCode] =
     "def" ~> "[a-zA-Z]+".r ~ ("[" ~> rep1sep(atom, ",") <~ "]") ~ (":" ~> proposition) ^^ {

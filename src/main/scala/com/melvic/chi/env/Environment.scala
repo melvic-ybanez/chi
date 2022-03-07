@@ -1,17 +1,15 @@
 package com.melvic.chi.env
 
-import com.melvic.chi.Proposition
-import com.melvic.chi.Proposition.{Atom, Conjunction, Disjunction, Implication}
-import com.melvic.chi.env.Identifier.{Group, Single}
+import com.melvic.chi.ast.Proof.{TUnit, Variable}
+import com.melvic.chi.ast.Proposition._
+import com.melvic.chi.ast.{Proof, Proposition}
 
 object Environment {
-  type Environment = List[Variable]
+  type Environment = List[Proof]
 
-  final case class Variable(name: String, proposition: Proposition)
+  def default: Environment = List(TUnit)
 
-  def empty: Environment = Nil
-
-  def findAtom(atom: Atom)(implicit env: Environment): Option[Variable] =
+  def findAtom(atom: Atom)(implicit env: Environment): Option[Proof] =
     env.find {
       case Variable(_, `atom`)                 => true
       case Variable(_, Implication(_, `atom`)) => true
@@ -21,23 +19,23 @@ object Environment {
   /**
     * Assigns a variable to the proposition and registers it into the environment
     */
-  def register(proposition: Proposition)(implicit env: Environment): (Identifier, Environment) =
+  def register(proposition: Proposition)(implicit env: Environment): (Proof, Environment) =
     proposition match {
       case Atom(value) => registerSingle(value.toLowerCase.head.toString, proposition)
       case Conjunction(components) =>
-        val (ids, newEnv) = components.foldLeft(List.empty[Identifier], env) {
+        val (ids, newEnv) = components.foldLeft(List.empty[Proof], env) {
           case ((ids, env), component) =>
-            val (identifier, newEnv) = register(component)(env)
-            (identifier :: ids, newEnv)
+            val (term, newEnv) = register(component)(env)
+            (term :: ids, newEnv)
         }
-        (Group(ids.reverse), newEnv)
+        (Proof.Conjunction(ids.reverse), newEnv)
       case Disjunction(_, _) => registerSingle("e", proposition)
       case Implication(_, _) => registerSingle("f", proposition)
     }
 
-  def registerSingle(base: String, proposition: Proposition)(implicit env: Environment): (Identifier, Environment) = {
-    val identifier = Single(generateName(base))
-    (identifier, Variable(identifier.name, proposition) :: env)
+  def registerSingle(base: String, proposition: Proposition)(implicit env: Environment): (Proof, Environment) = {
+    val variable = Variable(generateName(base), proposition)
+    (variable, variable :: env)
   }
 
   /**
