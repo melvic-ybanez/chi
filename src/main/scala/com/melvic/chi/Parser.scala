@@ -8,12 +8,13 @@ import scala.util.parsing.combinator._
 import scala.util.parsing.input.CharSequenceReader
 
 object Parser extends RegexParsers with PackratParsers {
-  val pUnit: Parser[PUnit] = (("(" ~ ")") | "Unit") ^^ { _ => PUnit }
-
   val atom: Parser[Atom] = "[a-zA-Z]+".r ^^ { Atom }
 
-  val conjunction: Parser[Conjunction] =
-    "(" ~> rep1sep(proposition, ",") <~ ")" ^^ { Conjunction }
+  val conjunction: Parser[Proposition] =
+    "(" ~> repsep(proposition, ",") <~ ")" ^^ {
+      case Nil => PUnit
+      case proposition => Conjunction(proposition)
+    }
 
   val disjunction: Parser[Disjunction] =
     "Either[" ~> proposition ~ ("," ~> proposition <~ "]") ^^ { case left ~ right => Disjunction(left, right) }
@@ -22,7 +23,7 @@ object Parser extends RegexParsers with PackratParsers {
     proposition ~ ("=>" ~> proposition) ^^ { case antecedent ~ consequent => Implication(antecedent, consequent) }
 
   lazy val proposition: PackratParser[Proposition] =
-    (opt("(") ~> implication <~ opt(")")) | implication | conjunction | disjunction | atom | pUnit
+     implication | ("(" ~> implication <~ ")") | conjunction | disjunction | atom
 
   def functionCode: Parser[FunctionCode] =
     "def" ~> "[a-zA-Z]+".r ~ ("[" ~> rep1sep(atom, ",") <~ "]") ~ (":" ~> proposition) ^^ {

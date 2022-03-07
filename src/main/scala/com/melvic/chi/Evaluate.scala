@@ -19,6 +19,7 @@ object Evaluate {
             case variable @ Variable(name, `atom`) => Result.success(variable)
             case variable @ Variable(f, Implication(antecedent, _)) =>
               Evaluate.proposition(antecedent)(env.filterNot(_ == variable)).map {
+                case TUnit => Application(f, Nil)
                 case Proof.Conjunction(terms) => Application(f, terms)
                 case param => Application(f, List(param))
               }
