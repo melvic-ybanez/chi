@@ -41,6 +41,21 @@ scala> generateAndShow("def andThen[A, B, C]: (A => B) => (B => C) => (A => C)")
 val res7: String =
 def andThen[A, B, C]: ((A => B) => ((B => C) => (A => C))) =
   f => g => a => g(f(a))
+```
 
+Named parameters are also supported:
+
+```scala
+import com.melvic.chi._
+
+scala> generateAndShow("def identity(a: A): A")
+val res0: String =
+def identity(a: A): A =
+  a
+
+scala> generateAndShow("def andThen[A, B, C](f: (A => B), g: (B => C)): A => C")
+val res1: String =
+def andThen[A, B, C](f: (A => B), g: (B => C)): (A => C) =
+  a => g(f(a))
 
 ```
