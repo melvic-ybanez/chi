@@ -46,9 +46,9 @@ object Evaluate {
     }
 
   def signature(signature: Signature): Result[Definition] = {
-    val Signature(name, typeParams, proposition) = signature
+    val Signature(name, typeParams, params, proposition) = signature
     Evaluate
-      .proposition(proposition)(Environment.default)
+      .proposition(proposition)(Environment.fromList(params))
       .map(Definition(signature, _))
   }
 
