@@ -1,7 +1,7 @@
 package com.melvic.chi
 
 import com.melvic.chi.ast.Proposition._
-import com.melvic.chi.ast.Proposition
+import com.melvic.chi.ast.{Proposition, Signature}
 
 import scala.util.parsing.combinator.RegexParsers
 import scala.util.parsing.combinator._
@@ -25,13 +25,13 @@ object Parser extends RegexParsers with PackratParsers {
   lazy val proposition: PackratParser[Proposition] =
      implication | ("(" ~> implication <~ ")") | conjunction | disjunction | atom
 
-  def functionCode: Parser[FunctionCode] =
-    "def" ~> "[a-zA-Z]+".r ~ ("[" ~> rep1sep(atom, ",") <~ "]") ~ (":" ~> proposition) ^^ {
+  def functionCode: Parser[Signature] =
+    "def" ~> "[a-zA-Z]+".r ~ opt("[" ~> rep1sep(atom, ",") <~ "]") ~ (":" ~> proposition) ^^ {
       case name ~ typeParams ~ proposition =>
-        FunctionCode(name, typeParams.map(_.value), proposition)
+        Signature(name, typeParams.getOrElse(Nil).map(_.value), proposition)
     }
 
-  def parseFunctionCode(code: String): Result[FunctionCode] =
+  def parseSignature(code: String): Result[Signature] =
     parseAll(functionCode, new PackratReader(new CharSequenceReader(code))) match {
       case Success(functionCode, _) => Right(functionCode)
       case Failure(msg, _) => Left(Fault.parseError(msg))

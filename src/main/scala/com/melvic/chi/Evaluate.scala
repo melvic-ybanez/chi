@@ -2,7 +2,7 @@ package com.melvic.chi
 
 import com.melvic.chi.ast.Proof.{Abstraction, Application, PLeft, PRight, TUnit, Variable}
 import com.melvic.chi.ast.Proposition._
-import com.melvic.chi.ast.{Proof, Proposition}
+import com.melvic.chi.ast.{Definition, Proof, Proposition, Signature}
 import com.melvic.chi.env.Environment
 import com.melvic.chi.env.Environment.Environment
 
@@ -45,17 +45,13 @@ object Evaluate {
         Evaluate.proposition(consequent)(newEnv).map(Abstraction(term, _))
     }
 
-  def functionCode(functionCode: FunctionCode): Result[String] = {
-    val FunctionCode(name, typeParams, proposition) = functionCode
+  def signature(signature: Signature): Result[Definition] = {
+    val Signature(name, typeParams, proposition) = signature
     Evaluate
       .proposition(proposition)(Environment.default)
-      .map { body =>
-        val propositionString = Proposition.show(proposition)
-        val signature         = s"def ${name}[${typeParams.mkString(", ")}]: $propositionString"
-        s"$signature =\n  ${Proof.show(body)}"
-      }
+      .map(Definition(signature, _))
   }
 
-  def functionString(functionCode: String): Result[String] =
-    Parser.parseFunctionCode(functionCode).flatMap(Evaluate.functionCode)
+  def signatureString(functionCode: String): Result[Definition] =
+    Parser.parseSignature(functionCode).flatMap(Evaluate.signature)
 }
