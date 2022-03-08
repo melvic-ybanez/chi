@@ -1,5 +1,8 @@
 # Chi
-A code generator for universally quantified function signatures.
+A code generator for universally quantified function signatures. Chi stands 
+for [Curry-Howard Isomorphism](https://en.wikipedia.org/wiki/Curry%E2%80%93Howard_correspondence). 
+This program is currently just a proof-of-concept to see how mechanical functions really
+are when their types serve as logical propositions under the Curry-Howard Isomorphism.
 
 Chi takes in a function signature as a string and generates the function implementation.
 
