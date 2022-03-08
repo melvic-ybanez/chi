@@ -1,5 +1,5 @@
 # Chi
-A code generator based on the Curry-Howard Isomorphism
+A code generator for universally quantified function signatures.
 
 Chi takes in a function signature as a string and generates the function implementation.
 
