@@ -9,6 +9,8 @@ object Environment {
 
   def default: Environment = List(TUnit)
 
+  def fromList(list: List[Proof]): Environment = list ++ default
+
   def findAtom(atom: Atom)(implicit env: Environment): Option[Proof] =
     env.find {
       case Variable(_, `atom`)                 => true
