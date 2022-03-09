@@ -35,4 +35,11 @@ class UniversallyQuantifiedSpec extends AnyFlatSpec with should.Matchers {
         |  }""".stripMargin
     )
   }
+
+  "compose" should "apply the first function after the second" in {
+    generateAndShow("def compose[A, B, C]: (B => C) => (A => B) => A => C") should be(
+      """def compose[A, B, C]: ((B => C) => ((A => B) => (A => C))) =
+        |  f => g => a => f(g(a))""".stripMargin
+    )
+  }
 }
