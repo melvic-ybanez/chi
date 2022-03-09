@@ -26,4 +26,13 @@ class UniversallyQuantifiedSpec extends AnyFlatSpec with should.Matchers {
         |  }""".stripMargin
     )
   }
+
+  "snd" should "return the second element" in {
+    generateAndShow("def snd[A, B]: (A, B) => B") should be(
+      """def snd[A, B]: ((A, B) => B) =
+        |  { case (a, b) =>
+        |    b
+        |  }""".stripMargin
+    )
+  }
 }
