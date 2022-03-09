@@ -53,4 +53,15 @@ class UniversallyQuantifiedSpec extends AnyFlatSpec with should.Matchers {
         |  a => g(f(a))""".stripMargin
     )
   }
+
+  "unit" should "be provable with the universal value ()" in {
+    generateAndShow("def unit: ()") should be(
+      """def unit: () =
+        |  ()""".stripMargin
+    )
+    generateAndShow("def unit[A]: (() => A) => A") should be(
+      """def unit[A]: ((() => A) => A) =
+        |  f => f()""".stripMargin
+    )
+  }
 }
