@@ -1,8 +1,6 @@
 package com.melvic.chi.tests
 
 import com.melvic.chi.{Evaluate, generateAndShow}
-import com.melvic.chi.Result.Result
-import com.melvic.chi.ast.{Definition, Proof}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should
 
@@ -62,6 +60,13 @@ class UniversalQuantificationSpec extends AnyFlatSpec with should.Matchers {
     generateAndShow("def unit[A]: (() => A) => A") should be(
       """def unit[A]: ((() => A) => A) =
         |  f => f()""".stripMargin
+    )
+  }
+
+  "either" should "default to left when the evaluation succeeds" in {
+    generateAndShow("def left[A]: A => Either[A, A]") should be(
+      """def left[A]: (A => Either[A, A]) =
+        |  a => Left(a)""".stripMargin
     )
   }
 }

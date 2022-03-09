@@ -38,8 +38,7 @@ object Evaluate {
         Evaluate
           .proposition(left)
           .map(PLeft)
-          .orElse(Evaluate.proposition(right))
-          .map(PRight)
+          .orElse(Evaluate.proposition(right).map(PRight))
       case Implication(antecedent, consequent) =>
         val (term, newEnv) = Environment.register(antecedent)
         Evaluate.proposition(consequent)(newEnv).map(Abstraction(term, _))

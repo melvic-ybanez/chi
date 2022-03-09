@@ -18,8 +18,8 @@ object Proof {
       case TUnit                             => "()"
       case Variable(name, _)                 => name
       case Conjunction(terms)                => "(" + terms.map(Proof.show).mkString(", ") + ")"
-      case PRight(term)                      => s"Right($term)"
-      case PLeft(term)                       => s"Left($term)"
+      case PRight(term)                      => s"Right(${Proof.show(term)})"
+      case PLeft(term)                       => s"Left(${Proof.show(term)})"
       case Abstraction(params: Conjunction, codomain) =>
         s"{ case ${show(params)} =>\n    ${show(codomain)}\n  }"
       case Abstraction(domain, codomain)     => s"${Proof.show(domain)} => ${Proof.show(codomain)}"
