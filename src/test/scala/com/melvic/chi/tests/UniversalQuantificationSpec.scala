@@ -6,7 +6,7 @@ import com.melvic.chi.ast.{Definition, Proof}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should
 
-class UniversallyQuantifiedSpec extends AnyFlatSpec with should.Matchers {
+class UniversalQuantificationSpec extends AnyFlatSpec with should.Matchers {
   "A => A" should "map the input to itself" in {
     generateAndShow("def identity[A]: A => A") should be(
       """def identity[A]: (A => A) =
