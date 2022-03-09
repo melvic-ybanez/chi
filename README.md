@@ -32,12 +32,12 @@ val res5: String =
 def const[A, B]: (A => (B => A)) =
   a => b => a
 
-scala> generateAndShow("def compose[A, B, C]: (B => C) => (A => B) => (A => C)")
+scala> generateAndShow("def compose[A, B, C]: (B => C) => (A => B) => A => C")
 val res6: String =
 def compose[A, B, C]: ((B => C) => ((A => B) => (A => C))) =
   f => g => a => f(g(a))
 
-scala> generateAndShow("def andThen[A, B, C]: (A => B) => (B => C) => (A => C)")
+scala> generateAndShow("def andThen[A, B, C]: (A => B) => (B => C) => A => C")
 val res7: String =
 def andThen[A, B, C]: ((A => B) => ((B => C) => (A => C))) =
   f => g => a => g(f(a))

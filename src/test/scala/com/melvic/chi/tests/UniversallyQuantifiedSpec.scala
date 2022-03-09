@@ -42,4 +42,15 @@ class UniversallyQuantifiedSpec extends AnyFlatSpec with should.Matchers {
         |  f => g => a => f(g(a))""".stripMargin
     )
   }
+
+  "andThen" should "apply the first function before the second" in {
+    generateAndShow("def andThen[A, B, C]: (A => B) => (B => C) => A => C") should be(
+      """def andThen[A, B, C]: ((A => B) => ((B => C) => (A => C))) =
+        |  f => g => a => g(f(a))""".stripMargin
+    )
+    generateAndShow("def andThen[A, B, C](f: (A => B), g: (B => C)): A => C") should be(
+      """def andThen[A, B, C](f: (A => B), g: (B => C)): (A => C) =
+        |  a => g(f(a))""".stripMargin
+    )
+  }
 }
