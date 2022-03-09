@@ -17,4 +17,13 @@ class UniversallyQuantifiedSpec extends AnyFlatSpec with should.Matchers {
         |  a""".stripMargin
     )
   }
+
+  "fst" should "return the first element" in {
+    generateAndShow("def fst[A, B]: (A, B) => A") should be(
+      """def fst[A, B]: ((A, B) => A) =
+        |  { case (a, b) =>
+        |    a
+        |  }""".stripMargin
+    )
+  }
 }
