@@ -4,7 +4,7 @@ import com.melvic.chi.{Evaluate, generateAndShow}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should
 
-class UniversalQuantificationSpec extends AnyFlatSpec with should.Matchers {
+class ScalaDefSpec extends AnyFlatSpec with should.Matchers {
   "A => A" should "map the input to itself" in {
     generateAndShow("def identity[A]: A => A") should be(
       """def identity[A]: (A => A) =
@@ -67,6 +67,12 @@ class UniversalQuantificationSpec extends AnyFlatSpec with should.Matchers {
     generateAndShow("def left[A]: A => Either[A, A]") should be(
       """def left[A]: (A => Either[A, A]) =
         |  a => Left(a)""".stripMargin
+    )
+  }
+
+  "Unknown propositions" should "not be allowed" in {
+    generateAndShow("def foo[A]: A => B") should be(
+      "Unknown propositions: B"
     )
   }
 }

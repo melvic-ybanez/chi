@@ -8,10 +8,7 @@ object Result {
 
   def show(result: Result[Definition]): String =
     result match {
-      case Left(CannotProve(proposition)) =>
-        val propositionString = Proposition.show(proposition)
-        s"Can not prove the following proposition: $propositionString"
-      case Left(ParseError(msg)) => s"Parse Error: $msg"
+      case Left(fault) => Fault.show(fault)
       case Right(code) => Definition.show(code)
     }
 

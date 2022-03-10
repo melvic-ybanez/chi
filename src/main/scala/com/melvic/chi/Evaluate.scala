@@ -1,6 +1,7 @@
 package com.melvic.chi
 
-import com.melvic.chi.ast.Proof.{Abstraction, Application, PLeft, PRight, TUnit, Variable}
+import com.melvic.chi.Fault.UnknownPropositions
+import com.melvic.chi.ast.Proof.{Conjunction => _, _}
 import com.melvic.chi.ast.Proposition._
 import com.melvic.chi.ast.{Definition, Proof, Proposition, Signature}
 import com.melvic.chi.env.Environment
@@ -19,9 +20,9 @@ object Evaluate {
             case variable @ Variable(name, `atom`) => Result.success(variable)
             case variable @ Variable(f, Implication(antecedent, _)) =>
               Evaluate.proposition(antecedent)(env.filterNot(_ == variable)).map {
-                case TUnit => Application(f, Nil)
+                case TUnit                    => Application(f, Nil)
                 case Proof.Conjunction(terms) => Application(f, terms)
-                case param => Application(f, List(param))
+                case param                    => Application(f, List(param))
               }
           }
       case Conjunction(components) =>
@@ -46,9 +47,18 @@ object Evaluate {
 
   def signature(signature: Signature): Result[Definition] = {
     val Signature(name, typeParams, params, proposition) = signature
-    Evaluate
-      .proposition(proposition)(Environment.fromList(params))
-      .map(Definition(signature, _))
+
+    val unknownTypes = Proposition.filter(proposition) {
+      case PUnit => false
+      case atom =>
+        !typeParams.map(Identifier).contains(atom)
+    }
+
+    if (unknownTypes.nonEmpty) Result.fail(UnknownPropositions(unknownTypes))
+    else
+      Evaluate
+        .proposition(proposition)(Environment.fromList(params))
+        .map(Definition(signature, _))
   }
 
   def signatureString(functionCode: String): Result[Definition] =
