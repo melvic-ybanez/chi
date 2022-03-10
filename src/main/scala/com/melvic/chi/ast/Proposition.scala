@@ -18,7 +18,14 @@ object Proposition {
 
   case object PUnit extends PUnit
   final case class Identifier(value: String) extends Atom
+
+  /**
+    * Logical conjunction. We are using a list for the components, instead of modeling
+    * them as a pair or as a Cons list (with a head and a tail), because we want to
+    * easily distinguished a flat tuple from a nested one.
+    */
   final case class Conjunction(components: List[Proposition]) extends Proposition
+
   final case class Disjunction(left: Proposition, right: Proposition) extends Proposition
   final case class Implication(antecedent: Proposition, consequent: Proposition) extends Proposition
 
