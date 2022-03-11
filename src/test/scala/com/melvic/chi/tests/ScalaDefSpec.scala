@@ -16,6 +16,13 @@ class ScalaDefSpec extends AnyFlatSpec with should.Matchers {
     )
   }
 
+  "(A => B) => A => B" should "apply the function to the input of the resulting function" in {
+    generateAndShow("def apply[A, B]: (A => B) => A => B") should be(
+      """def apply[A, B]: ((A => B) => (A => B)) =
+        |  f => a => f(a)""".stripMargin
+    )
+  }
+
   "fst" should "return the first element" in {
     generateAndShow("def fst[A, B]: (A, B) => A") should be(
       """def fst[A, B]: ((A, B) => A) =

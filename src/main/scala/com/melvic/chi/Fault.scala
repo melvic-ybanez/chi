@@ -23,6 +23,6 @@ object Fault {
         s"Can not prove the following proposition: $propositionString"
       case ParseError(msg) => s"Parse Error: $msg"
       case UnknownPropositions(identifiers) =>
-        s"Unknown propositions: ${identifiers.map(Proposition.show).mkString(", ")}"
+        s"Unknown propositions: ${identifiers.map(Proposition.show(_)).mkString(", ")}"
     }
 }
