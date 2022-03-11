@@ -12,7 +12,7 @@ object Main {
   @tailrec
   def repl(): Unit =
     readLine("chi> ") match {
-      case "exit" => ()
+      case "exit" => println("Bye!")
       case ""     => repl()
       case input =>
         println(generateAndShow(input))
