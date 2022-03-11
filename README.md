@@ -10,35 +10,29 @@ The following examples illustrate how to get an output string using the convenie
 `generateAndShow`:
 
 ```scala
-scala> generateAndShow("def identity[A]: A => A")
-val res0: String =
+chi> def identity[A]: A => A
 def identity[A]: A => A =
   a => a
-
-scala> generateAndShow("def apply[A, B]: (A => B) => A => B")
-val res3: String =
+  
+chi> def apply[A, B]: (A => B) => A => B
 def apply[A, B]: ((A => B) => (A => B)) =
   f => a => f(a)
-
-scala> generateAndShow("def fst[A, B]: (A, B) => A")
-val res4: String =
+  
+chi> def fst[A, B]: (A, B) => A
 def fst[A, B]: ((A, B) => A) =
-{ case (a, b) =>
-  a
-}
+  { case (a, b) =>
+    a
+  }
 
-scala> generateAndShow("def const[A, B]: A => (B => A)")
-val res5: String =
+chi> def const[A, B]: A => (B => A)
 def const[A, B]: (A => (B => A)) =
   a => b => a
 
-scala> generateAndShow("def compose[A, B, C]: (B => C) => (A => B) => A => C")
-val res6: String =
+chi> def compose[A, B, C]: (B => C) => (A => B) => A => C
 def compose[A, B, C]: ((B => C) => ((A => B) => (A => C))) =
   f => g => a => f(g(a))
 
-scala> generateAndShow("def andThen[A, B, C]: (A => B) => (B => C) => A => C")
-val res7: String =
+chi> def andThen[A, B, C]: (A => B) => (B => C) => A => C
 def andThen[A, B, C]: ((A => B) => ((B => C) => (A => C))) =
   f => g => a => g(f(a))
 ```
@@ -46,15 +40,11 @@ def andThen[A, B, C]: ((A => B) => ((B => C) => (A => C))) =
 Named parameters are also supported:
 
 ```scala
-import com.melvic.chi._
-
-scala> generateAndShow("def identity(a: A): A")
-val res0: String =
+chi> def identity(a: A): A
 def identity(a: A): A =
   a
 
-scala> generateAndShow("def andThen[A, B, C](f: (A => B), g: (B => C)): A => C")
-val res1: String =
+chi> def andThen[A, B, C](f: (A => B), g: (B => C)): A => C
 def andThen[A, B, C](f: (A => B), g: (B => C)): (A => C) =
   a => g(f(a))
 

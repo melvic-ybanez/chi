@@ -16,6 +16,7 @@ object Main {
       case ""     => repl()
       case input =>
         println(generateAndShow(input))
+        println()
         repl()
     }
 }
