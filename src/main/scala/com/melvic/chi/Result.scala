@@ -1,7 +1,6 @@
 package com.melvic.chi
 
-import com.melvic.chi.Fault.{CannotProve, ParseError}
-import com.melvic.chi.ast.{Definition, Proposition}
+import com.melvic.chi.ast.Definition
 
 object Result {
   type Result[A] = Either[Fault, A]
