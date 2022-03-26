@@ -75,6 +75,16 @@ class ScalaDefSpec extends AnyFlatSpec with should.Matchers {
       """def left[A]: (A => Either[A, A]) =
         |  a => Left(a)""".stripMargin
     )
+
+    generateAndShow("def left[A, B]: A => Either[A, B]") should be(
+      """def left[A, B]: (A => Either[A, B]) =
+        |  a => Left(a)""".stripMargin
+    )
+
+    generateAndShow("def right[A, B]: B => Either[A, B]") should be(
+      """def right[A, B]: (B => Either[A, B]) =
+        |  b => Right(b)""".stripMargin
+    )
   }
 
   "all assumptions" should "be considered" in {
