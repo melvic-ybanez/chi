@@ -5,6 +5,10 @@ import com.melvic.chi.ast.Proposition._
 import com.melvic.chi.ast.{Proof, Proposition}
 
 object Environment {
+
+  /**
+    * The set of assumptions and discharged formulae.
+    */
   type Environment = List[Proof]
 
   def default: Environment = List(TUnit)
@@ -27,15 +31,17 @@ object Environment {
       case Conjunction(components) =>
         val (ids, newEnv) = components.foldLeft(List.empty[Proof], env) {
           case ((ids, env), component) =>
-            val (term, newEnv) = register(component)(env)
-            (term :: ids, newEnv)
+            val (id, newEnv) = register(component)(env)
+            (id :: ids, newEnv)
         }
         (Proof.Conjunction(ids.reverse), newEnv)
       case Disjunction(_, _) => registerSingle("e", proposition)
       case Implication(_, _) => registerSingle("f", proposition)
     }
 
-  def registerSingle(base: String, proposition: Proposition)(implicit env: Environment): (Proof, Environment) = {
+  def registerSingle(base: String, proposition: Proposition)(
+      implicit env: Environment
+  ): (Proof, Environment) = {
     val variable = Variable(generateName(base), proposition)
     (variable, variable :: env)
   }

@@ -22,7 +22,8 @@ object Proposition {
   /**
     * Logical conjunction. We are using a list for the components, instead of modeling
     * them as a pair or as a Cons list (with a head and a tail), because we want to
-    * easily distinguished a flat tuple from a nested one.
+    * easily distinguished a flat tuple from a nested one (which is very important during
+    * stringification.)
     */
   final case class Conjunction(components: List[Proposition]) extends Proposition
 

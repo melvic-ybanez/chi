@@ -8,7 +8,7 @@ import scala.util.parsing.combinator._
 import scala.util.parsing.input.CharSequenceReader
 
 object Parser extends RegexParsers with PackratParsers {
-  val identifier: Parser[Atom] = "[a-zA-Z]+".r ^^ { Identifier }
+  val identifier: Parser[Atom] = nameParser ^^ { Identifier }
 
   val conjunction: Parser[Proposition] =
     "(" ~> repsep(proposition, ",") <~ ")" ^^ {
@@ -29,7 +29,7 @@ object Parser extends RegexParsers with PackratParsers {
   lazy val proposition: PackratParser[Proposition] =
     implication | ("(" ~> implication <~ ")") | conjunction | disjunction | identifier
 
-  val nameParser: Parser[String] = "[a-zA-Z]+".r
+  lazy val nameParser: Parser[String] = "[a-zA-Z]+".r
 
   val param: Parser[Variable] = (nameParser ~ (":" ~> proposition)) ^^ {
     case name ~ proposition =>

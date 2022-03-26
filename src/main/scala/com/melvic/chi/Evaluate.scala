@@ -25,16 +25,7 @@ object Evaluate {
                 case param                    => Application(f, List(param))
               }
           }
-      case Conjunction(components) =>
-        def recurse(result: List[Proof], components: List[Proposition]): Result[List[Proof]] =
-          components match {
-            case Nil => Result.success(result)
-            case component :: rest =>
-              Evaluate.proposition(component).flatMap(str => recurse(str :: result, rest))
-          }
-
-        val evaluatedComponents = recurse(Nil, components)
-        evaluatedComponents.map(Proof.Conjunction)
+      case Conjunction(components) => conjunctionIntroduction(components)
       case Disjunction(left, right) =>
         Evaluate
           .proposition(left)
@@ -63,4 +54,24 @@ object Evaluate {
 
   def signatureString(functionCode: String): Result[Definition] =
     Parser.parseSignature(functionCode).flatMap(Evaluate.signature)
+
+  /**
+    * Base on the the following rule for &-Introduction from propositional logic:
+    *   A B
+    * ------- (&-I)
+    *  A & B
+    * That is, if we assume proofs for A and B, we can construct a proof for their conjunction.
+    * (But of course in our case, we are not limited to two components.
+    */
+  def conjunctionIntroduction(components: List[Proposition])(implicit env: Environment) = {
+    def recurse(result: List[Proof], components: List[Proposition]): Result[List[Proof]] =
+      components match {
+        case Nil => Result.success(result)
+        case component :: rest =>
+          Evaluate.proposition(component).flatMap(proof => recurse(proof :: result, rest))
+      }
+
+    val evaluatedComponents = recurse(Nil, components)
+    evaluatedComponents.map(Proof.Conjunction)
+  }
 }

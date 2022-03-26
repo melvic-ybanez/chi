@@ -6,17 +6,6 @@ import scala.io.StdIn.readLine
 //noinspection SpellCheckingInspection
 object Main {
   def main(args: Array[String]): Unit = {
-    repl()
+    Repl()
   }
-
-  @tailrec
-  def repl(): Unit =
-    readLine("chi> ") match {
-      case "exit" => println("Bye!")
-      case ""     => repl()
-      case input =>
-        println(generateAndShow(input))
-        println()
-        repl()
-    }
 }
