@@ -77,6 +77,18 @@ class ScalaDefSpec extends AnyFlatSpec with should.Matchers {
     )
   }
 
+  "all assumptions" should "be considered" in {
+    generateAndShow("def foo[A, B, C]: (A => C) => (B => C) => B => C") should be(
+      """def foo[A, B, C]: ((A => C) => ((B => C) => (B => C))) =
+        |  f => g => b => g(b)""".stripMargin
+    )
+
+    generateAndShow("def foo[A, B, C]: (B => C) => (A => C) => B => C") should be(
+      """def foo[A, B, C]: ((B => C) => ((A => C) => (B => C))) =
+        |  f => g => b => f(b)""".stripMargin
+    )
+  }
+
   "Unknown propositions" should "not be allowed" in {
     generateAndShow("def foo[A]: A => B") should be(
       "Unknown propositions: B"

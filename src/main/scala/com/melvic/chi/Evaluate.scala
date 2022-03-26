@@ -6,25 +6,14 @@ import com.melvic.chi.ast.Proposition._
 import com.melvic.chi.ast.{Definition, Proof, Proposition, Signature}
 import com.melvic.chi.env.Environment
 import com.melvic.chi.env.Environment.Environment
+import com.melvic.chi.env.implicits._
 
 object Evaluate {
   //noinspection SpellCheckingInspection
   def proposition(proposition: Proposition)(implicit env: Environment): Result[Proof] =
     proposition match {
       case PUnit => Result.success(TUnit)
-      case atom: Atom =>
-        Environment
-          .findAtom(atom)
-          .toRight(Fault.cannotProve(atom))
-          .flatMap {
-            case variable @ Variable(name, `atom`) => Result.success(variable)
-            case variable @ Variable(f, Implication(antecedent, _)) =>
-              Evaluate.proposition(antecedent)(env.filterNot(_ == variable)).map {
-                case TUnit                    => Application(f, Nil)
-                case Proof.Conjunction(terms) => Application(f, terms)
-                case param                    => Application(f, List(param))
-              }
-          }
+      case atom: Atom => applyAssumptionRule(atom)
       case Conjunction(components) => conjunctionIntroduction(components)
       case Disjunction(left, right) =>
         Evaluate
@@ -74,4 +63,22 @@ object Evaluate {
     val evaluatedComponents = recurse(Nil, components)
     evaluatedComponents.map(Proof.Conjunction)
   }
+
+  def applyAssumptionRule(atom: Atom)(implicit env: Environment): Result[Proof] =
+    Environment
+      .findAtom(atom)(env)
+      .toRight(Fault.cannotProve(atom))
+      .flatMap {
+        case variable @ Variable(name, `atom`) => Result.success(variable)
+        case variable @ Variable(f, Implication(antecedent, _)) =>
+          val newEnv: Environment = env.discharge(variable)
+          Evaluate
+            .proposition(antecedent)(newEnv)
+            .map {
+              case TUnit                    => Application(f, Nil)
+              case Proof.Conjunction(terms) => Application(f, terms)
+              case param                    => Application(f, List(param))
+            }
+            .orElse(applyAssumptionRule(atom)(newEnv))
+      }
 }

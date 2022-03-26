@@ -22,6 +22,9 @@ object Environment {
       case _                                   => false
     }
 
+  def discharge(env: Environment, proof: Proof): Environment =
+    env.filterNot(_ == proof)
+
   /**
     * Assigns a variable to the proposition and registers it into the environment
     */
