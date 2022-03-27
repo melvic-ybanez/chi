@@ -1,8 +1,8 @@
-ThisBuild / version := "0.1.0-ALPHA"
+ThisBuild / version := "0.1.0-BETA"
 
 ThisBuild / scalaVersion := "2.13.8"
 
-assemblyJarName in assembly := "chi-0.1.0-alpha.jar"
+assemblyJarName in assembly := "chi-0.1.0-beta.jar"
 
 lazy val root = (project in file("."))
   .settings(
