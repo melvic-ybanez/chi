@@ -106,6 +106,14 @@ class ScalaDefSpec extends AnyFlatSpec with should.Matchers {
     )
   }
 
+  "implication" should "evaluate it's antecedent recursive" in {
+    // Note: `a => f(a)` could have been simplified to just `f`
+    generateAndShow("def foo[A, B, C]: (A => B) => ((A => B) => C) => C") should be(
+      """def foo[A, B, C]: ((A => B) => (((A => B) => C) => C)) =
+        |  f => g => g(a => f(a))""".stripMargin
+    )
+  }
+
   "Unknown propositions" should "not be allowed" in {
     generateAndShow("def foo[A]: A => B") should be(
       "Unknown propositions: B"

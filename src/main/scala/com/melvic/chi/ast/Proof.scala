@@ -18,6 +18,7 @@ object Proof {
     val indent = level.map(singleIndent * _).getOrElse("")
     val nextLine = level.map(_ => "\n").getOrElse("")
     val nextLevel = level.map(_ + 1)
+
     val proofString = proof match {
       case TUnit             => "()"
       case Variable(name, _) => name
@@ -36,6 +37,7 @@ object Proof {
       case Application(functionName, params) =>
         s"$functionName($nextLine${params.map(Proof.show(_, nextLevel)).mkString(", " + nextLine)}$nextLine$indent)"
     }
+
     s"$indent$proofString"
   }
 }

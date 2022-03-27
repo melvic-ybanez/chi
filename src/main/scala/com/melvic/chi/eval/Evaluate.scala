@@ -1,15 +1,17 @@
 package com.melvic.chi.eval
 
-import com.melvic.chi.Fault.UnknownPropositions
+import com.melvic.chi.Parser
 import com.melvic.chi.ast.Proof._
 import com.melvic.chi.ast.Proposition.{Conjunction => TConjunction, _}
 import com.melvic.chi.ast.{Definition, Proof, Proposition, Signature}
-import com.melvic.chi.env.Environment
-import com.melvic.chi.{Fault, Parser, Result}
+import com.melvic.chi.env.Env
+import com.melvic.chi.out.Fault.UnknownPropositions
+import com.melvic.chi.out.Result.Result
+import com.melvic.chi.out.{Fault, Result}
 
 object Evaluate {
   //noinspection SpellCheckingInspection
-  def proposition(proposition: Proposition)(implicit env: Environment): Result[Proof] =
+  def proposition(proposition: Proposition)(implicit env: Env): Result[Proof] =
     proposition match {
       case PUnit                    => Result.success(TUnit)
       case atom: Atom               => deduce(atom)
@@ -34,26 +36,27 @@ object Evaluate {
     if (unknownTypes.nonEmpty) Result.fail(UnknownPropositions(unknownTypes))
     else
       Evaluate
-        .proposition(proposition)(Environment.fromListWithDefault(params))
+        .proposition(proposition)(Env.fromListWithDefault(params))
         .map(Definition(signature, _))
   }
 
   def signatureString(functionCode: String): Result[Definition] =
     Parser.parseSignature(functionCode).flatMap(Evaluate.signature)
 
-  def deduce(atom: Atom)(implicit env: Environment): Result[Proof] =
+  def deduce(atom: Atom)(implicit env: Env): Result[Proof] =
     Rule
       .assumption(atom)
       .orElse {
-        val implicationOpt = Environment.findAssumption {
-          case Variable(_, Implication(_, `atom`)) => true
-        }
+        val implicationOpt = Env.filterByConsequent(atom).headOption
         implicationOpt
           .toRight(Fault.cannotProve(atom))
           .flatMap {
-            case variable @ Variable(varName, impl: Implication) =>
-              val newEnv = Environment.discharge(variable)
-              Rule.implicationElimination(varName, impl)(newEnv).orElse(deduce(atom)(newEnv))
+            case variable @ Variable(functionName, Implication(antecedent, _)) =>
+              val newEnv = Env.without(variable)
+              Evaluate
+                .proposition(antecedent)(newEnv)
+                .map(Rule.implicationElimination(functionName, _))
+                .orElse(deduce(atom)(newEnv))
           }
       }
 }
