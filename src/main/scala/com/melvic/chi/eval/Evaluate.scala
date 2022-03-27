@@ -1,20 +1,19 @@
-package com.melvic.chi
+package com.melvic.chi.eval
 
 import com.melvic.chi.Fault.UnknownPropositions
-import com.melvic.chi.ast.Proof.{Conjunction => _, _}
-import com.melvic.chi.ast.Proposition._
+import com.melvic.chi.ast.Proof._
+import com.melvic.chi.ast.Proposition.{Conjunction => TConjunction, _}
 import com.melvic.chi.ast.{Definition, Proof, Proposition, Signature}
 import com.melvic.chi.env.Environment
-import com.melvic.chi.env.Environment.Environment
-import com.melvic.chi.env.implicits._
+import com.melvic.chi.{Fault, Parser, Result}
 
 object Evaluate {
   //noinspection SpellCheckingInspection
   def proposition(proposition: Proposition)(implicit env: Environment): Result[Proof] =
     proposition match {
-      case PUnit => Result.success(TUnit)
-      case atom: Atom => applyAssumptionRule(atom)
-      case Conjunction(components) => conjunctionIntroduction(components)
+      case PUnit                   => Result.success(TUnit)
+      case atom: Atom              => applyAssumptionRule(atom)
+      case TConjunction(components) => conjunctionIntroduction(components)
       case Disjunction(left, right) =>
         Evaluate
           .proposition(left)
@@ -37,7 +36,7 @@ object Evaluate {
     if (unknownTypes.nonEmpty) Result.fail(UnknownPropositions(unknownTypes))
     else
       Evaluate
-        .proposition(proposition)(Environment.fromList(params))
+        .proposition(proposition)(Environment.fromListWithDefault(params))
         .map(Definition(signature, _))
   }
 
@@ -61,17 +60,17 @@ object Evaluate {
       }
 
     val evaluatedComponents = recurse(Nil, components)
-    evaluatedComponents.map(Proof.Conjunction)
+    evaluatedComponents.map(components => Proof.Conjunction(components.reverse))
   }
 
   def applyAssumptionRule(atom: Atom)(implicit env: Environment): Result[Proof] =
     Environment
-      .findAtom(atom)(env)
+      .findAssumption(atom)(env)
       .toRight(Fault.cannotProve(atom))
       .flatMap {
         case variable @ Variable(name, `atom`) => Result.success(variable)
         case variable @ Variable(f, Implication(antecedent, _)) =>
-          val newEnv: Environment = env.discharge(variable)
+          val newEnv: Environment = Environment.discharge(variable)
           Evaluate
             .proposition(antecedent)(newEnv)
             .map {

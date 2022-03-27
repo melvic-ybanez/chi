@@ -1,6 +1,6 @@
 package com.melvic.chi.tests
 
-import com.melvic.chi.{Evaluate, generateAndShow}
+import com.melvic.chi.generateAndShow
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should
 
@@ -67,6 +67,13 @@ class ScalaDefSpec extends AnyFlatSpec with should.Matchers {
     generateAndShow("def unit[A]: (() => A) => A") should be(
       """def unit[A]: ((() => A) => A) =
         |  f => f()""".stripMargin
+    )
+  }
+
+  "conjunction" should "depend on the proofs of its components" in {
+    generateAndShow("def foo[A, B]: A => (B => (A, B)) => B => (A, B)") should be(
+      """def foo[A, B]: (A => ((B => (A, B)) => (B => (A, B)))) =
+        |  a => f => b => (a, b)""".stripMargin
     )
   }
 

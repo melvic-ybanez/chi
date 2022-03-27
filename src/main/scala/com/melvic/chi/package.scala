@@ -1,5 +1,7 @@
 package com.melvic
 
+import com.melvic.chi.eval.Evaluate
+
 package object chi {
   type Result[A] = Result.Result[A]
 

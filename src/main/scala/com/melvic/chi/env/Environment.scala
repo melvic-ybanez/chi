@@ -4,26 +4,29 @@ import com.melvic.chi.ast.Proof.{TUnit, Variable}
 import com.melvic.chi.ast.Proposition._
 import com.melvic.chi.ast.{Proof, Proposition}
 
+/**
+ * The set of assumptions and discharged formulae.
+ */
+final case class Environment(proofs: List[Proof])
+
 object Environment {
+  def default: Environment = Environment(List(TUnit))
 
-  /**
-    * The set of assumptions and discharged formulae.
-    */
-  type Environment = List[Proof]
+  def fromList(proofs: List[Proof]): Environment =
+    Environment(proofs)
 
-  def default: Environment = List(TUnit)
+  def fromListWithDefault(proofs: List[Proof]): Environment =
+    fromList(proofs ++ Environment.default.proofs)
 
-  def fromList(list: List[Proof]): Environment = list ++ default
-
-  def findAtom(atom: Atom)(implicit env: Environment): Option[Proof] =
-    env.find {
+  def findAssumption(atom: Atom)(implicit env: Environment): Option[Proof] =
+    env.proofs.find {
       case Variable(_, `atom`)                 => true
       case Variable(_, Implication(_, `atom`)) => true
       case _                                   => false
     }
 
-  def discharge(env: Environment, proof: Proof): Environment =
-    env.filterNot(_ == proof)
+  def discharge(proof: Proof)(implicit env: Environment): Environment =
+    fromList(env.proofs.filterNot(_ == proof))
 
   /**
     * Assigns a variable to the proposition and registers it into the environment
@@ -46,7 +49,7 @@ object Environment {
       implicit env: Environment
   ): (Proof, Environment) = {
     val variable = Variable(generateName(base), proposition)
-    (variable, variable :: env)
+    (variable, fromList(variable :: env.proofs))
   }
 
   /**
@@ -56,7 +59,7 @@ object Environment {
     */
   private def generateName(base: String, count: Int = 0)(implicit env: Environment): String = {
     val name = base + (if (count == 0) "" else count.toString)
-    val nameOpt = env.find {
+    val nameOpt = env.proofs.find {
       case Variable(`name`, _) => true
       case _                   => false
     }
