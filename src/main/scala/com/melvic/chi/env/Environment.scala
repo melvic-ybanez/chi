@@ -18,12 +18,8 @@ object Environment {
   def fromListWithDefault(proofs: List[Proof]): Environment =
     fromList(proofs ++ Environment.default.proofs)
 
-  def findAssumption(atom: Atom)(implicit env: Environment): Option[Proof] =
-    env.proofs.find {
-      case Variable(_, `atom`)                 => true
-      case Variable(_, Implication(_, `atom`)) => true
-      case _                                   => false
-    }
+  def findAssumption(predicate: PartialFunction[Proof, Boolean])(implicit env: Environment): Option[Proof] =
+    env.proofs.find(predicate.orElse(_ => false))
 
   def discharge(proof: Proof)(implicit env: Environment): Environment =
     fromList(env.proofs.filterNot(_ == proof))
