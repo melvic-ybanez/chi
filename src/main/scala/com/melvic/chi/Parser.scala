@@ -3,6 +3,7 @@ package com.melvic.chi
 import com.melvic.chi.ast.Proof.Variable
 import com.melvic.chi.ast.Proposition._
 import com.melvic.chi.ast.{Proposition, Signature}
+import com.melvic.chi.out.Fault
 
 import scala.util.parsing.combinator._
 import scala.util.parsing.input.CharSequenceReader

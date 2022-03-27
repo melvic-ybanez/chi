@@ -27,7 +27,13 @@ object Proposition {
     */
   final case class Conjunction(components: List[Proposition]) extends Proposition
 
+  /**
+    * Logical disjunction. Note that we may also end up supporting a list of components, just
+    * like with conjunction, in the future (when adding support for languages that allow primitive
+    * union types)
+    */
   final case class Disjunction(left: Proposition, right: Proposition) extends Proposition
+
   final case class Implication(antecedent: Proposition, consequent: Proposition) extends Proposition
 
   def fold[A](proposition: Proposition, init: A)(f: (A, Atom) => A): A =

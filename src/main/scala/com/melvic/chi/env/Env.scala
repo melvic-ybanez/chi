@@ -4,31 +4,36 @@ import com.melvic.chi.ast.Proof.{TUnit, Variable}
 import com.melvic.chi.ast.Proposition._
 import com.melvic.chi.ast.{Proof, Proposition}
 
-object Environment {
+/**
+  * The set of assumptions and discharged formulae.
+  */
+final case class Env(proofs: List[Proof])
 
-  /**
-    * The set of assumptions and discharged formulae.
-    */
-  type Environment = List[Proof]
+object Env {
+  def default: Env = Env(List(TUnit))
 
-  def default: Environment = List(TUnit)
+  def fromList(proofs: List[Proof]): Env =
+    Env(proofs)
 
-  def fromList(list: List[Proof]): Environment = list ++ default
+  def fromListWithDefault(proofs: List[Proof]): Env =
+    fromList(proofs ++ Env.default.proofs)
 
-  def findAtom(atom: Atom)(implicit env: Environment): Option[Proof] =
-    env.find {
-      case Variable(_, `atom`)                 => true
-      case Variable(_, Implication(_, `atom`)) => true
-      case _                                   => false
-    }
+  def find(predicate: PartialFunction[Proof, Boolean])(implicit env: Env): Option[Proof] =
+    filter(predicate).headOption
 
-  def discharge(env: Environment, proof: Proof): Environment =
-    env.filterNot(_ == proof)
+  def filter(predicate: PartialFunction[Proof, Boolean])(implicit env: Env): List[Proof] =
+    env.proofs.filter(predicate.orElse(_ => false))
+
+  def filterByConsequent(consequent: Proposition)(implicit env: Env): List[Proof] =
+    filter { case Variable(_, Implication(_, `consequent`)) => true }
+
+  def without(proof: Proof)(implicit env: Env): Env =
+    fromList(env.proofs.filterNot(_ == proof))
 
   /**
     * Assigns a variable to the proposition and registers it into the environment
     */
-  def register(proposition: Proposition)(implicit env: Environment): (Proof, Environment) =
+  def register(proposition: Proposition)(implicit env: Env): (Proof, Env) =
     proposition match {
       case Atom(value) => registerSingle(value.toLowerCase.head.toString, proposition)
       case Conjunction(components) =>
@@ -43,10 +48,10 @@ object Environment {
     }
 
   def registerSingle(base: String, proposition: Proposition)(
-      implicit env: Environment
-  ): (Proof, Environment) = {
+      implicit env: Env
+  ): (Proof, Env) = {
     val variable = Variable(generateName(base), proposition)
-    (variable, variable :: env)
+    (variable, fromList(variable :: env.proofs))
   }
 
   /**
@@ -54,9 +59,9 @@ object Environment {
     * @param base the base or root name of the variable
     * @param count used as a suffix to distinguish variables with the same base
     */
-  private def generateName(base: String, count: Int = 0)(implicit env: Environment): String = {
+  private def generateName(base: String, count: Int = 0)(implicit env: Env): String = {
     val name = base + (if (count == 0) "" else count.toString)
-    val nameOpt = env.find {
+    val nameOpt = env.proofs.find {
       case Variable(`name`, _) => true
       case _                   => false
     }

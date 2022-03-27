@@ -1,6 +1,6 @@
 package com.melvic.chi.tests
 
-import com.melvic.chi.{Evaluate, generateAndShow}
+import com.melvic.chi.generateAndShow
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should
 
@@ -70,10 +70,27 @@ class ScalaDefSpec extends AnyFlatSpec with should.Matchers {
     )
   }
 
+  "conjunction" should "depend on the proofs of its components" in {
+    generateAndShow("def foo[A, B]: A => (B => (A, B)) => B => (A, B)") should be(
+      """def foo[A, B]: (A => ((B => (A, B)) => (B => (A, B)))) =
+        |  a => f => b => (a, b)""".stripMargin
+    )
+  }
+
   "either" should "default to left when the evaluation succeeds" in {
     generateAndShow("def left[A]: A => Either[A, A]") should be(
       """def left[A]: (A => Either[A, A]) =
         |  a => Left(a)""".stripMargin
+    )
+
+    generateAndShow("def left[A, B]: A => Either[A, B]") should be(
+      """def left[A, B]: (A => Either[A, B]) =
+        |  a => Left(a)""".stripMargin
+    )
+
+    generateAndShow("def right[A, B]: B => Either[A, B]") should be(
+      """def right[A, B]: (B => Either[A, B]) =
+        |  b => Right(b)""".stripMargin
     )
   }
 
@@ -89,9 +106,27 @@ class ScalaDefSpec extends AnyFlatSpec with should.Matchers {
     )
   }
 
+  "implication" should "evaluate it's antecedent recursive" in {
+    // Note: `a => f(a)` could have been simplified to just `f`
+    generateAndShow("def foo[A, B, C]: (A => B) => ((A => B) => C) => C") should be(
+      """def foo[A, B, C]: ((A => B) => (((A => B) => C) => C)) =
+        |  f => g => g(a => f(a))""".stripMargin
+    )
+  }
+
   "Unknown propositions" should "not be allowed" in {
     generateAndShow("def foo[A]: A => B") should be(
       "Unknown propositions: B"
+    )
+  }
+
+  "disjunction elimination" should "work as formalized in propositional logic" in {
+    generateAndShow("def foo[A, B, C]: (A => C) => (B => C) => Either[A, B] => C") should be(
+      """def foo[A, B, C]: ((A => C) => ((B => C) => (Either[A, B] => C))) =
+        |  f => g => e => e match {
+        |    case Left(a) => f(a)
+        |    case Right(b) => g(b)
+        |  }""".stripMargin
     )
   }
 }
