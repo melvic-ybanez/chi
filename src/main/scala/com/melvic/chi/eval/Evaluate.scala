@@ -1,8 +1,8 @@
 package com.melvic.chi.eval
 
 import com.melvic.chi.Parser
-import com.melvic.chi.ast.Proof._
-import com.melvic.chi.ast.Proposition.{Conjunction => TConjunction, _}
+import com.melvic.chi.ast.Proof.{PLeft, PRight, TUnit, Variable}
+import com.melvic.chi.ast.Proposition._
 import com.melvic.chi.ast.{Definition, Proof, Proposition, Signature}
 import com.melvic.chi.env.Env
 import com.melvic.chi.out.Fault.UnknownPropositions
@@ -15,7 +15,7 @@ object Evaluate {
     proposition match {
       case PUnit                    => Result.success(TUnit)
       case atom: Atom               => deduce(atom)
-      case TConjunction(components) => Rule.conjunctionIntroduction(components)
+      case Conjunction(components) => Rule.conjunctionIntroduction(components)
       case Disjunction(left, right) =>
         Evaluate
           .proposition(left)
@@ -46,17 +46,31 @@ object Evaluate {
   def deduce(atom: Atom)(implicit env: Env): Result[Proof] =
     Rule
       .assumption(atom)
-      .orElse {
-        val implicationOpt = Env.filterByConsequent(atom).headOption
-        implicationOpt
-          .toRight(Fault.cannotProve(atom))
-          .flatMap {
-            case variable @ Variable(functionName, Implication(antecedent, _)) =>
-              val newEnv = Env.without(variable)
-              Evaluate
-                .proposition(antecedent)(newEnv)
-                .map(Rule.implicationElimination(functionName, _))
-                .orElse(deduce(atom)(newEnv))
-          }
+      .orElse(deduceImplication(atom))
+      .orElse(deduceConjunction(atom))
+
+  def deduceImplication(atom: Atom)(implicit env: Env): Result[Proof] = {
+    val implicationOpt = Env.filterByConsequent(atom).headOption
+    implicationOpt
+      .toRight(Fault.cannotProve(atom))
+      .flatMap {
+        case variable @ Variable(functionName, Implication(antecedent, _)) =>
+          val newEnv = Env.without(variable)
+          Evaluate
+            .proposition(antecedent)(newEnv)
+            .map(Rule.implicationElimination(functionName, _))
+            .orElse(deduce(atom)(newEnv))
       }
+  }
+
+  def deduceConjunction(atom: Atom)(implicit env: Env): Result[Proof] = {
+    val disjunctionOpt = Env.find {
+      case Variable(_, _: Disjunction) => true
+    }
+    disjunctionOpt.toRight(Fault.cannotProve(atom))
+      .flatMap {
+        case variable @ Variable(name, disjunction: Disjunction) =>
+          Rule.disjunctionElimination(name, disjunction, atom)(Env.without(variable))
+      }
+  }
 }

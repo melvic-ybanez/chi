@@ -119,4 +119,14 @@ class ScalaDefSpec extends AnyFlatSpec with should.Matchers {
       "Unknown propositions: B"
     )
   }
+
+  "disjunction elimination" should "work as formalized in propositional logic" in {
+    generateAndShow("def foo[A, B, C]: (A => C) => (B => C) => Either[A, B] => C") should be(
+      """def foo[A, B, C]: ((A => C) => ((B => C) => (Either[A, B] => C))) =
+        |  f => g => e => e match {
+        |    case Left(a) => f(a)
+        |    case Right(b) => g(b)
+        |  }""".stripMargin
+    )
+  }
 }

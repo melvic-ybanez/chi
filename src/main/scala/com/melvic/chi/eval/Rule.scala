@@ -1,7 +1,7 @@
 package com.melvic.chi.eval
 
 import com.melvic.chi.ast.Proof.{Abstraction, Application, TUnit, Variable}
-import com.melvic.chi.ast.Proposition.Atom
+import com.melvic.chi.ast.Proposition.{Atom, Disjunction}
 import com.melvic.chi.ast.{Proof, Proposition}
 import com.melvic.chi.env.Env
 import com.melvic.chi.out.Result.Result
@@ -41,6 +41,17 @@ object Rule {
     evaluatedComponents.map(components => Proof.Conjunction(components.reverse))
   }
 
+  /**
+    * This is based on the =>-Introduction from propositional logic:
+    *   [A]
+    *    .
+    *    .
+    *    B
+    * ------- (=>-I)
+    *    C
+    *
+    * The function also adds a discharged assumption to the environment.
+    */
   def implicationIntroduction(antecedent: Proposition, consequent: Proposition)(
       implicit env: Env
   ): Result[Proof] = {
@@ -53,7 +64,7 @@ object Rule {
     * following rule for implication-elimination:
     *   A
     *   A => B
-    * ----------
+    * ---------- (=>-E)
     *     B
     * In programming, it means applying the function to the argument.
     */
@@ -63,4 +74,32 @@ object Rule {
       case Proof.Conjunction(terms) => Application(functionName, terms)
       case param                    => Application(functionName, List(param))
     }
+
+  /**
+    * If A => C and B => C, then (A|B) => C. This is according to the following
+    * disjunction-elimination rule:
+    *        [A] [B]
+    *         .   .
+    *         .   .
+    *    A|B  C   C
+    *  --------------- (|-E)
+    *         C
+    */
+  def disjunctionElimination(name: String, disjunction: Disjunction, consequent: Proposition)(
+      implicit env: Env
+  ): Result[Proof] = {
+    def proveComponent(component: Proposition): Result[(Proof, Proof)] = {
+      val (proofId, newEnv) = Env.register(component)
+      Evaluate.proposition(consequent)(newEnv).map((proofId, _))
+    }
+
+    val Disjunction(left, right) = disjunction
+    proveComponent(left).flatMap {
+      case (Variable(leftName, _), leftProof) =>
+        proveComponent(right).flatMap {
+          case (Variable(rightName, _), rightProof) =>
+            Result.success(Proof.Disjunction(name, (leftName, leftProof), (rightName, rightProof)))
+        }
+    }
+  }
 }
