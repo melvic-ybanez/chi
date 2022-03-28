@@ -128,5 +128,13 @@ class ScalaDefSpec extends AnyFlatSpec with should.Matchers {
         |    case Right(b) => g(b)
         |  }""".stripMargin
     )
+
+    generateAndShow("def foo[A, B]: Either[A, A] => A") should be(
+      """def foo[A, B]: (Either[A, A] => A) =
+        |  e => e match {
+        |    case Left(a) => a
+        |    case Right(a) => a
+        |  }""".stripMargin
+    )
   }
 }

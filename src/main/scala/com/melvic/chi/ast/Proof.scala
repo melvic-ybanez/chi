@@ -26,6 +26,7 @@ object Proof {
     val nextLine = level.map(_ => "\n").getOrElse("")
     val nextLevel = level.map(_ + 1)
     val bodyIndent = if (indent.nonEmpty) indent + singleIndent else singleIndent * 2
+    val endCurlyIndent = if (indent.nonEmpty) indent else singleIndent
 
     val proofString = proof match {
       case TUnit             => "()"
@@ -40,9 +41,9 @@ object Proof {
       case Disjunction(name, (leftName, left), (rightName, right)) =>
         val leftCase = s"case Left($leftName) => ${show(left, None)}"
         val rightCase = s"case Right($rightName) => ${show(right, None)}"
-        s"$name match {\n${bodyIndent}$leftCase\n$bodyIndent$rightCase\n  }"
+        s"$name match {\n${bodyIndent}$leftCase\n$bodyIndent$rightCase\n$endCurlyIndent}"
       case Abstraction(params: Conjunction, codomain) =>
-        s"{ case ${show(params, None)} =>\n$bodyIndent${show(codomain, None)}\n  }"
+        s"{ case ${show(params, None)} =>\n$bodyIndent${show(codomain, None)}\n$endCurlyIndent}"
       case Abstraction(domain, codomain) =>
         s"${Proof.show(domain, None)} => $nextLine${Proof.show(codomain, nextLevel)}"
       case Application(functionName, params) =>
