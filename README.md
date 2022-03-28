@@ -38,6 +38,21 @@ chi> def andThen[A, B, C]: (A => B) => (B => C) => A => C
 def andThen[A, B, C]: ((A => B) => ((B => C) => (A => C))) =
   f => g => a => g(f(a))
 
+chi> def foo[A, B, C]: (A => C) => (B => C) => Either[A, B] => C
+def foo[A, B, C]: ((A => C) => ((B => C) => (Either[A, B] => C))) =
+  f => g => e => e match {
+    case Left(a) => f(a)
+    case Right(b) => g(b)
+  }
+
+chi> def foo[A]: Either[A, A] => A
+def foo[A]: (Either[A, A] => A) =
+  e => e match {
+    case Left(a) => a
+    case Right(a) => a
+  }
+
+
 chi> exit
 Bye!
 ```
