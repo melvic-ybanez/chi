@@ -6,13 +6,13 @@ A code generator for universally quantified function signatures.
 Chi stands 
 for [Curry-Howard Isomorphism](https://en.wikipedia.org/wiki/Curry%E2%80%93Howard_correspondence). 
 
-This program is currently just a proof-of-concept to see how mechanical functions really
-are when their types serve as logical propositions under the Curry-Howard Isomorphism.
+This program started as a proof-of-concept to see the mechanical nature of the process of 
+deriving function implementations when the types involved serve as logical propositions under the Curry-Howard Isomorphism.
 
-Chi takes in a function signature as a string and generates the function implementation. At 
+Chi takes in a function signature and generates the function implementation. At 
 the time of this writing, Chi supports both Java and Scala.
 
-# Setup and Running Chi
+# Setting up and Running Chi
 The simplest way to run Chi is by using the stand-alone distribution:
 1. Download the jar file from the current [release](https://github.com/melvic-ybanez/chi/releases).
 2. Go to your download destination.
@@ -124,15 +124,15 @@ chi> <A, B, C> Function<A, C> compose(Function<B, C> f, Function<A, B> g)
 Detected language: Java
 Generated code:
 <A, B, C> Function<A, C> compose(Function<B, C> f, Function<A, B> g) {
-  return a -> f.apply(g.apply(a));
+    return a -> f.apply(g.apply(a));
 }
 
 chi> <A, B, C> BiFunction<A, B, C> foo(Function<A, C> f)
 Detected language: Java
 Generated code:
 <A, B, C> BiFunction<A, B, C> foo(Function<A, C> f) {
-  return (a, b) -> {
-    f.apply(a)
-  };
+    return (a, b) -> {
+        f.apply(a)
+    };
 }
 ```
