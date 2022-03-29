@@ -1,4 +1,4 @@
-https://img.shields.io/github/issues/melvic-ybanez/chi
+![issues](https://img.shields.io/github/issues/melvic-ybanez/chi)
 
 # Chi
 A code generator for universally quantified function signatures. 
