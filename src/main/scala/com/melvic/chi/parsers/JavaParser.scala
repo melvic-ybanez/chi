@@ -14,20 +14,20 @@ object JavaParser extends BaseParser {
   }
 
   lazy val function: PackratParser[Implication] =
-    ("Function" ~ "[") ~> proposition ~ ("," ~> proposition <~ "]") ^^ {
+    ("Function" ~ "<") ~> proposition ~ ("," ~> proposition <~ ">") ^^ {
       case in ~ out => Implication(in, out)
     }
 
   lazy val biFunction: PackratParser[Implication] =
-    ("BiFunction" ~> ("[" ~> repNM(3, 3, ",") <~ "]")) ^^ {
+    ("BiFunction" ~> ("<" ~> repNM(3, 3, proposition, ",") <~ ">")) ^^ {
       case a :: b :: c :: _ =>
-        Implication(Conjunction((a :: b :: Nil).map(Identifier)), Identifier(c))
+        Implication(Conjunction(a :: b :: Nil), c)
     }
 
   lazy val proposition: PackratParser[Proposition] = function | biFunction | identifier
 
   val functionCode: Parser[Signature] =
-    typeParams ~ identifier ~ nameParser ~ opt(paramList) ^^ {
+    typeParams ~ proposition ~ nameParser ~ opt(paramList) ^^ {
       case typeParams ~ returnType ~ name ~ params =>
         Signature(name, typeParams.map(_.value), params.getOrElse(Nil), returnType)
     }
