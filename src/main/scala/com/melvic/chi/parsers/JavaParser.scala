@@ -1,7 +1,7 @@
 package com.melvic.chi.parsers
 
 import com.melvic.chi.ast.Proof.Variable
-import com.melvic.chi.ast.Proposition.Atom
+import com.melvic.chi.ast.Proposition.{Atom, Conjunction, Identifier, Implication}
 import com.melvic.chi.ast.{Proposition, Signature}
 
 object JavaParser extends BaseParser {
@@ -13,7 +13,18 @@ object JavaParser extends BaseParser {
     case proposition ~ name => Variable(name, proposition)
   }
 
-  lazy val proposition: PackratParser[Proposition] = identifier
+  lazy val function: PackratParser[Implication] =
+    ("Function" ~ "[") ~> proposition ~ ("," ~> proposition <~ "]") ^^ {
+      case in ~ out => Implication(in, out)
+    }
+
+  lazy val biFunction: PackratParser[Implication] =
+    ("BiFunction" ~> ("[" ~> repNM(3, 3, ",") <~ "]")) ^^ {
+      case a :: b :: c :: _ =>
+        Implication(Conjunction((a :: b :: Nil).map(Identifier)), Identifier(c))
+    }
+
+  lazy val proposition: PackratParser[Proposition] = function | biFunction | identifier
 
   val functionCode: Parser[Signature] =
     typeParams ~ identifier ~ nameParser ~ opt(paramList) ^^ {
