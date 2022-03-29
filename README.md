@@ -96,7 +96,9 @@ def andThen[A, B, C](f: (A => B), g: (B => C)): (A => C) =
 ```
 
 # Supported Languages
-As mentioned above. Chi supports both Java and Scala. 
+As mentioned above, Chi supports both Java and Scala. You only need
+to input the signature and Chi will automatically detect the language used
+(though it will prioritize Scala syntax)
 
 ```scala
 chi> def implicationElimination[A, B, C](f: A => C, g: B => C): Either[A, C] => C
