@@ -1,15 +1,16 @@
-package com.melvic.chi
+package com.melvic.chi.parsers
 
+import com.melvic.chi.Result
 import com.melvic.chi.ast.Proof.Variable
 import com.melvic.chi.ast.Proposition._
 import com.melvic.chi.ast.{Proposition, Signature}
 import com.melvic.chi.out.Fault
 
-import scala.util.parsing.combinator._
+import scala.util.parsing.combinator.{PackratParsers, RegexParsers}
 import scala.util.parsing.input.CharSequenceReader
 
-object Parser extends RegexParsers with PackratParsers {
-  val identifier: Parser[Atom] = nameParser ^^ { Identifier }
+object ScalaParser extends BaseParser {
+  val language = Language.Scala
 
   val conjunction: Parser[Proposition] =
     "(" ~> repsep(proposition, ",") <~ ")" ^^ {
@@ -30,25 +31,15 @@ object Parser extends RegexParsers with PackratParsers {
   lazy val proposition: PackratParser[Proposition] =
     implication | ("(" ~> implication <~ ")") | conjunction | disjunction | identifier
 
-  lazy val nameParser: Parser[String] = "[a-zA-Z]+".r
-
   val param: Parser[Variable] = (nameParser ~ (":" ~> proposition)) ^^ {
     case name ~ proposition =>
       Variable(name, proposition)
   }
-
-  val paramList: Parser[List[Variable]] = "(" ~> (repsep(param, ",") <~ ")")
 
   val functionCode: Parser[Signature] =
     "def" ~> nameParser ~ opt("[" ~> rep1sep(identifier, ",") <~ "]") ~ opt(paramList) ~ (":" ~> proposition) ^^ {
       case name ~ typeParams ~ paramList ~ proposition =>
         val params = paramList.getOrElse(Nil)
         Signature(name, typeParams.getOrElse(Nil).map(_.value), params, proposition)
-    }
-
-  def parseSignature(code: String): Result[Signature] =
-    parseAll(functionCode, new PackratReader(new CharSequenceReader(code))) match {
-      case Success(functionCode, _) => Right(functionCode)
-      case Failure(msg, _)          => Left(Fault.parseError(msg))
     }
 }

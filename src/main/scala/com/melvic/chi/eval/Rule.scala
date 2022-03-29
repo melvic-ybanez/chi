@@ -34,7 +34,7 @@ object Rule {
       components match {
         case Nil => Result.success(result)
         case component :: rest =>
-          Evaluate.proposition(component).flatMap(proof => recurse(proof :: result, rest))
+          Evaluate.fromProposition(component).flatMap(proof => recurse(proof :: result, rest))
       }
 
     val evaluatedComponents = recurse(Nil, components)
@@ -56,7 +56,7 @@ object Rule {
       implicit env: Env
   ): Result[Proof] = {
     val (term, newEnv) = Env.register(antecedent)
-    Evaluate.proposition(consequent)(newEnv).map(Abstraction(term, _))
+    Evaluate.fromProposition(consequent)(newEnv).map(Abstraction(term, _))
   }
 
   /**
@@ -90,7 +90,7 @@ object Rule {
   ): Result[Proof] = {
     def proveComponent(component: Proposition): Result[(Proof, Proof)] = {
       val (proofId, newEnv) = Env.register(component)
-      Evaluate.proposition(consequent)(newEnv).map((proofId, _))
+      Evaluate.fromProposition(consequent)(newEnv).map((proofId, _))
     }
 
     val Disjunction(left, right) = disjunction
