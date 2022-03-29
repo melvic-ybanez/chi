@@ -1,5 +1,8 @@
 package com.melvic.chi.ast
 
+import com.melvic.chi.out.Display
+import com.melvic.chi.parsers.Language
+
 sealed trait Proposition
 
 object Proposition {
@@ -57,12 +60,4 @@ object Proposition {
 
   def exists(proposition: Proposition)(f: Atom => Boolean): Boolean =
     filter(proposition)(f).nonEmpty
-
-  def show(proposition: Proposition): String =
-    proposition match {
-      case Atom(value)                         => value
-      case Conjunction(components)             => "(" + components.map(show).mkString(", ") + ")"
-      case Disjunction(left, right)            => s"Either[${show(left)}, ${show(right)}]"
-      case Implication(antecedent, consequent) => s"(${show(antecedent)} => ${show(consequent)})"
-    }
 }

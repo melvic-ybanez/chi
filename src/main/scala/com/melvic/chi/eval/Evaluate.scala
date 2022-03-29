@@ -1,6 +1,5 @@
 package com.melvic.chi.eval
 
-import com.melvic.chi.Parser
 import com.melvic.chi.ast.Proof.{PLeft, PRight, TUnit, Variable}
 import com.melvic.chi.ast.Proposition._
 import com.melvic.chi.ast.{Definition, Proof, Proposition, Signature}
@@ -8,23 +7,24 @@ import com.melvic.chi.env.Env
 import com.melvic.chi.out.Fault.UnknownPropositions
 import com.melvic.chi.out.Result.Result
 import com.melvic.chi.out.{Fault, Result}
+import com.melvic.chi.parsers.{JavaParser, Language, ScalaParser}
 
 object Evaluate {
   //noinspection SpellCheckingInspection
-  def proposition(proposition: Proposition)(implicit env: Env): Result[Proof] =
+  def fromProposition(proposition: Proposition)(implicit env: Env): Result[Proof] =
     proposition match {
-      case PUnit                    => Result.success(TUnit)
-      case atom: Atom               => deduce(atom)
+      case PUnit                   => Result.success(TUnit)
+      case atom: Atom              => deduce(atom)
       case Conjunction(components) => Rule.conjunctionIntroduction(components)
       case Disjunction(left, right) =>
         Evaluate
-          .proposition(left)
+          .fromProposition(left)
           .map(PLeft)
-          .orElse(Evaluate.proposition(right).map(PRight))
+          .orElse(Evaluate.fromProposition(right).map(PRight))
       case Implication(antecedent, consequent) => Rule.implicationIntroduction(antecedent, consequent)
     }
 
-  def signature(signature: Signature): Result[Definition] = {
+  def fromSignature(signature: Signature, language: Language): Result[Definition] = {
     val Signature(name, typeParams, params, proposition) = signature
 
     val unknownTypes = Proposition.filter(proposition) {
@@ -36,12 +36,17 @@ object Evaluate {
     if (unknownTypes.nonEmpty) Result.fail(UnknownPropositions(unknownTypes))
     else
       Evaluate
-        .proposition(proposition)(Env.fromListWithDefault(params))
-        .map(Definition(signature, _))
+        .fromProposition(proposition)(Env.fromListWithDefault(params))
+        .map(Definition(signature, _, language))
   }
 
   def signatureString(functionCode: String): Result[Definition] =
-    Parser.parseSignature(functionCode).flatMap(Evaluate.signature)
+    ScalaParser
+      .parseSignature(functionCode)
+      .orElse(JavaParser.parseSignature(functionCode))
+      .flatMap {
+        case (signature, lang) => Evaluate.fromSignature(signature, lang)
+      }
 
   def deduce(atom: Atom)(implicit env: Env): Result[Proof] =
     Rule
@@ -57,7 +62,7 @@ object Evaluate {
         case variable @ Variable(functionName, Implication(antecedent, _)) =>
           val newEnv = Env.without(variable)
           Evaluate
-            .proposition(antecedent)(newEnv)
+            .fromProposition(antecedent)(newEnv)
             .map(Rule.implicationElimination(functionName, _))
             .orElse(deduce(atom)(newEnv))
       }
@@ -67,7 +72,8 @@ object Evaluate {
     val disjunctionOpt = Env.find {
       case Variable(_, _: Disjunction) => true
     }
-    disjunctionOpt.toRight(Fault.cannotProve(atom))
+    disjunctionOpt
+      .toRight(Fault.cannotProve(atom))
       .flatMap {
         case variable @ Variable(name, disjunction: Disjunction) =>
           Rule.disjunctionElimination(name, disjunction, atom)(Env.without(variable))
