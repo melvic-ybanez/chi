@@ -12,9 +12,10 @@ object Definition {
     val display = Display.fromLanguage(language)
 
     val bodyString = display.showProof(body, None)
+    val prettify = bodyString.length > Config.MaxColumnWidth
     val prettyBody =
-      if (bodyString.length > Config.MaxColumnWidth) display.showProof(body, Some(1))
-      else "  " + bodyString
+      if (prettify) display.showProof(body, Some(1))
+      else bodyString
 
     val signatureString = display.showSignature(signature)
     val splitSignature =
@@ -23,6 +24,6 @@ object Definition {
 
     val languageString = s"Detected language: $language"
 
-    s"$languageString\nGenerated code:\n$splitSignature =\n$prettyBody"
+    s"$languageString\nGenerated code:\n${display.showDefinition(splitSignature, prettyBody, prettify)}"
   }
 }
