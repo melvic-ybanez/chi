@@ -101,16 +101,16 @@ to input the signature and Chi will automatically detect the language used
 (though it will prioritize Scala syntax)
 
 ```scala
-chi> def disjunctionElimination[A, B, C](f: A => C, g: B => C): Either[A, C] => C
+chi> def disjunctionElimination[A, B, C](f: A => C, g: B => C): Either[A, B] => C
 Detected language: Scala
 Generated code:
 def disjunctionElimination[A, B, C](
     f: (A => C),
     g: (B => C)
-): (Either[A, C] => C) =
+): (Either[A, B] => C) =
   e => e match {
     case Left(a) => f(a)
-    case Right(c) => c
+    case Right(b) => g(b)
   }
   
 chi> <A, B> B apply(A a, Function<A, B> f)
