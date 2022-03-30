@@ -68,11 +68,11 @@ object Rule {
     *     B
     * In programming, it means applying the function to the argument.
     */
-  def implicationElimination(functionName: String, argument: Proof): Proof =
+  def implicationElimination(function: Proof, argument: Proof): Proof =
     argument match {
-      case TUnit                    => Application(functionName, Nil)
-      case Proof.Conjunction(terms) => Application(functionName, terms)
-      case param                    => Application(functionName, List(param))
+      case TUnit                    => Application(function, Nil)
+      case Proof.Conjunction(terms) => Application(function, terms)
+      case param                    => Application(function, List(param))
     }
 
   /**

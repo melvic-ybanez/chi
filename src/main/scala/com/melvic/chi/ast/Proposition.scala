@@ -3,6 +3,8 @@ package com.melvic.chi.ast
 import com.melvic.chi.out.Display
 import com.melvic.chi.parsers.Language
 
+import scala.annotation.tailrec
+
 sealed trait Proposition
 
 object Proposition {
@@ -60,4 +62,11 @@ object Proposition {
 
   def exists(proposition: Proposition)(f: Atom => Boolean): Boolean =
     filter(proposition)(f).nonEmpty
+
+  @tailrec
+  def rightMostOf(implication: Implication): Proposition =
+    implication match {
+      case Implication(_, consequent: Implication) => rightMostOf(consequent)
+      case Implication(_, consequent) => consequent
+    }
 }
