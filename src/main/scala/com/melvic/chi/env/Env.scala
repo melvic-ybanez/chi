@@ -25,7 +25,7 @@ object Env {
     env.proofs.filter(predicate.orElse(_ => false))
 
   def filterByConsequent(consequent: Proposition)(implicit env: Env): List[Proof] =
-    filter { case Variable(_, Implication(_, `consequent`)) => true }
+    filter { case Variable(_, impl: Implication) if Proposition.rightMostOf(impl) == consequent => true }
 
   def without(proof: Proof)(implicit env: Env): Env =
     fromList(env.proofs.filterNot(_ == proof))
