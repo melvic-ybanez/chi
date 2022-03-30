@@ -22,8 +22,6 @@ object Definition {
       if (signatureString.length > Config.MaxColumnWidth) display.showSignature(signature, split = true)
       else signatureString
 
-    val languageString = s"Detected language: $language"
-
-    s"$languageString\nGenerated code:\n${display.showDefinition(splitSignature, prettyBody, prettify)}"
+    display.showDefinition(splitSignature, prettyBody, prettify)
   }
 }
