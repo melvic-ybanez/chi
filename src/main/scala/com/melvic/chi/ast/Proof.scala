@@ -18,5 +18,10 @@ object Proof {
   final case class Disjunction(name: String, left: (String, Proof), right: (String, Proof)) extends Proof
 
   final case class Abstraction(domain: Proof, codomain: Proof) extends Proof
-  final case class Application(functionName: String, params: List[Proof]) extends Proof
+
+  /**
+    * Function application. The first parameter is a proof by itself, rather than a function
+    * name as a string, in order to support invokations of curried functions (e.g `f(a)(b)`)
+    */
+  final case class Application(function: Proof, params: List[Proof]) extends Proof
 }

@@ -1,6 +1,6 @@
 package com.melvic.chi.eval
 
-import com.melvic.chi.ast.Proof.{PLeft, PRight, TUnit, Variable}
+import com.melvic.chi.ast.Proof.{Application, PLeft, PRight, TUnit, Variable}
 import com.melvic.chi.ast.Proposition._
 import com.melvic.chi.ast.{Definition, Proof, Proposition, Signature}
 import com.melvic.chi.env.Env
@@ -59,12 +59,20 @@ object Evaluate {
     implicationOpt
       .toRight(Fault.cannotProve(atom))
       .flatMap {
-        case variable @ Variable(functionName, Implication(antecedent, _)) =>
+        case variable @ Variable(_, Implication(antecedent, consequent)) =>
           val newEnv = Env.without(variable)
-          Evaluate
-            .fromProposition(antecedent)(newEnv)
-            .map(Rule.implicationElimination(functionName, _))
-            .orElse(deduce(atom)(newEnv))
+
+          def recurse(function: Proof, in: Proposition, out: Proposition): Result[Proof] =
+            Evaluate.fromProposition(in)(newEnv)
+              .map(Rule.implicationElimination(function, _))
+              .flatMap { application =>
+                out match {
+                  case `atom` => Result.success(application)
+                  case Implication(newIn, newOut) => recurse(application, newIn, newOut)
+                }
+              }
+
+          recurse(variable, antecedent, consequent).orElse(deduce(atom)(newEnv))
       }
   }
 
