@@ -2,7 +2,7 @@
 ![release](https://img.shields.io/github/v/release/melvic-ybanez/chi?include_prereleases) ![issues](https://img.shields.io/github/issues/melvic-ybanez/chi) ![loc](https://img.shields.io/tokei/lines/github/melvic-ybanez/chi)
 ![licence](https://img.shields.io/github/license/melvic-ybanez/chi)
 
-A code generator for universally quantified function signatures. 
+A code generator for parametrically polymorphic functions. 
 Chi stands 
 for [Curry-Howard Isomorphism](https://en.wikipedia.org/wiki/Curry%E2%80%93Howard_correspondence). 
 
