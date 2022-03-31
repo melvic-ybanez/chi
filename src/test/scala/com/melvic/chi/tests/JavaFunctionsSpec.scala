@@ -31,7 +31,7 @@ class JavaFunctionsSpec extends AnyFlatSpec with should.Matchers {
         |Generated code:
         |<A, B, C> BiFunction<A, B, C> foo(Function<A, C> f) {
         |    return (a, b) -> {
-        |        f.apply(a)
+        |        return f.apply(a);
         |    };
         |}""".stripMargin
     )
