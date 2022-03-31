@@ -174,6 +174,16 @@ class ScalaDefSpec extends AnyFlatSpec with should.Matchers {
         |    case Right(a) => a
         |  }""".stripMargin
     )
+
+    generateAndShow("def foo[A, B, C]: Either[A => C, B] => (B => C) => A => C") should be(
+      """Detected language: Scala
+        |Generated code:
+        |def foo[A, B, C]: (Either[(A => C), B] => ((B => C) => (A => C))) =
+        |  e => f => a => e match {
+        |    case Left(g) => g(a)
+        |    case Right(b) => f(b)
+        |  }""".stripMargin
+    )
   }
 
   "search for implication assumption" should "be recursive" in {
