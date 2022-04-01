@@ -15,6 +15,7 @@ class MainView extends JFrame {
 
   setContentPane(new EditorView)
   setTitle("Chi")
+  setJMenuBar(new MenuBarView)
   setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)
   pack()
   setLocationRelativeTo(null)

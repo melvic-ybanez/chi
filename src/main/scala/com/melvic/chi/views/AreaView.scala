@@ -2,6 +2,8 @@ package com.melvic.chi.views
 
 import org.fife.ui.rsyntaxtextarea.{RSyntaxTextArea, Style, SyntaxConstants, Token, TokenTypes}
 import org.fife.ui.rtextarea.RTextScrollPane
+import org.fife.ui.rsyntaxtextarea.Theme
+import java.io.IOException
 
 import java.awt.{Color, Font}
 
@@ -10,11 +12,7 @@ class AreaView extends RSyntaxTextArea(50, 50) {
   setCodeFoldingEnabled(true)
 
   updateStyle()
-
   setFont(new Font(getFont.getName, getFont.getStyle, 16))
-
-  import org.fife.ui.rsyntaxtextarea.Theme
-  import java.io.IOException
 
   private def updateStyle(): Unit =
     try {
