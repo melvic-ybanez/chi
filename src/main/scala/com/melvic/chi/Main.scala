@@ -1,6 +1,8 @@
 package com.melvic.chi
 
-import com.melvic.chi.views.EditorView
+import com.github.weisj.darklaf.LafManager
+import com.github.weisj.darklaf.theme.DarculaTheme
+import com.melvic.chi.views.MainView
 
 import javax.swing.SwingUtilities
 import scala.annotation.tailrec
@@ -11,8 +13,10 @@ object Main {
   def main(args: Array[String]): Unit = {
     //Repl()
     SwingUtilities.invokeLater(new Runnable() {
+      LafManager.install(new DarculaTheme)
+
       override def run(): Unit = {
-        new EditorView().setVisible(true)
+        new MainView().setVisible(true)
       }
     })
   }

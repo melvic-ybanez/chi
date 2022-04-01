@@ -1,6 +1,7 @@
 package com.melvic.chi.views
 
 import org.fife.ui.rsyntaxtextarea.{RSyntaxTextArea, Style, SyntaxConstants, Token, TokenTypes}
+import org.fife.ui.rtextarea.RTextScrollPane
 
 import java.awt.{Color, Font}
 
@@ -23,4 +24,8 @@ class AreaView extends RSyntaxTextArea(50, 50) {
       case ioe: IOException =>
         ioe.printStackTrace()
     }
+}
+
+object AreaView {
+  def withScrollPane = new RTextScrollPane(new AreaView)
 }
