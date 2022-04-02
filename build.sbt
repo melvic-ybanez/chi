@@ -1,15 +1,19 @@
-ThisBuild / version := "0.1.0-RC"
+import Dependencies.dependencies
+
+ThisBuild / version := "0.1.0-RC2-SNAPSHOT"
 
 ThisBuild / scalaVersion := "2.13.8"
 
-assemblyJarName in assembly := "chi-0.1.0-rc.jar"
+assemblyJarName in assembly := "chi-0.1.0-rc2-snapshot.jar"
 
 lazy val root = (project in file("."))
   .settings(
     name := "chi",
-    libraryDependencies ++= Seq(
-      "org.scala-lang.modules" % "scala-parser-combinators_2.13" % "2.1.1",
-      "org.scalactic"          %% "scalactic"                    % "3.2.11",
-      "org.scalatest"          %% "scalatest"                    % "3.2.11" % "test"
-    )
+    libraryDependencies ++= dependencies
   )
+
+// Fix deduplication error during merge (see https://stackoverflow.com/questions/25144484/sbt-assembly-deduplication-found-error)
+assemblyMergeStrategy in assembly := {
+  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+  case x                             => MergeStrategy.first
+}

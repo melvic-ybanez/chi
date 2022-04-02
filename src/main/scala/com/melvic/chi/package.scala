@@ -5,7 +5,7 @@ import com.melvic.chi.out.Result
 
 package object chi {
   type Result[A] = Result.Result[A]
+  type Evaluate = eval.Evaluate
 
-  def generateAndShow(code: String): String =
-    Result.show(CodeGen.fromSignatureString(code))
+  val generateAndShow = eval.generateAndShow
 }
