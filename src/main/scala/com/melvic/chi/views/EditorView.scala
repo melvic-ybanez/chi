@@ -37,5 +37,10 @@ class EditorView(evaluate: Evaluate) extends JPanel {
     val outputs = programs.map(_.trim).filter(_.nonEmpty).map(evaluate)
     outputView.getTextArea.setText(outputs.mkString("\n\n"))
   }
+
+  def clear(): Unit = {
+    inputView.getTextArea.setText("")
+    outputView.getTextArea.setText("")
+  }
 }
 
