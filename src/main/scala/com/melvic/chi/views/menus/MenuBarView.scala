@@ -1,23 +1,16 @@
-package com.melvic.chi.views
+package com.melvic.chi.views.menus
+
+import com.melvic.chi.Evaluate
+import com.melvic.chi.views.EditorView
 
 import java.awt.event.{ActionEvent, KeyEvent}
 import javax.swing.{JMenu, JMenuBar, JMenuItem, KeyStroke}
 
-class MenuBarView extends JMenuBar {
+class MenuBarView(editorView: EditorView) extends JMenuBar {
   val fileMenu = createMenuItem(
     new JMenu("File"),
     "Exit",
     Some(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK))
-  )
-
-  val editorMenu = createMenuItem(
-    createMenuItem(
-      new JMenu("Editor"),
-      "Run",
-      Some(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.CTRL_MASK))
-    ),
-    "Clear",
-    None
   )
 
   def createMenuItem(menu: JMenu, itemName: String, keyStroke: Option[KeyStroke] = None): JMenu = {
@@ -28,5 +21,5 @@ class MenuBarView extends JMenuBar {
   }
 
   add(fileMenu)
-  add(editorMenu)
+  add(new EditorMenu(editorView))
 }

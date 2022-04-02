@@ -1,9 +1,12 @@
 package com.melvic.chi.views
 
+import com.melvic.chi.Evaluate
+
 import java.awt.BorderLayout
+import java.awt.event.{KeyEvent, KeyListener}
 import javax.swing.{JPanel, JSplitPane}
 
-class EditorView extends JPanel {
+class EditorView(evaluate: Evaluate) extends JPanel {
   val inputView = AreaView.withScrollPane
   val outputView = {
     val out = AreaView.withScrollPane
@@ -20,5 +23,15 @@ class EditorView extends JPanel {
 
   setLayout(new BorderLayout)
   add(splitPane, BorderLayout.CENTER)
+
+  inputView.getTextArea.addKeyListener(new KeyListener {
+    override def keyTyped(e: KeyEvent): Unit = {}
+
+    override def keyPressed(e: KeyEvent): Unit = {}
+
+    override def keyReleased(e: KeyEvent): Unit = run()
+  })
+
+  def run(): Unit = outputView.getTextArea.setText(evaluate(inputView.getTextArea.getText))
 }
 

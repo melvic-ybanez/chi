@@ -2,7 +2,7 @@ package com.melvic.chi
 
 import com.github.weisj.darklaf.LafManager
 import com.github.weisj.darklaf.theme.DarculaTheme
-import com.melvic.chi.views.MainView
+import com.melvic.chi.views.menus.MainView
 
 import javax.swing.SwingUtilities
 import scala.annotation.tailrec
@@ -16,7 +16,7 @@ object Main {
       LafManager.install(new DarculaTheme)
 
       override def run(): Unit = {
-        new MainView().setVisible(true)
+        new MainView(generateAndShow).setVisible(true)
       }
     })
   }
