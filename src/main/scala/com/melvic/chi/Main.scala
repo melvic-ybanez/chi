@@ -5,13 +5,16 @@ import com.github.weisj.darklaf.theme.DarculaTheme
 import com.melvic.chi.views.menus.MainView
 
 import javax.swing.SwingUtilities
-import scala.annotation.tailrec
-import scala.io.StdIn.readLine
 
 //noinspection SpellCheckingInspection
 object Main {
-  def main(args: Array[String]): Unit = {
-    //Repl()
+  def main(args: Array[String]): Unit =
+    args match {
+      case Array("repl", _ @_*) => Repl()
+      case _                    => runUI()
+    }
+
+  def runUI(): Unit =
     SwingUtilities.invokeLater(new Runnable() {
       LafManager.install(new DarculaTheme)
 
@@ -19,5 +22,4 @@ object Main {
         new MainView(generateAndShow).setVisible(true)
       }
     })
-  }
 }
