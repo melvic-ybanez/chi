@@ -1,3 +1,4 @@
+
 # Chi
 ![release](https://img.shields.io/github/v/release/melvic-ybanez/chi?include_prereleases) ![issues](https://img.shields.io/github/issues/melvic-ybanez/chi) ![loc](https://img.shields.io/tokei/lines/github/melvic-ybanez/chi)
 ![licence](https://img.shields.io/github/license/melvic-ybanez/chi)
@@ -19,16 +20,20 @@ The simplest way to install Chi is to download the distribution from the
 # Running Chi
 Chi supports both UI and REPL. 
 
-#### Running the UI
+### Running the UI
 1. Go to the download destination.
 2. Run the jar file: `$ java -jar chi-<version>.jar`
 
-#### Running the REPL
+Here's how it currently looks:
+
+https://user-images.githubusercontent.com/4519785/161389760-8998a1c2-2ee5-45c5-8c8c-4b0c4ff334b5.mov
+
+### Running the REPL
 Running the REPL is similar to running the UI except you need to pass an additional
 `repl` argument:
 `$ java -jar chi-<version>.jar repl`
 
-Withing the REPL, you can evaluate as many inputs as you want:
+Within the REPL, inputs are evaluated when you press enter:
 
 ```scala
 chi> def identity[A]: A => A
