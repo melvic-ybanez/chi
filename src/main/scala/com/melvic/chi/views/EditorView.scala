@@ -32,6 +32,10 @@ class EditorView(evaluate: Evaluate) extends JPanel {
     override def keyReleased(e: KeyEvent): Unit = run()
   })
 
-  def run(): Unit = outputView.getTextArea.setText(evaluate(inputView.getTextArea.getText))
+  def run(): Unit = {
+    val programs = inputView.getTextArea.getText.split("\n")
+    val outputs = programs.map(_.trim).filter(_.nonEmpty).map(evaluate)
+    outputView.getTextArea.setText(outputs.mkString("\n\n"))
+  }
 }
 

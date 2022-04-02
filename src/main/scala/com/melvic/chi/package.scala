@@ -7,6 +7,5 @@ package object chi {
   type Result[A] = Result.Result[A]
   type Evaluate = eval.Evaluate
 
-  def generateAndShow: Evaluate = code =>
-    Result.show(CodeGen.fromSignatureString(code))
+  val generateAndShow = eval.generateAndShow
 }
