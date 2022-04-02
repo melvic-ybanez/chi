@@ -2,7 +2,7 @@
 ![release](https://img.shields.io/github/v/release/melvic-ybanez/chi?include_prereleases) ![issues](https://img.shields.io/github/issues/melvic-ybanez/chi) ![loc](https://img.shields.io/tokei/lines/github/melvic-ybanez/chi)
 ![licence](https://img.shields.io/github/license/melvic-ybanez/chi)
 
-A code generator for parametrically polymorphic functions. 
+A code generator for fully parametric functions. 
 Chi stands 
 for [Curry-Howard Isomorphism](https://en.wikipedia.org/wiki/Curry%E2%80%93Howard_correspondence). 
 
@@ -12,14 +12,23 @@ deriving function implementations when the types involved serve as logical propo
 Chi takes in a function signature and generates the function implementation. At 
 the time of this writing, Chi supports both Java and Scala.
 
-# Setting up and Running Chi
-The simplest way to run Chi is by using the stand-alone distribution:
-1. Download the jar file from the current [release](https://github.com/melvic-ybanez/chi/releases).
-2. Go to your download destination.
-3. Run the jar file: `java -jar chi-<version>.jar`
+# Installation
+The simplest way to install Chi is to download the distribution from the
+[release](https://github.com/melvic-ybanez/chi/releases) page.
 
-Running Chi will bring in the REPL, within which you can evaluate as many
-inputs as you want:
+# Running Chi
+Chi supports both UI and REPL. 
+
+#### Running the UI
+1. Go to the download destination.
+2. Run the jar file: `$ java -jar chi-<version>.jar`
+
+#### Running the REPL
+Running the REPL is similar to running the UI except you need to pass an additional
+`repl` argument:
+`$ java -jar chi-<version>.jar repl`
+
+Withing the REPL, you can evaluate as many inputs as you want:
 
 ```scala
 chi> def identity[A]: A => A
