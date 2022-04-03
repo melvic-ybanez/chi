@@ -19,7 +19,7 @@ object ScalaParser extends BaseParser {
     }
 
   val disjunction: Parser[Disjunction] =
-    "Either[" ~> proposition ~ ("," ~> proposition <~ "]") ^^ {
+    "Either" ~> "[" ~> proposition ~ ("," ~> proposition <~ "]") ^^ {
       case left ~ right => Disjunction(left, right)
     }
 

@@ -14,7 +14,7 @@ object JavaParser extends BaseParser {
   }
 
   lazy val function: PackratParser[Implication] =
-    ("Function" ~ "<") ~> proposition ~ ("," ~> proposition <~ ">") ^^ {
+    "Function" ~> "<" ~> proposition ~ ("," ~> proposition <~ ">") ^^ {
       case in ~ out => Implication(in, out)
     }
 
