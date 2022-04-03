@@ -3,7 +3,7 @@
 ![release](https://img.shields.io/github/v/release/melvic-ybanez/chi?include_prereleases) ![issues](https://img.shields.io/github/issues/melvic-ybanez/chi) ![loc](https://img.shields.io/tokei/lines/github/melvic-ybanez/chi)
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 
-A code generator for fully parametric functions and functions between selected set of built-in and standard types. 
+Chi is a code generator for fully parametric functions and functions between selected set of built-in and standard types. 
 Chi stands 
 for [Curry-Howard Isomorphism](https://en.wikipedia.org/wiki/Curry%E2%80%93Howard_correspondence). 
 
@@ -11,7 +11,8 @@ This program started as a proof-of-concept to see the mechanical nature of the p
 deriving function implementations when the types involved serve as logical propositions under the Curry-Howard Isomorphism.
 
 Chi takes in a function signature and generates the function implementation. At 
-the time of this writing, Chi supports both Java and Scala.
+the time of this writing, Chi supports both Java and Scala. Future support for 
+other languages are considered.
 
 # Installation
 The simplest way to install Chi is to download the distribution from the

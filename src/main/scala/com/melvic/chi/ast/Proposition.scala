@@ -1,8 +1,5 @@
 package com.melvic.chi.ast
 
-import com.melvic.chi.out.Display
-import com.melvic.chi.parsers.Language
-
 import scala.annotation.tailrec
 
 sealed trait Proposition

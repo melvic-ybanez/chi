@@ -1,11 +1,10 @@
 package com.melvic.chi.views
 
-import org.fife.ui.rsyntaxtextarea.{RSyntaxTextArea, Style, SyntaxConstants, Token, TokenTypes}
+import org.fife.ui.rsyntaxtextarea.{RSyntaxTextArea, SyntaxConstants, Theme}
 import org.fife.ui.rtextarea.RTextScrollPane
-import org.fife.ui.rsyntaxtextarea.Theme
-import java.io.IOException
 
-import java.awt.{Color, Font}
+import java.awt.Font
+import java.io.IOException
 
 class AreaView extends RSyntaxTextArea(50, 50) {
   setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_SCALA)

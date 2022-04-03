@@ -1,15 +1,6 @@
 package com.melvic.chi.eval
 
-import com.melvic.chi.ast.Proof.{
-  Abstraction,
-  Application,
-  PLeft,
-  PRight,
-  TUnit,
-  Variable,
-  Conjunction => PConjunction,
-  Disjunction => PDisjunction
-}
+import com.melvic.chi.ast.Proof.{Abstraction, Application, PLeft, PRight, TUnit, Variable, Conjunction => PConjunction, Disjunction => PDisjunction}
 import com.melvic.chi.ast.Proposition._
 import com.melvic.chi.ast.{Proof, Proposition}
 import com.melvic.chi.env.Env

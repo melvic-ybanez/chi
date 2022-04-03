@@ -1,9 +1,8 @@
 package com.melvic.chi.views.menus
 
-import com.melvic.chi.Evaluate
 import com.melvic.chi.views.EditorView
 
-import java.awt.event.{ActionEvent, ActionListener, KeyEvent}
+import java.awt.event.{ActionEvent, KeyEvent}
 import javax.swing.{JMenu, JMenuItem, KeyStroke}
 
 class EditorMenu(editorView: EditorView) extends JMenu("Editor") {

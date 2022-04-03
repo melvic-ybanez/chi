@@ -1,6 +1,5 @@
 package com.melvic.chi.views.menus
 
-import com.melvic.chi.Evaluate
 import com.melvic.chi.views.EditorView
 
 import java.awt.event.{ActionEvent, KeyEvent}

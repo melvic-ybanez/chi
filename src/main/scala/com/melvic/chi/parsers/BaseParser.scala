@@ -5,7 +5,6 @@ import com.melvic.chi.ast.Proof.Variable
 import com.melvic.chi.ast.Proposition.{Atom, Identifier}
 import com.melvic.chi.ast.{Proposition, Signature}
 import com.melvic.chi.out.Fault
-import com.melvic.chi.parsers.ScalaParser.{functionCode, implication, nameParser, param, parseAll, repsep}
 
 import scala.util.parsing.combinator.{PackratParsers, RegexParsers}
 import scala.util.parsing.input.CharSequenceReader
