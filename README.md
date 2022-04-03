@@ -3,7 +3,7 @@
 ![release](https://img.shields.io/github/v/release/melvic-ybanez/chi?include_prereleases) ![issues](https://img.shields.io/github/issues/melvic-ybanez/chi) ![loc](https://img.shields.io/tokei/lines/github/melvic-ybanez/chi)
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 
-A code generator for fully parametric functions. 
+A code generator for fully parametric functions and functions between selected set of built-in and standard types. 
 Chi stands 
 for [Curry-Howard Isomorphism](https://en.wikipedia.org/wiki/Curry%E2%80%93Howard_correspondence). 
 
@@ -149,4 +149,24 @@ Generated code:
         return f.apply(a);
     };
 }
+```
+
+# Built-in types
+Chi also recognize built-in types:
+```scala
+chi> String idString(String s)
+Detected language: Java
+Generated code:
+String idString(String s) {
+    return s;
+}
+
+chi> def foo(f: String => Int, g: Float => Int): Either[String, Float] => Int
+Detected language: Scala
+Generated code:
+def foo(f: (String => Int), g: (Float => Int)): (Either[String, Float] => Int) =
+  e => e match {
+    case Left(s) => f(s)
+    case Right(h) => g(h)
+  }
 ```

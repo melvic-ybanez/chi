@@ -196,4 +196,16 @@ class ScalaDefSpec extends AnyFlatSpec with should.Matchers {
         |  }""".stripMargin
     )
   }
+
+  "Built-in types" should "be included in the type search" in {
+    generateAndShow("def foo(f: String => Int, g: Float => Int): Either[String, Float] => Int") should be(
+      """Detected language: Scala
+        |Generated code:
+        |def foo(f: (String => Int), g: (Float => Int)): (Either[String, Float] => Int) =
+        |  e => e match {
+        |    case Left(s) => f(s)
+        |    case Right(h) => g(h)
+        |  }""".stripMargin
+    )
+  }
 }
