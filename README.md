@@ -1,7 +1,7 @@
 
 # Chi
 ![release](https://img.shields.io/github/v/release/melvic-ybanez/chi?include_prereleases) ![issues](https://img.shields.io/github/issues/melvic-ybanez/chi) ![loc](https://img.shields.io/tokei/lines/github/melvic-ybanez/chi)
-![licence](https://img.shields.io/github/license/melvic-ybanez/chi)
+[![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 
 A code generator for fully parametric functions. 
 Chi stands 
