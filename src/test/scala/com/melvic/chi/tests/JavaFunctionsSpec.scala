@@ -36,4 +36,14 @@ class JavaFunctionsSpec extends AnyFlatSpec with should.Matchers {
         |}""".stripMargin
     )
   }
+
+  "Built-in types" should "be included in the type search" in {
+    generateAndShow("String idString(String s)") should be(
+      """Detected language: Java
+        |Generated code:
+        |String idString(String s) {
+        |    return s;
+        |}""".stripMargin
+    )
+  }
 }

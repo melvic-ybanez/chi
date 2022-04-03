@@ -27,8 +27,8 @@ object JavaParser extends BaseParser {
   lazy val proposition: PackratParser[Proposition] = function | biFunction | identifier
 
   val functionCode: Parser[Signature] =
-    typeParams ~ proposition ~ nameParser ~ opt(paramList) ^^ {
+    opt(typeParams) ~ proposition ~ nameParser ~ opt(paramList) ^^ {
       case typeParams ~ returnType ~ name ~ params =>
-        Signature(name, typeParams.map(_.value), params.getOrElse(Nil), returnType)
+        Signature(name, typeParams.getOrElse(Nil).map(_.value), params.getOrElse(Nil), returnType)
     }
 }
