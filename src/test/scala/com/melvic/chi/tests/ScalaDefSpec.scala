@@ -10,7 +10,7 @@ class ScalaDefSpec extends AnyFlatSpec with should.Matchers {
       """Detected language: Scala
         |Generated code:
         |def identity[A]: (A => A) =
-        |  a => a""".stripMargin
+        |  Predef.identity""".stripMargin
     )
     generateAndShow("def identity[A](a: A): A") should be(
       """Detected language: Scala
@@ -21,11 +21,18 @@ class ScalaDefSpec extends AnyFlatSpec with should.Matchers {
   }
 
   "(A => B) => A => B" should "apply the function to the input of the resulting function" in {
+    generateAndShow("def apply[A, B](f: A => B, a: A): B") should be(
+      """Detected language: Scala
+        |Generated code:
+        |def apply[A, B](f: (A => B), a: A): B =
+        |  f(a)""".stripMargin
+    )
+
     generateAndShow("def apply[A, B]: (A => B) => A => B") should be(
       """Detected language: Scala
         |Generated code:
         |def apply[A, B]: ((A => B) => (A => B)) =
-        |  f => a => f(a)""".stripMargin
+        |  Predef.identity""".stripMargin
     )
   }
 
@@ -127,14 +134,14 @@ class ScalaDefSpec extends AnyFlatSpec with should.Matchers {
       """Detected language: Scala
         |Generated code:
         |def foo[A, B, C]: ((A => C) => ((B => C) => (B => C))) =
-        |  f => g => b => g(b)""".stripMargin
+        |  f => Predef.identity""".stripMargin
     )
 
     generateAndShow("def foo[A, B, C]: (B => C) => (A => C) => B => C") should be(
       """Detected language: Scala
         |Generated code:
         |def foo[A, B, C]: ((B => C) => ((A => C) => (B => C))) =
-        |  f => g => b => f(b)""".stripMargin
+        |  f => g => f""".stripMargin
     )
   }
 
@@ -144,7 +151,7 @@ class ScalaDefSpec extends AnyFlatSpec with should.Matchers {
       """Detected language: Scala
         |Generated code:
         |def foo[A, B, C]: ((A => B) => (((A => B) => C) => C)) =
-        |  f => g => g(a => f(a))""".stripMargin
+        |  f => g => g(f)""".stripMargin
     )
   }
 
@@ -206,6 +213,22 @@ class ScalaDefSpec extends AnyFlatSpec with should.Matchers {
         |    case Left(s) => f(s)
         |    case Right(h) => g(h)
         |  }""".stripMargin
+    )
+  }
+
+  "Function expressions" should "be simplified" in {
+    generateAndShow("def foo(f: String => Int): String => Int") should be(
+      """Detected language: Scala
+        |Generated code:
+        |def foo(f: (String => Int)): (String => Int) =
+        |  f""".stripMargin
+    )
+
+    generateAndShow("def foo[A, B, C]: A => (A => (B => C)) => B => C") should be(
+      """Detected language: Scala
+        |Generated code:
+        |def foo[A, B, C]: (A => ((A => (B => C)) => (B => C))) =
+        |  a => f => f(a)""".stripMargin
     )
   }
 }
