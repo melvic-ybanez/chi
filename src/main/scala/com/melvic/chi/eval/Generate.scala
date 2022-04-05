@@ -22,6 +22,7 @@ object Generate {
     else
       Prover
         .proveProposition(proposition)(Env.fromListWithDefault(params))
+        .map(Simplifier.simplyProof(_, language))
         .map(Definition(signature, _, language))
   }
 

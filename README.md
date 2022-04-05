@@ -37,17 +37,11 @@ Running the REPL is similar to running the UI except you need to pass an additio
 Within the REPL, inputs are evaluated when you press enter:
 
 ```scala
-chi> def identity[A]: A => A
-Detected language: Scala
-Generated code:
-def identity[A]: A => A =
-  a => a
-  
 chi> def apply[A, B]: (A => B) => A => B
 Detected language: Scala
 Generated code:
 def apply[A, B]: ((A => B) => (A => B)) =
-  f => a => f(a)
+  Predef.identity
   
 chi> def fst[A, B]: (A, B) => A
 Detected language: Scala
@@ -92,6 +86,12 @@ def foo[A]: (Either[A, A] => A) =
     case Left(a) => a
     case Right(a) => a
   }
+
+chi> def foo[A, B, C]: (A => C) => (B => C) => B => C
+Detected language: Scala
+Generated code:
+def foo[A, B, C]: ((A => C) => ((B => C) => (B => C))) =
+  f => Predef.identity
 
 chi> exit
 Bye!
