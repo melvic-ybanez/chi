@@ -11,7 +11,12 @@ object Dependencies {
     "com.fifesoft" % "rsyntaxtextarea" % "3.2.0"
   )
 
+  lazy val jsonDependencies = Seq(
+    "com.lihaoyi" %% "upickle" % "1.5.0"
+  )
+
   lazy val dependencies = Seq(
     "org.scala-lang.modules" % "scala-parser-combinators_2.13" % "2.1.1",
-  ) ++ testDependencies ++ uiDependencies
+    "com.lihaoyi" %% "os-lib" % "0.8.1"
+  ) ++ testDependencies ++ uiDependencies ++ jsonDependencies
 }

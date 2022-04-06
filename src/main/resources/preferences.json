@@ -1,0 +1,7 @@
+{
+  "scala": {
+    "pointFree": true,
+    "simplifyMatch": true,
+    "usePredef": true
+  }
+}
