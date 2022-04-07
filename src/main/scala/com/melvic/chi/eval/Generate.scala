@@ -2,6 +2,7 @@ package com.melvic.chi.eval
 
 import com.melvic.chi.ast.Proposition.{Atom, Identifier, PUnit}
 import com.melvic.chi.ast.{Definition, Proposition, Signature}
+import com.melvic.chi.config.Preferences
 import com.melvic.chi.env.Env
 import com.melvic.chi.out.Fault.UnknownPropositions
 import com.melvic.chi.out.Result
@@ -9,7 +10,7 @@ import com.melvic.chi.out.Result.Result
 import com.melvic.chi.parsers.{JavaParser, Language, ScalaParser}
 
 object Generate {
-  def fromSignature(signature: Signature, language: Language): Result[Definition] = {
+  def fromSignature(signature: Signature, language: Language)(implicit prefs: Preferences): Result[Definition] = {
     val Signature(name, typeParams, params, proposition) = signature
 
     val unknownTypes = Proposition.filter(proposition) {
@@ -22,11 +23,11 @@ object Generate {
     else
       Prover
         .proveProposition(proposition)(Env.fromListWithDefault(params))
-        .map(Simplifier.simplyProof(_, language))
+        .map(Transform.from(_, language))
         .map(Definition(signature, _, language))
   }
 
-  def fromSignatureString(functionCode: String): Result[Definition] =
+  def fromSignatureString(functionCode: String)(implicit prefs: Preferences): Result[Definition] =
     ScalaParser
       .parseSignature(functionCode)
       .orElse(JavaParser.parseSignature(functionCode))
