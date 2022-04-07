@@ -3,7 +3,7 @@ package com.melvic.chi
 import com.github.weisj.darklaf.LafManager
 import com.github.weisj.darklaf.theme.DarculaTheme
 import com.melvic.chi.config.Preferences
-import com.melvic.chi.views.menus.MainView
+import com.melvic.chi.views.MainComponent
 
 import javax.swing.SwingUtilities
 
@@ -22,7 +22,7 @@ object Main {
       LafManager.install(new DarculaTheme)
 
       override def run(): Unit = {
-        new MainView(generateAndShow).setVisible(true)
+        new MainComponent(generateAndShow).setVisible(true)
       }
     })
 }

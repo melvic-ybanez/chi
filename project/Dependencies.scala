@@ -17,6 +17,7 @@ object Dependencies {
 
   lazy val dependencies = Seq(
     "org.scala-lang.modules" % "scala-parser-combinators_2.13" % "2.1.1",
-    "com.lihaoyi" %% "os-lib" % "0.8.1"
+    "com.lihaoyi" %% "os-lib" % "0.8.1",
+    "com.miglayout" % "miglayout-swing" % "11.0"
   ) ++ testDependencies ++ uiDependencies ++ jsonDependencies
 }

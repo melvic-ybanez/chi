@@ -6,10 +6,10 @@ import java.awt.BorderLayout
 import java.awt.event.{KeyEvent, KeyListener}
 import javax.swing.{JPanel, JSplitPane}
 
-class EditorView(evaluate: Evaluate) extends JPanel {
-  val inputView = AreaView.withScrollPane
+class EditorComponent(evaluate: Evaluate) extends JPanel {
+  val inputView = TextAreaComponent.withScrollPane
   val outputView = {
-    val out = AreaView.withScrollPane
+    val out = TextAreaComponent.withScrollPane
     out.getTextArea.setEditable(false)
     out
   }
