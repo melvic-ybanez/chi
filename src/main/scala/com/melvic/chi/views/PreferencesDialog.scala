@@ -4,15 +4,21 @@ import com.melvic.chi.Config
 import net.miginfocom.swing.MigLayout
 
 import java.awt.{Font, Frame}
-import javax.swing.border.Border
-import javax.swing.{BorderFactory, JCheckBox, JDialog, JFrame, JOptionPane, JPanel}
+import javax.swing._
 
 class PreferencesDialog(frame: Frame) extends JDialog(frame, true) {
   setTitle("Preferences")
-  setLayout(new MigLayout())
 
-  add(createScalaPrefsComponent(), "wrap")
-
+  setContentPane(
+    new JOptionPane(
+      createScalaPrefsComponent(),
+      JOptionPane.PLAIN_MESSAGE,
+      JOptionPane.YES_NO_OPTION,
+      null,
+      Array("Apply", "Cancel"),
+      "Apply"
+    )
+  )
   pack()
 
   private def createScalaPrefsComponent(): JPanel = {
@@ -22,8 +28,8 @@ class PreferencesDialog(frame: Frame) extends JDialog(frame, true) {
 
     val scalaPane = new JPanel()
     scalaPane.setLayout(new MigLayout())
-    scalaPane.setBorder(createBorder("Scala"))
 
+    addTitle("Scala Settings", scalaPane)
     scalaPane.add(pointFreeBox, "wrap")
     scalaPane.add(simplyMatchBox, "wrap")
     scalaPane.add(usePredefBox, "wrap")
@@ -31,16 +37,14 @@ class PreferencesDialog(frame: Frame) extends JDialog(frame, true) {
     scalaPane
   }
 
-  private def createCheckBox(text: String): JCheckBox = {
-    val checkBox = new JCheckBox(text)
-    checkBox.setFont(new Font(checkBox.getFont.getName, checkBox.getFont.getStyle, Config.DialogFontSize))
-    checkBox
-  }
+  private def createCheckBox(text: String): JCheckBox =
+    FontUtils.updateSize(new JCheckBox(text), Config.DialogFontSize)
 
-  private def createBorder(title: String): Border = {
-    val border = BorderFactory.createTitledBorder(title)
-    val titleFont = border.getTitleFont
-    border.setTitleFont(new Font(titleFont.getName, titleFont.getStyle, Config.DialogFontSize))
-    border
+  private def addTitle(title: String, panel: JPanel): Unit = {
+    panel.add(
+      FontUtils.updateStyle(FontUtils.updateSize(new JLabel(title), Config.DialogHeaderFontSize), Font.BOLD),
+      "gapleft 20, wrap"
+    )
+    panel.add(new JSeparator(), "growx, wrap, gapbottom 20")
   }
 }
