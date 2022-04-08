@@ -1,12 +1,13 @@
 package com.melvic.chi.views
 
 import com.melvic.chi.Config
+import com.melvic.chi.config.Preferences
 import net.miginfocom.swing.MigLayout
 
 import java.awt.{Font, Frame}
 import javax.swing._
 
-class PreferencesDialog(frame: Frame) extends JDialog(frame, true) {
+class PreferencesDialog(frame: Frame)(implicit preferences: Preferences) extends JDialog(frame, true) {
   setTitle("Preferences")
 
   setContentPane(

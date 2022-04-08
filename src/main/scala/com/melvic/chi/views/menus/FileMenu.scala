@@ -1,12 +1,13 @@
 package com.melvic.chi.views.menus
 
+import com.melvic.chi.config.Preferences
 import com.melvic.chi.views.PreferencesDialog
 
 import java.awt.Frame
 import java.awt.event.{ActionEvent, KeyEvent}
 import javax.swing.{JMenu, JMenuItem, KeyStroke}
 
-class FileMenu(frame: Frame) extends JMenu("File") {
+class FileMenu(frame: Frame)(implicit preferences: Preferences) extends JMenu("File") {
   add(preferencesMenuItem)
   add(exitMenuItem)
 

@@ -3,7 +3,8 @@ package com.melvic.chi.eval
 import com.melvic.chi.ast.Proof
 import com.melvic.chi.ast.Proof.{Abstraction, Application, Variable}
 import com.melvic.chi.ast.Proposition.PUnit
-import com.melvic.chi.config.Preferences.ScalaPrefs
+import com.melvic.chi.config.Preferences
+import com.melvic.chi.config.PrefsContent.ScalaPrefs
 import com.melvic.chi.parsers.Language
 
 final case class Transform(proof: Proof) {
@@ -12,7 +13,7 @@ final case class Transform(proof: Proof) {
 }
 
 object Transform {
-  def from(proof: Proof, language: Language)(implicit scalaPrefs: ScalaPrefs): Proof =
+  def from(proof: Proof, language: Language)(implicit prefs: Preferences): Proof =
     language match {
       case Language.Scala => transformScala(proof)
       case Language.Java  => proof

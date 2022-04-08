@@ -2,7 +2,7 @@ package com.melvic.chi
 
 import com.github.weisj.darklaf.LafManager
 import com.github.weisj.darklaf.theme.DarculaTheme
-import com.melvic.chi.config.Preferences
+import com.melvic.chi.config.{Preferences, PrefsContent}
 import com.melvic.chi.views.MainComponent
 
 import javax.swing.SwingUtilities

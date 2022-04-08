@@ -10,7 +10,9 @@ import com.melvic.chi.out.Result.Result
 import com.melvic.chi.parsers.{JavaParser, Language, ScalaParser}
 
 object Generate {
-  def fromSignature(signature: Signature, language: Language)(implicit prefs: Preferences): Result[Definition] = {
+  def fromSignature(signature: Signature, language: Language)(
+      implicit prefs: Preferences
+  ): Result[Definition] = {
     val Signature(name, typeParams, params, proposition) = signature
 
     val unknownTypes = Proposition.filter(proposition) {
