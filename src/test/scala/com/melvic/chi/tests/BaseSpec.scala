@@ -7,7 +7,7 @@ import org.scalatest.matchers.should
 trait BaseSpec extends AnyFlatSpec with should.Matchers {
   val language: String
 
-  implicit val preferences: Preferences = Preferences.load
+  implicit val preferences: Preferences = Preferences.loadDefaults
 
   def output(outputString: String): String =
     s"""Detected language: $language

@@ -164,7 +164,7 @@ class ScalaDefSpec extends BaseSpec {
     generateAndShow("def foo[A, B, C]: (A => C) => (B => C) => Either[A, B] => C") should be(
       output(
         """def foo[A, B, C]: ((A => C) => ((B => C) => (Either[A, B] => C))) =
-          |  f => g => e => e match {
+          |  f => g => {
           |    case Left(a) => f(a)
           |    case Right(b) => g(b)
           |  }""".stripMargin
@@ -174,7 +174,7 @@ class ScalaDefSpec extends BaseSpec {
     generateAndShow("def foo[A, B]: Either[A, A] => A") should be(
       output(
         """def foo[A, B]: (Either[A, A] => A) =
-          |  e => e match {
+          |  {
           |    case Left(a) => a
           |    case Right(a) => a
           |  }""".stripMargin
@@ -207,7 +207,7 @@ class ScalaDefSpec extends BaseSpec {
     generateAndShow("def foo(f: String => Int, g: Float => Int): Either[String, Float] => Int") should be(
       output(
         """def foo(f: (String => Int), g: (Float => Int)): (Either[String, Float] => Int) =
-          |  e => e match {
+          |  {
           |    case Left(s) => f(s)
           |    case Right(h) => g(h)
           |  }""".stripMargin

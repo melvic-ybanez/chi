@@ -1,6 +1,7 @@
 package com.melvic.chi.config
 
 import com.melvic.chi.config.SettingsContent.save
+import os.Path
 
 class Preferences {
   var content: SettingsContent = SettingsContent.dummy
@@ -17,5 +18,9 @@ class Preferences {
 object Preferences {
   def load: Preferences = new Preferences {
     content = SettingsContent.load
+  }
+
+  def loadDefaults: Preferences = new Preferences {
+    content = SettingsContent.loadDefaults
   }
 }

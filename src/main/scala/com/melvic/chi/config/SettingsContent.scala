@@ -2,6 +2,7 @@ package com.melvic.chi.config
 
 import com.melvic.chi.Config
 import com.melvic.chi.config.SettingsContent.ScalaSettings
+import os.{Path, ReadablePath, ResourcePath}
 import upickle.default._
 
 import java.io.{BufferedWriter, FileWriter}
@@ -28,9 +29,14 @@ object SettingsContent {
     val prefPath =
       if (os.exists(customSettingsPath)) os.read(customSettingsPath)
       else os.read(defaultSettingsPath)
-    val preferences = read[SettingsContent](ujson.read(prefPath))
-    preferences
+    loadFromPathString(prefPath)
   }
+
+  def loadFromPathString(path: String) =
+    read[SettingsContent](ujson.read(path))
+
+  def loadDefaults: SettingsContent =
+    loadFromPathString(os.read(defaultSettingsPath))
 
   def save(settingsContent: SettingsContent): Unit = {
     if (!os.exists(customSettingsPath))
