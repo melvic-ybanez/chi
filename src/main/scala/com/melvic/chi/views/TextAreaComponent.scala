@@ -1,17 +1,22 @@
 package com.melvic.chi.views
 
+import com.melvic.chi.Config
 import org.fife.ui.rsyntaxtextarea.{RSyntaxTextArea, SyntaxConstants, Theme}
 import org.fife.ui.rtextarea.RTextScrollPane
 
 import java.awt.Font
+import java.awt.font.TextAttribute
 import java.io.IOException
+import scala.collection.mutable
+import scala.jdk.CollectionConverters._
 
 class TextAreaComponent extends RSyntaxTextArea(50, 50) {
   setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_SCALA)
   setCodeFoldingEnabled(true)
+  setAntiAliasingEnabled(true)
 
   updateStyle()
-  setFont(new Font(getFont.getName, getFont.getStyle, 16))
+  updateFont()
 
   private def updateStyle(): Unit =
     try {
@@ -21,6 +26,18 @@ class TextAreaComponent extends RSyntaxTextArea(50, 50) {
       case ioe: IOException =>
         ioe.printStackTrace()
     }
+
+  private def updateFont(): Unit = {
+    val font = Font.createFont(Font.TRUETYPE_FONT, getClass.getResourceAsStream(Config.DefaultFontPath))
+
+    val newFont = font.getAttributes.asScala match {
+      case attributes: mutable.Map[TextAttribute, Any] =>
+        attributes.put(TextAttribute.LIGATURES, TextAttribute.LIGATURES_ON)
+        font.deriveFont(attributes.asJava).deriveFont(16: Float)
+      case _ => font
+    }
+    setFont(newFont)
+  }
 }
 
 object TextAreaComponent {

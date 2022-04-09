@@ -26,14 +26,14 @@ object SettingsContent {
   val defaultSettingsPath = os.resource / Config.DefaultSettingsPath
 
   def load: SettingsContent = {
-    val prefPath =
+    val prefData =
       if (os.exists(customSettingsPath)) os.read(customSettingsPath)
       else os.read(defaultSettingsPath)
-    loadFromPathString(prefPath)
+    loadFromPathString(prefData)
   }
 
-  def loadFromPathString(path: String) =
-    read[SettingsContent](ujson.read(path))
+  def loadFromPathString(data: String) =
+    read[SettingsContent](ujson.read(data))
 
   def loadDefaults: SettingsContent =
     loadFromPathString(os.read(defaultSettingsPath))

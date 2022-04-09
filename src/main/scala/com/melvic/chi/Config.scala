@@ -7,4 +7,5 @@ object Config {
   val DialogHeaderFontSize: Int = 15
   val CustomSettingsPath = "user-prefs.json"
   val DefaultSettingsPath = "preferences.json"
+  val DefaultFontPath = "/fonts/FiraCode-Regular.ttf"
 }
