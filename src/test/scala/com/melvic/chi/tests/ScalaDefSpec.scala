@@ -31,7 +31,7 @@ class ScalaDefSpec extends BaseSpec {
     generateAndShow("def apply[A, B]: (A => B) => A => B") should be(
       output(
         """def apply[A, B]: ((A => B) => (A => B)) =
-          |  Predef.identity""".stripMargin
+          |  identity""".stripMargin
       )
     )
   }
@@ -62,7 +62,7 @@ class ScalaDefSpec extends BaseSpec {
     generateAndShow("def compose[A, B, C]: (B => C) => (A => B) => A => C") should be(
       output(
         """def compose[A, B, C]: ((B => C) => ((A => B) => (A => C))) =
-          |  f => g => a => f(g(a))""".stripMargin
+          |  f => g => f.compose(g)""".stripMargin
       )
     )
   }
@@ -71,13 +71,13 @@ class ScalaDefSpec extends BaseSpec {
     generateAndShow("def andThen[A, B, C]: (A => B) => (B => C) => A => C") should be(
       output(
         """def andThen[A, B, C]: ((A => B) => ((B => C) => (A => C))) =
-          |  f => g => a => g(f(a))""".stripMargin
+          |  f => g => g.compose(f)""".stripMargin
       )
     )
     generateAndShow("def andThen[A, B, C](f: (A => B), g: (B => C)): A => C") should be(
       output(
         """def andThen[A, B, C](f: (A => B), g: (B => C)): (A => C) =
-          |  a => g(f(a))""".stripMargin
+          |  g.compose(f)""".stripMargin
       )
     )
   }
@@ -133,7 +133,7 @@ class ScalaDefSpec extends BaseSpec {
     generateAndShow("def foo[A, B, C]: (A => C) => (B => C) => B => C") should be(
       output(
         """def foo[A, B, C]: ((A => C) => ((B => C) => (B => C))) =
-          |  f => Predef.identity""".stripMargin
+          |  f => identity""".stripMargin
       )
     )
 
