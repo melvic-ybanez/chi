@@ -41,7 +41,7 @@ chi> def apply[A, B]: (A => B) => A => B
 Detected language: Scala
 Generated code:
 def apply[A, B]: ((A => B) => (A => B)) =
-  Predef.identity
+  identity
   
 chi> def fst[A, B]: (A, B) => A
 Detected language: Scala
@@ -61,19 +61,19 @@ chi> def compose[A, B, C]: (B => C) => (A => B) => A => C
 Detected language: Scala
 Generated code:
 def compose[A, B, C]: ((B => C) => ((A => B) => (A => C))) =
-  f => g => a => f(g(a))
+  f => g => f.compose(g)
 
 chi> def andThen[A, B, C]: (A => B) => (B => C) => A => C
 Detected language: Scala
 Generated code:
 def andThen[A, B, C]: ((A => B) => ((B => C) => (A => C))) =
-  f => g => a => g(f(a))
+  f => g => g.compose(f)
 
 chi> def foo[A, B, C]: (A => C) => (B => C) => Either[A, B] => C
 Detected language: Scala
 Generated code:
 def foo[A, B, C]: ((A => C) => ((B => C) => (Either[A, B] => C))) =
-  f => g => e => e match {
+  f => g => {
     case Left(a) => f(a)
     case Right(b) => g(b)
   }
@@ -82,7 +82,7 @@ chi> def foo[A]: Either[A, A] => A
 Detected language: Scala
 Generated code:
 def foo[A]: (Either[A, A] => A) =
-  e => e match {
+  {
     case Left(a) => a
     case Right(a) => a
   }
@@ -91,7 +91,7 @@ chi> def foo[A, B, C]: (A => C) => (B => C) => B => C
 Detected language: Scala
 Generated code:
 def foo[A, B, C]: ((A => C) => ((B => C) => (B => C))) =
-  f => Predef.identity
+  f => identity
 
 chi> exit
 Bye!
@@ -106,7 +106,7 @@ def identity(a: A): A =
 
 chi> def andThen[A, B, C](f: (A => B), g: (B => C)): A => C
 def andThen[A, B, C](f: (A => B), g: (B => C)): (A => C) =
-  a => g(f(a))
+  g.compose(f)
 
 ```
 
@@ -123,7 +123,7 @@ def disjunctionElimination[A, B, C](
     f: (A => C),
     g: (B => C)
 ): (Either[A, B] => C) =
-  e => e match {
+  {
     case Left(a) => f(a)
     case Right(b) => g(b)
   }
@@ -166,7 +166,7 @@ chi> def foo(f: String => Int, g: Float => Int): Either[String, Float] => Int
 Detected language: Scala
 Generated code:
 def foo(f: (String => Int), g: (Float => Int)): (Either[String, Float] => Int) =
-  e => e match {
+  {
     case Left(s) => f(s)
     case Right(h) => g(h)
   }

@@ -6,7 +6,7 @@ import org.fife.ui.rtextarea.RTextScrollPane
 import java.awt.Font
 import java.io.IOException
 
-class AreaView extends RSyntaxTextArea(50, 50) {
+class TextAreaComponent extends RSyntaxTextArea(50, 50) {
   setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_SCALA)
   setCodeFoldingEnabled(true)
 
@@ -23,6 +23,6 @@ class AreaView extends RSyntaxTextArea(50, 50) {
     }
 }
 
-object AreaView {
-  def withScrollPane = new RTextScrollPane(new AreaView)
+object TextAreaComponent {
+  def withScrollPane = new RTextScrollPane(new TextAreaComponent)
 }

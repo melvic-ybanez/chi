@@ -31,7 +31,7 @@ class ScalaDefSpec extends BaseSpec {
     generateAndShow("def apply[A, B]: (A => B) => A => B") should be(
       output(
         """def apply[A, B]: ((A => B) => (A => B)) =
-          |  Predef.identity""".stripMargin
+          |  identity""".stripMargin
       )
     )
   }
@@ -62,7 +62,7 @@ class ScalaDefSpec extends BaseSpec {
     generateAndShow("def compose[A, B, C]: (B => C) => (A => B) => A => C") should be(
       output(
         """def compose[A, B, C]: ((B => C) => ((A => B) => (A => C))) =
-          |  f => g => a => f(g(a))""".stripMargin
+          |  f => g => f.compose(g)""".stripMargin
       )
     )
   }
@@ -71,13 +71,13 @@ class ScalaDefSpec extends BaseSpec {
     generateAndShow("def andThen[A, B, C]: (A => B) => (B => C) => A => C") should be(
       output(
         """def andThen[A, B, C]: ((A => B) => ((B => C) => (A => C))) =
-          |  f => g => a => g(f(a))""".stripMargin
+          |  f => g => g.compose(f)""".stripMargin
       )
     )
     generateAndShow("def andThen[A, B, C](f: (A => B), g: (B => C)): A => C") should be(
       output(
         """def andThen[A, B, C](f: (A => B), g: (B => C)): (A => C) =
-          |  a => g(f(a))""".stripMargin
+          |  g.compose(f)""".stripMargin
       )
     )
   }
@@ -133,7 +133,7 @@ class ScalaDefSpec extends BaseSpec {
     generateAndShow("def foo[A, B, C]: (A => C) => (B => C) => B => C") should be(
       output(
         """def foo[A, B, C]: ((A => C) => ((B => C) => (B => C))) =
-          |  f => Predef.identity""".stripMargin
+          |  f => identity""".stripMargin
       )
     )
 
@@ -164,7 +164,7 @@ class ScalaDefSpec extends BaseSpec {
     generateAndShow("def foo[A, B, C]: (A => C) => (B => C) => Either[A, B] => C") should be(
       output(
         """def foo[A, B, C]: ((A => C) => ((B => C) => (Either[A, B] => C))) =
-          |  f => g => e => e match {
+          |  f => g => {
           |    case Left(a) => f(a)
           |    case Right(b) => g(b)
           |  }""".stripMargin
@@ -174,7 +174,7 @@ class ScalaDefSpec extends BaseSpec {
     generateAndShow("def foo[A, B]: Either[A, A] => A") should be(
       output(
         """def foo[A, B]: (Either[A, A] => A) =
-          |  e => e match {
+          |  {
           |    case Left(a) => a
           |    case Right(a) => a
           |  }""".stripMargin
@@ -207,7 +207,7 @@ class ScalaDefSpec extends BaseSpec {
     generateAndShow("def foo(f: String => Int, g: Float => Int): Either[String, Float] => Int") should be(
       output(
         """def foo(f: (String => Int), g: (Float => Int)): (Either[String, Float] => Int) =
-          |  e => e match {
+          |  {
           |    case Left(s) => f(s)
           |    case Right(h) => g(h)
           |  }""".stripMargin
@@ -227,6 +227,29 @@ class ScalaDefSpec extends BaseSpec {
       output(
         """def foo[A, B, C]: (A => ((A => (B => C)) => (B => C))) =
           |  a => f => f(a)""".stripMargin
+      )
+    )
+  }
+
+  "Point-free style" should "use Scala's `compose` function" in {
+    generateAndShow("def compose(f: String => Int, g: Int => Float): Double => String => Float") should be(
+      output(
+        """def compose(
+          |  f: (String => Int),
+          |  g: (Int => Float)
+          |): (Double => (String => Float)) =
+          |  d => g.compose(f)""".stripMargin
+      )
+    )
+
+    generateAndShow("def foo(f: String => Int, g: Double => Int => Float, d: Double): String => Float") should be(
+      output(
+        """def foo(
+          |  f: (String => Int),
+          |  g: (Double => (Int => Float)),
+          |  d: Double
+          |): (String => Float) =
+          |  g(d).compose(f)""".stripMargin
       )
     )
   }
