@@ -15,6 +15,8 @@ object Generate {
   ): Result[Definition] = {
     val Signature(name, typeParams, params, proposition) = signature
 
+    implicit val localFnName: String = name
+
     val unknownTypes = Proposition.filter(proposition) {
       case PUnit => false
       case atom @ Atom(value) =>

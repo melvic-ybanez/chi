@@ -1,5 +1,7 @@
 package com.melvic.chi.ast
 
+import com.melvic.chi.ast.Proposition.PUnit
+
 sealed trait Proof
 
 //noinspection SpellCheckingInspection
@@ -24,4 +26,12 @@ object Proof {
     * name as a string, in order to support invokations of curried functions (e.g `f(a)(b)`)
     */
   final case class Application(function: Proof, params: List[Proof]) extends Proof
+
+  final case class Infix(left: Proof, right: Proof) extends Proof
+
+  def atomicVariable(name: String): Variable =
+    Variable(name, PUnit)
+
+  def applyOne(function: Proof, arg: Proof): Application =
+    Application(function, arg :: Nil)
 }
