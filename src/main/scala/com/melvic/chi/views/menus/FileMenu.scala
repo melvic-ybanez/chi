@@ -7,15 +7,16 @@ import java.awt.Frame
 import java.awt.event.{ActionEvent, KeyEvent}
 import javax.swing.{JMenu, JMenuItem, KeyStroke}
 
-class FileMenu(frame: Frame)(implicit preferences: Preferences) extends JMenu("File") {
+class FileMenu(frame: Frame, prefsDialog: PreferencesDialog)(implicit preferences: Preferences)
+    extends JMenu("File") {
   add(preferencesMenuItem)
   add(exitMenuItem)
 
-  val prefsDialog = new PreferencesDialog(frame)
-
   private def preferencesMenuItem = {
     val prefsItem = new JMenuItem("Preferences")
-    prefsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK))
+    prefsItem.setAccelerator(
+      KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK)
+    )
     prefsItem.addActionListener(_ => prefsDialog.display())
     prefsItem
   }
