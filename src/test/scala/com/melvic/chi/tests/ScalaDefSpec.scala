@@ -230,4 +230,27 @@ class ScalaDefSpec extends BaseSpec {
       )
     )
   }
+
+  "Point-free style" should "use Scala's `compose` function" in {
+    generateAndShow("def compose(f: String => Int, g: Int => Float): Double => String => Float") should be(
+      output(
+        """def compose(
+          |  f: (String => Int),
+          |  g: (Int => Float)
+          |): (Double => (String => Float)) =
+          |  d => g.compose(f)""".stripMargin
+      )
+    )
+
+    generateAndShow("def foo(f: String => Int, g: Double => Int => Float, d: Double): String => Float") should be(
+      output(
+        """def foo(
+          |  f: (String => Int),
+          |  g: (Double => (Int => Float)),
+          |  d: Double
+          |): (String => Float) =
+          |  g(d).compose(f)""".stripMargin
+      )
+    )
+  }
 }
