@@ -1,6 +1,6 @@
 package com.melvic.chi.tests
 
-import com.melvic.chi.config.{Preferences, PrefsContent}
+import com.melvic.chi.config.{Preferences, SettingsContent}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should
 

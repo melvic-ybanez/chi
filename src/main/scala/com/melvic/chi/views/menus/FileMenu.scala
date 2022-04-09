@@ -16,7 +16,7 @@ class FileMenu(frame: Frame)(implicit preferences: Preferences) extends JMenu("F
   private def preferencesMenuItem = {
     val prefsItem = new JMenuItem("Preferences")
     prefsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.SHIFT_MASK))
-    prefsItem.addActionListener(_ => showPreferences())
+    prefsItem.addActionListener(_ => prefsDialog.display())
     prefsItem
   }
 
@@ -24,10 +24,5 @@ class FileMenu(frame: Frame)(implicit preferences: Preferences) extends JMenu("F
     val exitItem = new JMenuItem("Exit")
     exitItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK))
     exitItem
-  }
-
-  private def showPreferences(): Unit = {
-    prefsDialog.setLocationRelativeTo(frame)
-    prefsDialog.setVisible(true)
   }
 }

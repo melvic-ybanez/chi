@@ -4,7 +4,7 @@ import com.melvic.chi.ast.Proof
 import com.melvic.chi.ast.Proof.{Abstraction, Application, Variable}
 import com.melvic.chi.ast.Proposition.PUnit
 import com.melvic.chi.config.Preferences
-import com.melvic.chi.config.PrefsContent.ScalaPrefs
+import com.melvic.chi.config.SettingsContent.ScalaSettings
 import com.melvic.chi.parsers.Language
 
 final case class Transform(proof: Proof) {
@@ -19,7 +19,7 @@ object Transform {
       case Language.Java  => proof
     }
 
-  def transformScala(proof: Proof)(implicit scalaPrefs: ScalaPrefs): Proof =
+  def transformScala(proof: Proof)(implicit scalaPrefs: ScalaSettings): Proof =
     proof match {
       // e.g. `a => f(a)` becomes `f`
       case Abstraction(in, Application(function, param :: Nil)) if param == in =>
