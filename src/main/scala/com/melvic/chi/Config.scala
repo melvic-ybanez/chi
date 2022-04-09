@@ -8,4 +8,5 @@ object Config {
   val CustomSettingsPath = "user-prefs.json"
   val DefaultSettingsPath = "preferences.json"
   val DefaultFontPath = "/fonts/FiraCode-Regular.ttf"
+  val IconsDir = "/icons/"
 }

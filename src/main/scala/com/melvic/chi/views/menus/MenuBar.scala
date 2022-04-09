@@ -1,13 +1,14 @@
 package com.melvic.chi.views.menus
 
 import com.melvic.chi.config.Preferences
-import com.melvic.chi.views.EditorComponent
+import com.melvic.chi.views.{EditorComponent, PreferencesDialog}
 
 import java.awt.Frame
-import java.awt.event.{ActionEvent, KeyEvent}
-import javax.swing.{JMenu, JMenuBar, JMenuItem, KeyStroke}
+import javax.swing.JMenuBar
 
-class MenuBar(frame: Frame, editorView: EditorComponent)(implicit prefs: Preferences) extends JMenuBar {
-  add(new FileMenu(frame))
+class MenuBar(frame: Frame, editorView: EditorComponent, prefsDialog: PreferencesDialog)(
+    implicit prefs: Preferences
+) extends JMenuBar {
+  add(new FileMenu(frame, prefsDialog))
   add(new EditorMenu(editorView))
 }
