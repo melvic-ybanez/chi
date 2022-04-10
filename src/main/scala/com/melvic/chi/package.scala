@@ -7,5 +7,5 @@ package object chi {
   type Result[A] = Result.Result[A]
   type Evaluate = eval.Evaluate
 
-  def generateAndShow(code: String)(implicit prefs: Preferences): String = eval.generateAndShow(code)
+  def generateAndShow(code: String)(implicit prefs: Preferences): String = eval.generateAndShowWithInfo(code)
 }

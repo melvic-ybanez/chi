@@ -1,6 +1,7 @@
 package com.melvic.chi.views
 
 import com.melvic.chi.Config
+import com.melvic.chi.views.dialogs.PreferencesDialog
 
 import java.awt.Dimension
 import java.awt.event.ActionListener
@@ -24,10 +25,11 @@ class ToolBarComponent(editorComponent: EditorComponent, preferencesDialog: Pref
     button.addActionListener(actionListener)
 
     val imageURL = getClass.getResource(Config.IconsDir + imageName + ".png")
-    if (imageURL != null) {
+    if (imageURL != null)
       button.setIcon(new ImageIcon(imageURL, altText))
-    } else
+    else
       System.err.println("Icon not found: " + imageName)
+
     button.setText(altText)
 
     button

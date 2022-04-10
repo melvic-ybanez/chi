@@ -1,6 +1,8 @@
 package com.melvic.chi.views
 
-import java.awt.Component
+import com.melvic.chi.Config
+
+import java.awt.{Component, Font}
 
 object FontUtils {
   def updateSize[C <: Component](component: C, size: Float): C =
@@ -17,4 +19,10 @@ object FontUtils {
     component.setFont(newFont)
     component
   }
+
+  def withComponentFont[C <: Component](component: C): C =
+    updateSize(component, Config.ComponentFontSize)
+
+  def withComponentHeaderFont[C <: Component](component: C) =
+    updateStyle(updateSize(component, Config.ComponentHeaderFontSize), Font.BOLD)
 }
