@@ -21,7 +21,7 @@ object Repl {
       case "exit" => println("Bye!")
       case ""     => loop
       case input =>
-        println(generateAndShow(input))
+        println(generateAndShowWithInfo(input))
         println()
         loop
     }

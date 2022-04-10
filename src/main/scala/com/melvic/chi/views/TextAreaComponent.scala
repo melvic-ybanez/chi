@@ -1,6 +1,7 @@
 package com.melvic.chi.views
 
 import com.melvic.chi.Config
+import com.melvic.chi.config.Preferences
 import org.fife.ui.rsyntaxtextarea.{RSyntaxTextArea, SyntaxConstants, Theme}
 import org.fife.ui.rtextarea.RTextScrollPane
 

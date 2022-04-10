@@ -1,7 +1,7 @@
 package com.melvic.chi.views
 
 import com.melvic.chi.Config
-import com.melvic.chi.views.dialogs.PreferencesDialog
+import com.melvic.chi.views.prefs.PreferencesDialog
 
 import java.awt.Dimension
 import java.awt.event.ActionListener

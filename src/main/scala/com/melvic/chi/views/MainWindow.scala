@@ -2,15 +2,15 @@ package com.melvic.chi.views
 
 import com.melvic.chi.Evaluate
 import com.melvic.chi.config.Preferences
-import com.melvic.chi.views.dialogs.PreferencesDialog
+import com.melvic.chi.views.prefs.PreferencesDialog
 import com.melvic.chi.views.menus.MenuBar
 
 import java.awt._
 import javax.swing._
 
-class MainWindow(evaluate: Evaluate)(implicit preferences: Preferences) extends JFrame {
-  val editorComponent = new EditorComponent(evaluate)
-  val preferencesDialog = new PreferencesDialog(this)
+class MainWindow(implicit preferences: Preferences) extends JFrame {
+  val editorComponent = new EditorComponent
+  val preferencesDialog = new PreferencesDialog(this, editorComponent)
 
   setTitle("Chi")
   createContentPane(editorComponent)

@@ -1,4 +1,4 @@
-package com.melvic.chi.views.dialogs
+package com.melvic.chi.views.prefs
 
 import com.melvic.chi.config.Preferences
 import com.melvic.chi.eval.generateAndShowCode
@@ -17,7 +17,7 @@ class PreviewComponent(implicit prefs: Preferences) extends RTextScrollPane(new 
 
   val inputs = List(
     "def compose[A, B, C](f: B => C, g: A => B): A => C",
-    "def disjunctionElimination[A, B, C](f: A => C, g: B => C): Either[A, B] => C",
+    "def disjunctionElimination[A, B, C]: (A => C) => (B => C) => Either[A, B] => C",
     "def id[A]: A => A",
     "def identity[A]: A => A"
   )

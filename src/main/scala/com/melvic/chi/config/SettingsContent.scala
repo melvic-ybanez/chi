@@ -1,24 +1,31 @@
 package com.melvic.chi.config
 
 import com.melvic.chi.Config
-import com.melvic.chi.config.SettingsContent.ScalaSettings
-import os.{Path, ReadablePath, ResourcePath}
+import com.melvic.chi.config.SettingsContent.{EditorSettings, ScalaSettings}
 import upickle.default._
 
 import java.io.{BufferedWriter, FileWriter}
 
-final case class SettingsContent(scala: ScalaSettings)
+final case class SettingsContent(editor: EditorSettings, scala: ScalaSettings)
 
 object SettingsContent {
   final case class ScalaSettings(pointFree: Boolean, simplifyMatch: Boolean, usePredef: Boolean)
+  final case class EditorSettings(
+      evalOnType: Boolean,
+      showLineNumbers: Boolean,
+      maxColumn: Int,
+      showOutputInfo: Boolean
+  )
 
   implicit def scalaPrefs(implicit prefs: Preferences): ScalaSettings =
     prefs.content.scala
 
   implicit val scalaConfigRW: ReadWriter[ScalaSettings] = macroRW[ScalaSettings]
+  implicit val editorConfigRW: ReadWriter[EditorSettings] = macroRW[EditorSettings]
   implicit val prefRW: ReadWriter[SettingsContent] = macroRW[SettingsContent]
 
   val dummy = SettingsContent(
+    EditorSettings(evalOnType = true, showLineNumbers = true, maxColumn = 80, showOutputInfo = true),
     ScalaSettings(pointFree = false, simplifyMatch = false, usePredef = false)
   )
 

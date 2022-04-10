@@ -2,7 +2,7 @@ package com.melvic.chi.views.menus
 
 import com.melvic.chi.config.Preferences
 import com.melvic.chi.views.EditorComponent
-import com.melvic.chi.views.dialogs.PreferencesDialog
+import com.melvic.chi.views.prefs.PreferencesDialog
 
 import java.awt.Frame
 import javax.swing.JMenuBar

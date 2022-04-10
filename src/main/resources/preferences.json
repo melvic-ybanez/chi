@@ -1,4 +1,10 @@
 {
+  "editor": {
+    "evalOnType": true,
+    "showLineNumbers": true,
+    "maxColumn": 80,
+    "showOutputInfo": true
+  },
   "scala": {
     "pointFree": true,
     "simplifyMatch": true,

@@ -1,12 +1,12 @@
 package com.melvic.chi.tests
 
-import com.melvic.chi.generateAndShow
+import com.melvic.chi.generateAndShowWithInfo
 
 class JavaFunctionsSpec extends BaseSpec {
   val language = "Java"
 
   "function application" should "work according to the implication elimination rule" in {
-    generateAndShow("<A, B> B apply(A a, Function<A, B> f)") should be(
+    generateAndShowWithInfo("<A, B> B apply(A a, Function<A, B> f)") should be(
       output(
         """<A, B> B apply(A a, Function<A, B> f) {
           |    return f.apply(a);
@@ -16,7 +16,7 @@ class JavaFunctionsSpec extends BaseSpec {
   }
 
   "function composition" should "chain functions with aligned types" in {
-    generateAndShow("<A, B, C> Function<A, C> compose(Function<B, C> f, Function<A, B> g)") should be(
+    generateAndShowWithInfo("<A, B, C> Function<A, C> compose(Function<B, C> f, Function<A, B> g)") should be(
       output(
         """<A, B, C> Function<A, C> compose(Function<B, C> f, Function<A, B> g) {
           |    return a -> f.apply(g.apply(a));
@@ -26,7 +26,7 @@ class JavaFunctionsSpec extends BaseSpec {
   }
 
   "function interfaces" should "support lambda notations from Java 8 and beyond" in {
-    generateAndShow("<A, B, C> BiFunction<A, B, C> foo(Function<A, C> f)") should be(
+    generateAndShowWithInfo("<A, B, C> BiFunction<A, B, C> foo(Function<A, C> f)") should be(
       output(
         """<A, B, C> BiFunction<A, B, C> foo(Function<A, C> f) {
           |    return (a, b) -> {
@@ -38,7 +38,7 @@ class JavaFunctionsSpec extends BaseSpec {
   }
 
   "Built-in types" should "be included in the type search" in {
-    generateAndShow("String idString(String s)") should be(
+    generateAndShowWithInfo("String idString(String s)") should be(
       output(
         """String idString(String s) {
           |    return s;
