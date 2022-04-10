@@ -32,6 +32,9 @@ object Preferences {
   def maxColumn(implicit preferences: Preferences): Int =
     preferences.content.editor.maxColumn
 
+  def showLineNumbers(implicit preferences: Preferences): Boolean =
+    preferences.content.editor.showLineNumbers
+
   def showOutputInfo(implicit preferences: Preferences): Boolean =
     preferences.content.editor.showOutputInfo
 }

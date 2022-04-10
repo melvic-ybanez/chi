@@ -47,7 +47,7 @@ class EditorSettingsComponent(implicit preferences: Preferences) extends JPanel 
       val settingsContent = preferences.content.copy(
         editor = editorSettings.copy(
           evalOnType = evalOnTypeBox.isSelected,
-          showLineNumbers = showOutputInfoBox.isSelected,
+          showLineNumbers = showLineNumbersBox.isSelected,
           maxColumn = maxColumnField.getText.toInt,
           showOutputInfo = showOutputInfoBox.isSelected
         )
