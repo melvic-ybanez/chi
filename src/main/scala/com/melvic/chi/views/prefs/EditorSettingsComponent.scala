@@ -27,7 +27,7 @@ class EditorSettingsComponent(implicit preferences: Preferences) extends JPanel 
     add(maxColumnField, "wrap")
     maxColumnField.setColumns(5)
 
-    val previewComponent = PreviewComponent.fromPanel(this)
+    val previewComponent = PreviewComponent.fromPanel(this, showExtraInfo = true)
 
     reloadPreferences(preferences.content.editor)
     addListeners(previewComponent)

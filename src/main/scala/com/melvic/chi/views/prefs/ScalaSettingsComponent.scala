@@ -23,7 +23,7 @@ class ScalaSettingsComponent(implicit preferences: Preferences) extends JPanel {
     val checkBoxes = pointFreeBox :: simplifyMatchBox :: usePredefBox :: Nil
     checkBoxes.foreach(add(_, "wrap"))
 
-    val previewComponent = PreviewComponent.fromPanel(this)
+    val previewComponent = PreviewComponent.fromPanel(this, showExtraInfo = false)
     addCheckBoxListeners(previewComponent)
   }
 
