@@ -13,7 +13,7 @@ object SettingsContent {
   final case class EditorSettings(
       evalOnType: Boolean,
       showLineNumbers: Boolean,
-      maxColumnWidth: Int,
+      maxColumn: Int,
       showOutputInfo: Boolean
   )
 
@@ -25,7 +25,7 @@ object SettingsContent {
   implicit val prefRW: ReadWriter[SettingsContent] = macroRW[SettingsContent]
 
   val dummy = SettingsContent(
-    EditorSettings(evalOnType = true, showLineNumbers = true, maxColumnWidth = 80, showOutputInfo = true),
+    EditorSettings(evalOnType = true, showLineNumbers = true, maxColumn = 80, showOutputInfo = true),
     ScalaSettings(pointFree = false, simplifyMatch = false, usePredef = false)
   )
 

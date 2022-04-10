@@ -2,7 +2,7 @@
   "editor": {
     "evalOnType": true,
     "showLineNumbers": true,
-    "maxColumnWidth": 80,
+    "maxColumn": 80,
     "showOutputInfo": true
   },
   "scala": {

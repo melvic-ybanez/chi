@@ -2,10 +2,10 @@ package com.melvic.chi.views.prefs
 
 import com.melvic.chi.config.Preferences
 import com.melvic.chi.config.SettingsContent.ScalaSettings
-import com.melvic.chi.views.FontUtils
+import com.melvic.chi.views.prefs.Utils.createCheckBox
 import net.miginfocom.swing.MigLayout
 
-import javax.swing.{JCheckBox, JPanel}
+import javax.swing.JPanel
 
 class ScalaSettingsComponent(implicit preferences: Preferences) extends JPanel {
   val pointFreeBox = createCheckBox("Point-free style")
@@ -14,6 +14,19 @@ class ScalaSettingsComponent(implicit preferences: Preferences) extends JPanel {
     "Use Predef and Function utilities when applicable"
   )
 
+  init()
+
+  private def init(): Unit = {
+    setLayout(new MigLayout())
+
+    Utils.addTitle("Scala Settings", this)
+    val checkBoxes = pointFreeBox :: simplifyMatchBox :: usePredefBox :: Nil
+    checkBoxes.foreach(add(_, "wrap"))
+
+    val previewComponent = PreviewComponent.fromPanel(this)
+    addCheckBoxListeners(previewComponent)
+  }
+
   def reloadPreferences(scalaSettings: ScalaSettings): Unit = {
     val ScalaSettings(pointFree, simplifyMatch, usePredef) = scalaSettings
     pointFreeBox.setSelected(pointFree)
@@ -21,12 +34,7 @@ class ScalaSettingsComponent(implicit preferences: Preferences) extends JPanel {
     usePredefBox.setSelected(usePredef)
   }
 
-  private def createCheckBox(text: String): JCheckBox =
-    FontUtils.withComponentFont(new JCheckBox(text))
-
-  private def addCheckBoxListeners(
-      previewComponent: PreviewComponent
-  )(implicit preferences: Preferences): Unit = {
+  private def addCheckBoxListeners(previewComponent: PreviewComponent): Unit = {
     def rerunPreview(): Unit = {
       val scalaSettings = preferences.content.scala
       val settingsContent = preferences.content.copy(
@@ -40,29 +48,8 @@ class ScalaSettingsComponent(implicit preferences: Preferences) extends JPanel {
       previewComponent.run(newPreferences)
     }
 
-    pointFreeBox.addActionListener(_ => rerunPreview())
     pointFreeBox.addItemListener(_ => rerunPreview())
-    simplifyMatchBox.addActionListener(_ => rerunPreview())
     simplifyMatchBox.addItemListener(_ => rerunPreview())
-    usePredefBox.addActionListener(_ => rerunPreview())
     usePredefBox.addItemListener(_ => rerunPreview())
-  }
-}
-
-object ScalaSettingsComponent {
-  def build(implicit preferences: Preferences): ScalaSettingsComponent = {
-    val scalaPane = new ScalaSettingsComponent()
-
-    import scalaPane._
-
-    scalaPane.setLayout(new MigLayout())
-
-    PreferencesDialog.addTitle("Scala Settings", scalaPane)
-    val checkBoxes = pointFreeBox :: simplifyMatchBox :: usePredefBox :: Nil
-    checkBoxes.foreach(scalaPane.add(_, "wrap"))
-
-    val previewComponent = PreviewComponent.fromPanel(scalaPane)
-    addCheckBoxListeners(previewComponent)
-    scalaPane
   }
 }
