@@ -25,6 +25,7 @@ class PreviewComponent(implicit prefs: Preferences) extends RTextScrollPane(new 
   run(prefs)
 
   def run(preferences: Preferences): Unit = {
+    setLineNumbersEnabled(preferences.content.editor.showLineNumbers)
     val output = inputs.map(generateAndShowCode(_)(preferences)).mkString("\n\n")
     textArea.setText(output)
   }

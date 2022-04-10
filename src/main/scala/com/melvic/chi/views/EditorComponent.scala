@@ -18,9 +18,8 @@ class EditorComponent(implicit prefs: Preferences) extends JPanel {
   reloadPreferences()
 
   def reloadPreferences(): Unit = {
-    val showLineNumber = prefs.content.editor.showLineNumbers
-    inputView.setLineNumbersEnabled(showLineNumber)
-    outputView.setLineNumbersEnabled(showLineNumber)
+    inputView.setLineNumbersEnabled(Preferences.showLineNumbers)
+    outputView.setLineNumbersEnabled(Preferences.showLineNumbers)
   }
 
   private val splitPane = {
