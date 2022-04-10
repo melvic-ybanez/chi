@@ -8,9 +8,9 @@ import com.melvic.chi.views.menus.MenuBar
 import java.awt._
 import javax.swing._
 
-class MainWindow(evaluate: Evaluate)(implicit preferences: Preferences) extends JFrame {
-  val editorComponent = new EditorComponent(evaluate)
-  val preferencesDialog = new PreferencesDialog(this)
+class MainWindow(implicit preferences: Preferences) extends JFrame {
+  val editorComponent = new EditorComponent
+  val preferencesDialog = new PreferencesDialog(this, editorComponent)
 
   setTitle("Chi")
   createContentPane(editorComponent)

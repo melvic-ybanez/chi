@@ -1,13 +1,14 @@
 package com.melvic.chi.views.prefs
 
 import com.melvic.chi.config.Preferences
-import com.melvic.chi.config.SettingsContent.ScalaSettings
-import com.melvic.chi.views.FontUtils
+import com.melvic.chi.config.SettingsContent.{EditorSettings, ScalaSettings}
+import com.melvic.chi.views.EditorComponent
 
 import java.awt.{Dimension, Frame}
 import javax.swing._
 
-class PreferencesDialog(frame: Frame)(implicit preferences: Preferences) extends JDialog(frame, true) {
+class PreferencesDialog(frame: Frame, editorComponent: EditorComponent)(implicit preferences: Preferences)
+    extends JDialog(frame, true) {
   setTitle("Preferences")
 
   val scalaSettingsComponent = new ScalaSettingsComponent()
@@ -71,6 +72,12 @@ class PreferencesDialog(frame: Frame)(implicit preferences: Preferences) extends
 
           if (value == applyButtonString) {
             val settings = preferences.content.copy(
+              editor = EditorSettings(
+                editorSettingsComponent.evalOnTypeBox.isSelected,
+                editorSettingsComponent.showLineNumbersBox.isSelected,
+                editorSettingsComponent.maxColumnField.getText.toInt,
+                editorSettingsComponent.showOutputInfoBox.isSelected
+              ),
               scala = ScalaSettings(
                 scalaSettingsComponent.pointFreeBox.isSelected,
                 scalaSettingsComponent.simplifyMatchBox.isSelected,
@@ -78,6 +85,8 @@ class PreferencesDialog(frame: Frame)(implicit preferences: Preferences) extends
               )
             )
             preferences.save(settings)
+
+            editorComponent.reloadPreferences()
           }
         }
         setVisible(false)

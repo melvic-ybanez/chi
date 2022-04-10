@@ -22,7 +22,7 @@ object Main {
       LafManager.install(new DarculaTheme)
 
       override def run(): Unit = {
-        new MainWindow(generateAndShow).setVisible(true)
+        new MainWindow().setVisible(true)
       }
     })
 }

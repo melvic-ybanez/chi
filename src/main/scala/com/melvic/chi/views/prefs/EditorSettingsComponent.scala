@@ -5,6 +5,7 @@ import com.melvic.chi.config.SettingsContent.EditorSettings
 import com.melvic.chi.views.prefs.Utils.createCheckBox
 import net.miginfocom.swing.MigLayout
 
+import java.awt.event.{KeyAdapter, KeyEvent, KeyListener}
 import javax.swing.{JLabel, JPanel}
 
 class EditorSettingsComponent(implicit preferences: Preferences) extends JPanel {
@@ -51,13 +52,15 @@ class EditorSettingsComponent(implicit preferences: Preferences) extends JPanel 
           showOutputInfo = showOutputInfoBox.isSelected
         )
       )
-      val newPreferences = Preferences.fromContent((settingsContent))
+      val newPreferences = Preferences.fromContent(settingsContent)
       previewComponent.run(newPreferences)
     }
 
     evalOnTypeBox.addItemListener(_ => rerunPreview())
     showLineNumbersBox.addItemListener(_ => rerunPreview())
-    maxColumnField.addActionListener(_ => rerunPreview())
+    maxColumnField.addKeyListener(new KeyAdapter {
+      override def keyReleased(e: KeyEvent): Unit = rerunPreview()
+    })
     showOutputInfoBox.addItemListener(_ => rerunPreview())
   }
 }
