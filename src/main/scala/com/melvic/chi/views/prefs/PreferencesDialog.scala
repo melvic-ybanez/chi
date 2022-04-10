@@ -26,12 +26,22 @@ class PreferencesDialog(frame: Frame)(implicit preferences: Preferences) extends
     scalaComponent.reloadPreferences(preferences.content.scala)
   }
 
+  private def mainPane: JSplitPane = {
+    val treeView = new JScrollPane(SettingsTree.fromPreferencesDialog(this))
+    val settingsPane = new JScrollPane(scalaComponent)
+    val splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT)
+    splitPane.setDividerLocation(120)
+    splitPane.setTopComponent(treeView)
+    splitPane.setBottomComponent(settingsPane)
+    splitPane
+  }
+
   private def optionPane: JOptionPane = {
     val applyButtonString = "Apply"
     val cancelButtonString = "Cancel"
 
     val optionPane = new JOptionPane(
-      scalaComponent,
+      mainPane,
       JOptionPane.PLAIN_MESSAGE,
       JOptionPane.YES_NO_OPTION,
       null,
