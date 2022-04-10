@@ -1,3 +1,4 @@
+
 # Chi
 ![release](https://img.shields.io/github/v/release/melvic-ybanez/chi?include_prereleases) ![issues](https://img.shields.io/github/issues/melvic-ybanez/chi) ![loc](https://img.shields.io/tokei/lines/github/melvic-ybanez/chi)
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
@@ -26,7 +27,7 @@ Chi supports both UI and REPL.
 
 Here's how it currently looks:
 
-https://user-images.githubusercontent.com/4519785/161389760-8998a1c2-2ee5-45c5-8c8c-4b0c4ff334b5.mov
+https://user-images.githubusercontent.com/4519785/162632565-78b9ee95-ff3f-4032-97e7-82f7beec8bfe.mov
 
 Updated Image:
 <img width="1792" alt="Screen Shot 2022-04-11 at 1 31 01 AM" src="https://user-images.githubusercontent.com/4519785/162631911-fbf22095-2022-4108-945c-05d38a9610e9.png">
