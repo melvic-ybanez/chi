@@ -1,7 +1,7 @@
 package com.melvic.chi.views.menus
 
 import com.melvic.chi.config.Preferences
-import com.melvic.chi.views.PreferencesDialog
+import com.melvic.chi.views.dialogs.PreferencesDialog
 
 import java.awt.Frame
 import java.awt.event.{ActionEvent, KeyEvent}

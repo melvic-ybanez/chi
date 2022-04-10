@@ -1,15 +1,16 @@
-package com.melvic.chi.views
+package com.melvic.chi.views.dialogs
 
-import com.melvic.chi.Config
 import com.melvic.chi.config.SettingsContent.ScalaSettings
 import com.melvic.chi.config.{Preferences, SettingsContent}
+import com.melvic.chi.views.FontUtils
 import net.miginfocom.swing.MigLayout
 
-import java.awt.{Font, Frame}
+import java.awt.Frame
+import java.awt.event.{ActionEvent, ActionListener, ItemEvent, ItemListener}
 import javax.swing._
+import scala.Function.const
 
-class PreferencesDialog(frame: Frame)(implicit preferences: Preferences)
-    extends JDialog(frame, true) {
+class PreferencesDialog(frame: Frame)(implicit preferences: Preferences) extends JDialog(frame, true) {
   setTitle("Preferences")
 
   val pointFreeBox = createCheckBox("Point-free style")
@@ -83,20 +84,40 @@ class PreferencesDialog(frame: Frame)(implicit preferences: Preferences)
     addTitle("Scala Settings", scalaPane)
     checkBoxes.foreach(scalaPane.add(_, "wrap"))
 
+    val previewComponent = PreviewComponent.fromPanel(scalaPane)
+    addCheckBoxListeners(previewComponent)
     scalaPane
   }
 
   private def createCheckBox(text: String): JCheckBox =
-    FontUtils.updateSize(new JCheckBox(text), Config.DialogFontSize)
+    FontUtils.withComponentFont(new JCheckBox(text))
 
   private def addTitle(title: String, panel: JPanel): Unit = {
     panel.add(
-      FontUtils.updateStyle(
-        FontUtils.updateSize(new JLabel(title), Config.DialogHeaderFontSize),
-        Font.BOLD
-      ),
+      FontUtils.withComponentHeaderFont(new JLabel(title)),
       "gapleft 20, wrap"
     )
     panel.add(new JSeparator(), "growx, wrap, gapbottom 20")
+  }
+
+  private def addCheckBoxListeners(previewComponent: PreviewComponent): Unit = {
+    def rerunPreview(): Unit = {
+      val scalaSettings = preferences.content.scala
+      val newScalaSettings = scalaSettings.copy(
+        pointFree = pointFreeBox.isSelected,
+        simplifyMatch = simplifyMatchBox.isSelected,
+        usePredef = usePredefBox.isSelected
+      )
+      val newPreferences = Preferences.fromContent(SettingsContent(newScalaSettings))
+      println(newScalaSettings)
+      previewComponent.run(newPreferences)
+    }
+
+    pointFreeBox.addActionListener(_ => rerunPreview())
+    pointFreeBox.addItemListener(_ => rerunPreview())
+    simplifyMatchBox.addActionListener(_ => rerunPreview())
+    simplifyMatchBox.addItemListener(_ => rerunPreview())
+    usePredefBox.addActionListener(_ => rerunPreview())
+    usePredefBox.addItemListener(_ => rerunPreview())
   }
 }

@@ -23,4 +23,9 @@ object Preferences {
   def loadDefaults: Preferences = new Preferences {
     content = SettingsContent.loadDefaults
   }
+
+  def fromContent(settingsContent: SettingsContent): Preferences =
+    new Preferences {
+      content = settingsContent
+    }
 }
