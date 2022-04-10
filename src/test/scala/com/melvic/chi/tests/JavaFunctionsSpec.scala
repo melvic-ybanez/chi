@@ -45,5 +45,15 @@ class JavaFunctionsSpec extends BaseSpec {
           |}""".stripMargin
       )
     )
+    generateAndShowWithInfo("Function<String, Integer> bar(Function<String, Float> f, Function<Float, Integer> g)") should be(
+      output(
+        """Function<String, Integer> bar(
+          |  Function<String, Float> f,
+          |  Function<Float, Integer> g
+          |) {
+          |    return s -> g.apply(f.apply(s));
+          |}""".stripMargin
+      )
+    )
   }
 }
