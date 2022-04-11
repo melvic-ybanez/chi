@@ -12,7 +12,7 @@ import scala.util.parsing.input.CharSequenceReader
 trait BaseParser extends RegexParsers with PackratParsers {
   val language: Language
 
-  val functionCode: Parser[Signature]
+  val signature: Parser[Signature]
 
   val param: Parser[Variable]
 
@@ -25,8 +25,8 @@ trait BaseParser extends RegexParsers with PackratParsers {
   val proposition: PackratParser[Proposition]
 
   def parseSignature(code: String): Result[(Signature, Language)] =
-    parseAll(functionCode, new PackratReader(new CharSequenceReader(code))) match {
-      case Success(functionCode, _) => Right(functionCode, language)
-      case Failure(msg, _)          => Left(Fault.parseError(msg))
+    parseAll(signature, new PackratReader(new CharSequenceReader(code))) match {
+      case Success(signature, _) => Right(signature, language)
+      case Failure(msg, _)       => Left(Fault.parseError(msg))
     }
 }

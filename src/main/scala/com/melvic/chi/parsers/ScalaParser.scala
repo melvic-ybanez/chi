@@ -31,7 +31,7 @@ object ScalaParser extends BaseParser {
       Variable(name, proposition)
   }
 
-  val functionCode: Parser[Signature] =
+  val signature: Parser[Signature] =
     "def" ~> nameParser ~ opt("[" ~> rep1sep(identifier, ",") <~ "]") ~ opt(paramList) ~ (":" ~> proposition) ^^ {
       case name ~ typeParams ~ paramList ~ proposition =>
         val params = paramList.getOrElse(Nil)
