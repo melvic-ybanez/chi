@@ -1,7 +1,7 @@
 package com.melvic.chi.views
 
-import com.melvic.chi.{Evaluate, generateAndShowCode, generateAndShowWithInfo}
 import com.melvic.chi.config.Preferences
+import com.melvic.chi.{Evaluate, generateAndShowCode, generateAndShowWithInfo}
 
 import java.awt.BorderLayout
 import java.awt.event.{KeyAdapter, KeyEvent}
@@ -39,8 +39,11 @@ class EditorComponent(implicit prefs: Preferences) extends JPanel {
 
   def run(): Unit = {
     val evaluate: Evaluate = if (Preferences.showOutputInfo) generateAndShowWithInfo else generateAndShowCode
-    val programs = inputView.getTextArea.getText.split("\n")
-    val outputs = programs.map(_.trim).filter(_.nonEmpty).map(evaluate)
+    val definitions = inputView.getTextArea.getText.split("\n")
+    val outputs = removeComments(definitions)
+      .map(_.trim) // we need to trim again to remove extra spaces between a definition and a comment
+      .filter(_.nonEmpty)
+      .map(evaluate)
     outputView.getTextArea.setText(outputs.mkString("\n\n"))
   }
 
@@ -48,4 +51,14 @@ class EditorComponent(implicit prefs: Preferences) extends JPanel {
     inputView.getTextArea.setText("")
     outputView.getTextArea.setText("")
   }
+
+  private def removeComments(definitions: Array[String]): Array[String] =
+    definitions
+      .map(_.trim)
+      .filterNot(_.startsWith("//"))
+      // for comments appearing at the end of the definition
+      .map { str =>
+        val i = str.indexOf("//")
+        if (i != -1) str.take(i) else str
+      }
 }
