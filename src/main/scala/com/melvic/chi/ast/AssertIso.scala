@@ -1,6 +1,6 @@
 package com.melvic.chi.ast
 
-final case class Isomorphism(
+final case class AssertIso(
     left: Signature,
     right: Signature
 )
