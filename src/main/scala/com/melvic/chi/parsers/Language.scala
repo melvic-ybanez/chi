@@ -5,6 +5,7 @@ sealed trait Language
 object Language {
   case object Java extends Language
   case object Scala extends Language
+  case object All extends Language
 
   def builtInTypes(language: Language): List[String] = {
     val builtinTypeString = language match {

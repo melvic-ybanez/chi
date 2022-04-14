@@ -4,7 +4,11 @@ import com.melvic.chi.ast.Proof.Variable
 import com.melvic.chi.ast.Proposition._
 import com.melvic.chi.ast.{Proposition, Signature}
 
-object ScalaParser extends BaseParser {
+object ScalaParser extends ScalaParser {
+  val signature: Parser[Signature] = scalaParser
+}
+
+trait ScalaParser extends BaseParser {
   val language = Language.Scala
 
   val conjunction: Parser[Proposition] =
@@ -31,7 +35,7 @@ object ScalaParser extends BaseParser {
       Variable(name, proposition)
   }
 
-  val signature: Parser[Signature] =
+  val scalaParser: Parser[Signature] =
     "def" ~> nameParser ~ opt("[" ~> rep1sep(identifier, ",") <~ "]") ~ opt(paramList) ~ (":" ~> proposition) ^^ {
       case name ~ typeParams ~ paramList ~ proposition =>
         val params = paramList.getOrElse(Nil)
