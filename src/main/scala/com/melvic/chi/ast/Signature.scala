@@ -22,10 +22,13 @@ object Signature {
     val atoms = Proposition.atoms(proposition)
     val atoms1 = Proposition.atoms(proposition1)
 
+    // Find a set of type arguments whose names do not conflict with the names of the
+    // type parameters from both propositions. This is needed to allow isomorphic
+    // types that happen to use different type parameter names.
     val typeArgs = {
       val atomsCombined = atoms ++ atoms1
       val env = Env.fromList(atomsCombined.map(atom => Variable(atom.value, atom)))
-      val (renamedAtoms, _) = atomsCombined.foldLeft((List.empty[Atom], Env.default)) {
+      val (renamedAtoms, _) = atomsCombined.foldLeft((List.empty[Atom], env)) {
         case ((acc, env), atom) =>
           val atomName = Env.generateName(atom.value)(env)
           (Identifier(atomName) :: acc, Env.addProof(Variable(atomName, PUnit))(env))
