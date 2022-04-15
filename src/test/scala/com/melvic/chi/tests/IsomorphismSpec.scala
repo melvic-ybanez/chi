@@ -40,13 +40,16 @@ class IsomorphismSpec extends AnyFlatSpec with should.Matchers {
     )
   }
 
-  it should "exist between conjunctions that differ only in parens" in {
+  it should "respect conjunction associativity" in {
     generate("def foo[A]: (A, (A, A)) <=> def bar[B]: (B, B, B)") should be(
+      iso("foo", "C", "bar", "C", "C")
+    )
+    generate("def foo[A]: A => (A, (A, A)) <=> def bar[B]: B => (B, B, B)") should be(
       iso("foo", "C", "bar", "C", "C")
     )
   }
 
-  it should "exist between isomorphic functions with built-in types" in {
+  it should "respect disjunction associativity" in {
     generate("def foo: String => Int <=> def bar: String => Int") should be(
       iso("foo", "", "bar", "", "")
     )
