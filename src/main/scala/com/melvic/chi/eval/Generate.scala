@@ -41,6 +41,7 @@ object Generate {
 
   def assertIso(signature: String): Result[(AssertIso, Boolean)] =
     IsomorphismParser.parseIso(signature).map {
-      case assert @ AssertIso(s, s1) => (assert, Proposition.isomorphic(s.proposition, s1.proposition))
+      case assert @ AssertIso(s, s1) =>
+        (assert, Signature.isomorphic(s, s1))
     }
 }

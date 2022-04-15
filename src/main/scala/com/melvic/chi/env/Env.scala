@@ -30,6 +30,9 @@ object Env {
   def without(proof: Proof)(implicit env: Env): Env =
     fromList(env.proofs.filterNot(_ == proof))
 
+  def addProof(proof: Proof)(implicit env: Env): Env =
+    fromList(proof :: env.proofs)
+
   /**
     * Assigns a variable to the proposition and registers it into the environment
     */
@@ -59,7 +62,7 @@ object Env {
     * @param base the base or root name of the variable
     * @param count used as a suffix to distinguish variables with the same base
     */
-  private def generateName(base: String, count: Int = 0)(implicit env: Env): String = {
+  def generateName(base: String, count: Int = 0)(implicit env: Env): String = {
     val name = base + (if (count == 0) "" else count.toString)
     val nameOpt = env.proofs.find {
       case Variable(`name`, _) => true

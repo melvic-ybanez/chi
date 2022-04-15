@@ -43,6 +43,27 @@ object Proposition {
     */
   final case class Union(components: List[Proposition]) extends Proposition
 
+  /**
+    * Combines the parameter types, if any, with the return type to
+    * form the full proposition of the signature.
+    * For example:
+    * `def foo[A, B](a: A, b: B): A` should return the proposition `(A, B) => A`
+    */
+  def fromSignature(signature: Signature): Proposition =
+    if (signature.params.nonEmpty)
+      Implication(Conjunction(signature.params.map(_.proposition)), signature.returnType)
+    else signature.returnType
+
+  /**
+    * Renames the atoms in the proposition. This is needed to check isomorphism
+    * between two propositions with different names for the variables.
+    */
+  def rename(proposition: Proposition, atoms: List[Atom], newAtoms: List[Atom]): Proposition =
+    atoms.zip(newAtoms).foldLeft(proposition) {
+      case (acc, (atom, newAtom)) =>
+        map(acc)(a => if (a == atom) newAtom else a)
+    }
+
   def fold[A](proposition: Proposition, init: A)(f: (A, Atom) => A): A =
     proposition match {
       case atom: Atom => f(init, atom)
@@ -56,6 +77,14 @@ object Proposition {
         fold(consequent, fold(antecedent, init)(f))(f)
     }
 
+  def map(proposition: Proposition)(f: Atom => Proposition): Proposition =
+    proposition match {
+      case atom: Atom               => f(atom)
+      case Conjunction(components)  => Conjunction(components.map(map(_)(f)))
+      case Disjunction(left, right) => Disjunction(map(left)(f), map(right)(f))
+      case Implication(in, out)     => Implication(map(in)(f), map(out)(f))
+    }
+
   def filter(proposition: Proposition)(f: Atom => Boolean): List[Atom] =
     fold(proposition, List.empty[Atom]) { (acc, atom) =>
       if (f(atom)) atom :: acc
@@ -64,6 +93,9 @@ object Proposition {
 
   def exists(proposition: Proposition)(f: Atom => Boolean): Boolean =
     filter(proposition)(f).nonEmpty
+
+  def atoms(proposition: Proposition): List[Atom] =
+    filter(proposition)(_ => true)
 
   @tailrec
   def rightMostOf(implication: Implication): Proposition =
