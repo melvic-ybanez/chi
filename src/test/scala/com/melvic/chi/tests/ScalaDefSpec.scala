@@ -1,6 +1,6 @@
 package com.melvic.chi.tests
 
-import com.melvic.chi.generateAndShowWithInfo
+import com.melvic.chi.{generateAndShowCode, generateAndShowWithInfo}
 
 class ScalaDefSpec extends BaseSpec {
   val language = "Scala"
@@ -251,6 +251,18 @@ class ScalaDefSpec extends BaseSpec {
           |): (String => Float) =
           |  g(d).compose(f)""".stripMargin
       )
+    )
+  }
+
+  "component of a product consequent" should "be accessible if the function is applied" in {
+    generateAndShowCode("def foo[A, B, C]: (A => (C, B)) => A => C") should be(
+      """def foo[A, B, C]: ((A => (C, B)) => (A => C)) =
+        |  f => a => f(a)._1""".stripMargin
+    )
+
+    generateAndShowCode("def foo[A, B]: (A => (A, B)) => (A => A, A => B)") should be(
+      """def foo[A, B]: ((A => (A, B)) => ((A => A), (A => B))) =
+        |  f => (a => a, a => f(a)._2)""".stripMargin
     )
   }
 }
