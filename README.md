@@ -11,7 +11,9 @@ deriving function implementations when the types involved serve as logical propo
 
 Chi takes in a function signature and generates the function implementation. At 
 the time of this writing, Chi supports both Java and Scala. Future support for 
-other languages are considered.
+other languages are considered. 
+
+Chi can also check if two functions are isomorphic. See the [Isomorphism](#isomorphism) section for more details on this.
 
 # Installation
 The simplest way to install Chi is to download the distribution from the
@@ -112,6 +114,10 @@ def andThen[A, B, C](f: (A => B), g: (B => C)): (A => C) =
   g.compose(f)
 
 ```
+
+# Isomorphism
+To see if two functions are isomorphic with each other, just place the `<=>` operator between them:
+<img width="1792" alt="Screen Shot 2022-04-16 at 4 33 08 AM" src="https://user-images.githubusercontent.com/4519785/163630127-325001f1-c679-4065-a644-15a0b2b8d927.png">
 
 # Supported Languages
 As mentioned above, Chi supports both Java and Scala. You only need
