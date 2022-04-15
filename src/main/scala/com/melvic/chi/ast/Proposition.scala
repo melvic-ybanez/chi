@@ -108,7 +108,6 @@ object Proposition {
     * Combine antecedents in a nested implication such that
     * A => B => C becomes (A, B) => C. This is useful for computing isomorphisms.
     */
-  @tailrec
   def normalize(proposition: Proposition): Proposition =
     proposition match {
       case Implication(in, Implication(in1, out)) =>
@@ -125,6 +124,18 @@ object Proposition {
           case p => Implication(in, p)
         }
         Conjunction(components)
+      case Conjunction(components) =>
+        // flatten a conjunction
+        val (found, newComponents) = components.foldLeft(false, List.empty[Proposition]) {
+          case ((_, acc), Conjunction(cs)) => (true, acc ++ cs)
+          case ((found, acc), c) => (found, c :: acc)
+        }
+        val flat = Conjunction(newComponents)
+
+        // see if there are changes in the components. If there are, try normalizing again
+        if (found) normalize(flat) else flat
+      case Implication(Disjunction(left, right), out) =>
+        normalize(Conjunction(normalize(Implication(left, out)) :: normalize(Implication(right, out)) :: Nil))
       case _ => proposition
     }
 
