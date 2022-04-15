@@ -75,6 +75,10 @@ object Proposition {
         fold(right, fold(left, init)(f))(f)
       case Implication(antecedent, consequent) =>
         fold(consequent, fold(antecedent, init)(f))(f)
+      case Union(components) =>
+        components.foldLeft(init) { (acc, proposition) =>
+          fold(proposition, acc)(f)
+        }
     }
 
   def map(proposition: Proposition)(f: Atom => Proposition): Proposition =
@@ -83,6 +87,7 @@ object Proposition {
       case Conjunction(components)  => Conjunction(components.map(map(_)(f)))
       case Disjunction(left, right) => Disjunction(map(left)(f), map(right)(f))
       case Implication(in, out)     => Implication(map(in)(f), map(out)(f))
+      case Union(components)        => Union(components.map(map(_)(f)))
     }
 
   def filter(proposition: Proposition)(f: Atom => Boolean): List[Atom] =
@@ -128,7 +133,7 @@ object Proposition {
         // flatten a conjunction
         val (found, newComponents) = components.foldLeft(false, List.empty[Proposition]) {
           case ((_, acc), Conjunction(cs)) => (true, acc ++ cs)
-          case ((found, acc), c) => (found, c :: acc)
+          case ((found, acc), c)           => (found, c :: acc)
         }
         val flat = Conjunction(newComponents)
 
@@ -136,7 +141,8 @@ object Proposition {
         if (found) normalize(flat) else flat
       case Implication(Disjunction(left, right), out) =>
         normalize(Conjunction(normalize(Implication(left, out)) :: normalize(Implication(right, out)) :: Nil))
-      case _ => proposition
+      case disjunction: Disjunction => Union.fromDisjunction(disjunction)
+      case _                        => proposition
     }
 
   def isomorphic(proposition: Proposition, proposition1: Proposition): Boolean = {
@@ -163,9 +169,10 @@ object Proposition {
       def recurse(disjunction: Disjunction, components: List[Proposition]): List[Proposition] =
         disjunction match {
           case Disjunction(left: Disjunction, right: Disjunction) =>
-            recurse(left, components) ++ recurse(right, components)
+            recurse(right, recurse(left, components))
           case Disjunction(left: Disjunction, right) => recurse(left, right :: components)
           case Disjunction(left, right: Disjunction) => recurse(right, left :: components)
+          case Disjunction(left, right)              => left :: right :: components
         }
 
       Union(recurse(disjunction, Nil))
