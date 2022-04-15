@@ -1,11 +1,11 @@
 package com.melvic.chi.eval
 
 import com.melvic.chi.ast.Proposition.{Atom, Identifier, PUnit}
-import com.melvic.chi.ast.{Definition, AssertIso, Proposition, Signature}
+import com.melvic.chi.ast.{AssertIso, Definition, Proposition, Signature}
 import com.melvic.chi.config.Preferences
 import com.melvic.chi.env.Env
 import com.melvic.chi.out.Fault.UnknownPropositions
-import com.melvic.chi.out.Result
+import com.melvic.chi.out.{IsoResult, Result}
 import com.melvic.chi.out.Result.Result
 import com.melvic.chi.parsers.{IsomorphismParser, JavaParser, Language, ScalaParser}
 
@@ -39,9 +39,8 @@ object Generate {
         case (signature, lang) => codeFromSignature(signature, lang)
       }
 
-  def assertIso(signature: String): Result[(AssertIso, Boolean)] =
+  def assertIso(signature: String): Result[IsoResult] =
     IsomorphismParser.parseIso(signature).map {
-      case assert @ AssertIso(s, s1) =>
-        (assert, Signature.isomorphic(s, s1))
+      case assert @ AssertIso(s, s1) => Signature.isomorphic(s, s1)
     }
 }

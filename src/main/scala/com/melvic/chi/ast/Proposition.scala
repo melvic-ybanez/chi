@@ -95,7 +95,7 @@ object Proposition {
     filter(proposition)(f).nonEmpty
 
   def atoms(proposition: Proposition): List[Atom] =
-    filter(proposition)(_ => true)
+    filter(proposition)(_ => true).distinct
 
   @tailrec
   def rightMostOf(implication: Implication): Proposition =
