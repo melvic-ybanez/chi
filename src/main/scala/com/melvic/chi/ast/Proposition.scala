@@ -118,17 +118,20 @@ object Proposition {
       case Implication(in, Implication(in1, out)) =>
         // combine the exponents and recurse
         normalize(Implication(Conjunction(in :: in1 :: Nil), out))
-      case Implication(in, Conjunction(co)) =>
-        // distribute the exponent over the components
-        val components = co.map {
-          // if the component already has a product exponent, multiply it with the outer one
-          case Implication(Conjunction(co1), out) => Implication(Conjunction(in :: co1), out)
-          case Implication(in1, out)              => Implication(Conjunction(in :: in1 :: Nil), out)
+      case Implication(in, conjunction: Conjunction) =>
+        normalize(conjunction) match {
+          case Conjunction(cs) =>
+            // distribute the exponent over the components
+            val components = cs.map {
+              // if the component already has a product exponent, multiply it with the outer one
+              case Implication(Conjunction(cs1), out) => Implication(Conjunction(in :: cs1), out)
+              case Implication(in1, out)              => Implication(Conjunction(in :: in1 :: Nil), out)
 
-          // implication has no exponents, create one
-          case p => Implication(in, p)
+              // implication has no exponents, create one
+              case p => Implication(in, p)
+            }
+            Conjunction(components)
         }
-        Conjunction(components)
       case Conjunction(components) =>
         // flatten a conjunction
         val (found, newComponents) = components.foldLeft(false, List.empty[Proposition]) {
