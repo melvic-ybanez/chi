@@ -1,16 +1,16 @@
 package com.melvic.chi.eval
 
 import com.melvic.chi.ast.Proposition.{Atom, Identifier, PUnit}
-import com.melvic.chi.ast.{Definition, Proposition, Signature}
+import com.melvic.chi.ast.{AssertIso, Definition, Proposition, Signature}
 import com.melvic.chi.config.Preferences
 import com.melvic.chi.env.Env
 import com.melvic.chi.out.Fault.UnknownPropositions
-import com.melvic.chi.out.Result
+import com.melvic.chi.out.{IsoResult, Result}
 import com.melvic.chi.out.Result.Result
-import com.melvic.chi.parsers.{JavaParser, Language, ScalaParser}
+import com.melvic.chi.parsers.{IsomorphismParser, JavaParser, Language, ScalaParser}
 
 object Generate {
-  def fromSignature(signature: Signature, language: Language)(
+  def codeFromSignature(signature: Signature, language: Language)(
       implicit prefs: Preferences
   ): Result[Definition] = {
     val Signature(name, typeParams, params, proposition) = signature
@@ -31,11 +31,16 @@ object Generate {
         .map(Definition(signature, _, language))
   }
 
-  def fromSignatureString(functionCode: String)(implicit prefs: Preferences): Result[Definition] =
-    ScalaParser
-      .parseSignature(functionCode)
-      .orElse(JavaParser.parseSignature(functionCode))
+  def codeFromSignatureString(signature: String)(implicit prefs: Preferences): Result[Definition] =
+    JavaParser
+      .parseSignature(signature)
+      .orElse(ScalaParser.parseSignature(signature))
       .flatMap {
-        case (signature, lang) => fromSignature(signature, lang)
+        case (signature, lang) => codeFromSignature(signature, lang)
       }
+
+  def assertIso(signature: String): Result[IsoResult] =
+    IsomorphismParser.parseIso(signature).map {
+      case assert @ AssertIso(s, s1) => Signature.isomorphic(s, s1)
+    }
 }
