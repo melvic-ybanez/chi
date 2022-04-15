@@ -31,6 +31,8 @@ object Proof {
 
   final case class Infix(left: Proof, right: Proof) extends Proof
 
+  final case class Attribute(function: Proof, name: String) extends Proof
+
   def atomicVariable(name: String): Variable =
     Variable(name, PUnit)
 
