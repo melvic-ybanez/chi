@@ -49,10 +49,14 @@ object Proposition {
     * For example:
     * `def foo[A, B](a: A, b: B): A` should return the proposition `(A, B) => A`
     */
-  def fromSignature(signature: Signature): Proposition =
-    if (signature.params.nonEmpty)
-      Implication(Conjunction(signature.params.map(_.proposition)), signature.returnType)
-    else signature.returnType
+  def fromSignature(signature: Signature): Proposition = {
+    val out = signature.returnType
+    signature.params match {
+      case Nil          => out
+      case param :: Nil => Implication(param.proposition, out)
+      case params       => Implication(Conjunction(params.map(_.proposition)), out)
+    }
+  }
 
   /**
     * Renames the atoms in the proposition. This is needed to check isomorphism
