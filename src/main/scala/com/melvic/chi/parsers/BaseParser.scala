@@ -24,7 +24,7 @@ trait BaseParser extends RegexParsers with PackratParsers {
 
   val proposition: PackratParser[Proposition]
 
-  def parseSignature(code: String): Result[(Signature, Language)] =
+  def parseSignature(code: String): ParseSignature =
     parseAll(signature, new PackratReader(new CharSequenceReader(code))) match {
       case Success(signature, _) => Right(signature, language)
       case Failure(msg, _)       => Left(Fault.parseError(msg))
