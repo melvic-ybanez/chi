@@ -148,6 +148,7 @@ object Proposition {
         if (found) normalize(flat) else flat
       case Implication(Disjunction(left, right), out) =>
         normalize(Conjunction(normalize(Implication(left, out)) :: normalize(Implication(right, out)) :: Nil))
+      case Implication(in, disjunction: Disjunction) => normalize(Implication(in, normalize(disjunction)))
       case disjunction: Disjunction => Union.fromDisjunction(disjunction)
       case _                        => proposition
     }
