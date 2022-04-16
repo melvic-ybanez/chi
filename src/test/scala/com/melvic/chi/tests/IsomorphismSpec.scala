@@ -6,11 +6,14 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should
 
 class IsomorphismSpec extends AnyFlatSpec with should.Matchers {
-  def iso(leftName: String, leftArgs: String, rightName: String, rightArgs: String, typeArgs: String): String = {
+  def iso(leftName: String, leftArgs: String, rightName: String, rightArgs: String): String = {
     def argsString(args: String) = if (args.nonEmpty) s"[$args]" else ""
-    val forall = if (typeArgs.nonEmpty) s", for all types $typeArgs" else ""
+    val forall = if (leftArgs.nonEmpty) s", for all types $leftArgs" else ""
     s"$leftName${argsString(leftArgs)} Is isomorphic to $rightName${argsString(rightArgs)}$forall"
   }
+
+  def isoNoTypeParams(leftName: String, rightName: String): String =
+    iso(leftName, "", rightName, "")
 
   def notIso(leftName: String, rightName: String): String =
     s"$leftName is NOT isomorphic to $rightName"
@@ -21,43 +24,55 @@ class IsomorphismSpec extends AnyFlatSpec with should.Matchers {
 
   "isomorphism" should "exist between two identities" in {
     generate("def foo[A]: A => A <=> def bar[B]: B => B") should be(
-      iso("foo", "C", "bar", "C", "C")
+      iso("foo", "C", "bar", "C")
     )
   }
 
   it should "exist between alpha-equivalent functions" in {
     generate("def foo[A, B]: A => (A, B) <=> def bar[C, D]: C => (C, D)") should be(
-      iso("foo", "F, E", "bar", "F, E", "F, E")
+      iso("foo", "F, E", "bar", "F, E")
     )
   }
 
   it should "consider the laws of exponents" in {
     generate("def foo[A, B]: A => (A, B) <=> def bar[A, B]: (B => B, B => A)") should be(
-      iso("foo", "D, C", "bar", "C, D", "D, C")
+      iso("foo", "D, C", "bar", "C, D")
     )
     generate("def f[A, B, C]: (A => C, B => C) <=> def g[A, B, C]: Either[A, B] => C") should be(
-      iso("f", "F, E, D", "g", "F, E, D", "F, E, D")
+      iso("f", "F, E, D", "g", "F, E, D")
     )
   }
 
   it should "respect conjunction associativity" in {
     generate("def foo[A]: (A, (A, A)) <=> def bar[B]: (B, B, B)") should be(
-      iso("foo", "C", "bar", "C", "C")
+      iso("foo", "C", "bar", "C")
     )
     generate("def foo[A]: A => (A, (A, A)) <=> def bar[B]: B => (B, B, B)") should be(
-      iso("foo", "C", "bar", "C", "C")
+      iso("foo", "C", "bar", "C")
     )
   }
 
   it should "respect disjunction associativity" in {
     generate("def foo: String => Int <=> def bar: String => Int") should be(
-      iso("foo", "", "bar", "", "")
+      isoNoTypeParams("foo", "bar")
     )
   }
 
   it should "exist between disjunction that differ only in parens" in {
     generate("def foo[A]: Either[A, Either[A, A]] <=> def bar[A]: Either[Either[A, A], A]") should be(
-      iso("foo", "B", "bar", "B", "B")
+      iso("foo", "B", "bar", "B")
+    )
+  }
+
+  it should "support named parameters" in {
+    generate("def len(str: String): Int <=> def toString(i: Int): String") should be(
+      "len is NOT isomorphic to toString"
+    )
+    generate("def idA[A](value: A): A <=> def idB[A]: A => A") should be(
+      iso("idA", "B", "idB", "B")
+    )
+    generate("def foo(a: String, b: Int): Float <=> def bar(b: Int, a: String): Float") should be(
+      isoNoTypeParams("foo", "bar")
     )
   }
 }
