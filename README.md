@@ -117,7 +117,7 @@ def andThen[A, B, C](f: (A => B), g: (B => C)): (A => C) =
 
 # Isomorphism
 To see if two functions are isomorphic with each other, just place the `<=>` operator between them:
-<img width="1792" alt="Screen Shot 2022-04-16 at 5 02 43 AM" src="https://user-images.githubusercontent.com/4519785/163631697-1875659d-1933-4712-9d8f-631694a109ff.png">
+<img width="1792" alt="Screen Shot 2022-04-16 at 7 24 49 PM" src="https://user-images.githubusercontent.com/4519785/163673226-10bfabf5-c214-4691-97b4-e1bed6a0b3f5.png">
 
 # Supported Languages
 As mentioned above, Chi supports both Java and Scala. You only need
