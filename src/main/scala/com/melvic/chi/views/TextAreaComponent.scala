@@ -1,11 +1,10 @@
 package com.melvic.chi.views
 
 import com.melvic.chi.Config
-import com.melvic.chi.config.Preferences
-import org.fife.ui.rsyntaxtextarea.{RSyntaxTextArea, SyntaxConstants, Theme}
+import org.fife.ui.rsyntaxtextarea.{RSyntaxTextArea, SyntaxConstants, Theme, TokenTypes}
 import org.fife.ui.rtextarea.RTextScrollPane
 
-import java.awt.Font
+import java.awt.{Color, Font}
 import java.awt.font.TextAttribute
 import java.io.IOException
 import scala.collection.mutable
@@ -17,6 +16,7 @@ class TextAreaComponent extends RSyntaxTextArea(50, 50) {
   setAntiAliasingEnabled(true)
 
   updateStyle()
+  updateScheme()
   updateFont()
 
   private def updateStyle(): Unit =
@@ -27,6 +27,17 @@ class TextAreaComponent extends RSyntaxTextArea(50, 50) {
       case ioe: IOException =>
         ioe.printStackTrace()
     }
+
+  private def updateScheme(): Unit = {
+    val scheme = getSyntaxScheme
+
+    setBackground(Color.decode("#212020"))
+    setCurrentLineHighlightColor(Color.decode("#191819"))
+    scheme.getStyle(TokenTypes.RESERVED_WORD).foreground = Color.decode("#C792EA")
+    scheme.getStyle(TokenTypes.IDENTIFIER).foreground = Color.decode("#82AAFF")
+
+    revalidate()
+  }
 
   private def updateFont(): Unit = {
     val font = Font.createFont(Font.TRUETYPE_FONT, getClass.getResourceAsStream(Config.DefaultFontPath))
