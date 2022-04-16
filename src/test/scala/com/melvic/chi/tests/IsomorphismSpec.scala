@@ -38,6 +38,9 @@ class IsomorphismSpec extends AnyFlatSpec with should.Matchers {
     generate("def foo[A, B]: A => (A, B) <=> def bar[A, B]: (B => B, B => A)") should be(
       iso("foo", "D, C", "bar", "C, D")
     )
+  }
+
+  it should "respect disjunction elimination" in {
     generate("def f[A, B, C]: (A => C, B => C) <=> def g[A, B, C]: Either[A, B] => C") should be(
       iso("f", "F, E, D", "g", "F, E, D")
     )
@@ -52,15 +55,18 @@ class IsomorphismSpec extends AnyFlatSpec with should.Matchers {
     )
   }
 
-  it should "respect disjunction associativity" in {
+  it should "exist between isomorphic functions with built-in types" in {
     generate("def foo: String => Int <=> def bar: String => Int") should be(
       isoNoTypeParams("foo", "bar")
     )
   }
 
-  it should "exist between disjunction that differ only in parens" in {
-    generate("def foo[A]: Either[A, Either[A, A]] <=> def bar[A]: Either[Either[A, A], A]") should be(
-      iso("foo", "B", "bar", "B")
+  it should "respect disjunction associativity" in {
+    generate("def fRight[A, B]: Either[A, Either[A, B]] <=> def fLeft[A, B]: Either[Either[A, A], B]") should be(
+      iso("fRight", "D, C", "fLeft", "D, C")
+    )
+    generate("def foo[A]: A => Either[A, Either[A, A]] <=> def bar[B]: B => Either[Either[B, B], B]") should be(
+      iso("foo", "C", "bar", "C")
     )
   }
 

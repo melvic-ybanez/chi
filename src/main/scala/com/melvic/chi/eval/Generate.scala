@@ -5,9 +5,12 @@ import com.melvic.chi.ast.{AssertIso, Definition, Proposition, Signature}
 import com.melvic.chi.config.Preferences
 import com.melvic.chi.env.Env
 import com.melvic.chi.out.Fault.UnknownPropositions
-import com.melvic.chi.out.{IsoResult, Result}
 import com.melvic.chi.out.Result.Result
-import com.melvic.chi.parsers.{IsomorphismParser, JavaParser, Language, ScalaParser}
+import com.melvic.chi.out.{IsoResult, Result}
+import com.melvic.chi.parsers
+import com.melvic.chi.parsers.{IsomorphismParser, Language}
+
+import scala.annotation.tailrec
 
 object Generate {
   def codeFromSignature(signature: Signature, language: Language)(
@@ -32,9 +35,8 @@ object Generate {
   }
 
   def codeFromSignatureString(signature: String)(implicit prefs: Preferences): Result[Definition] =
-    JavaParser
+    parsers
       .parseSignature(signature)
-      .orElse(ScalaParser.parseSignature(signature))
       .flatMap {
         case (signature, lang) => codeFromSignature(signature, lang)
       }
@@ -43,4 +45,38 @@ object Generate {
     IsomorphismParser.parseIso(signature).map {
       case assert @ AssertIso(s, s1) => Signature.isomorphic(s, s1)
     }
+
+  def all(lines: List[String])(implicit preferences: Preferences): List[String] = {
+    val evaluate: Evaluate = if (Preferences.showOutputInfo) generateAndShowWithInfo else generateAndShowCode
+    val definitions = parsers.Utils.removeComments(lines)
+      .map(_.trim) // we need to trim again to remove extra spaces between a definition and a comment
+      .filter(_.nonEmpty)
+
+    @tailrec
+    def recurse(outputs: List[String], definitions: List[String]): List[String] =
+      definitions match {
+        case Nil => outputs
+        case _ =>
+          val (output, rest) = Generate.fromLines(definitions, evaluate)
+          recurse(output :: outputs, rest)
+      }
+
+    recurse(Nil, definitions).reverse
+  }
+
+  def fromLines(lines: List[String], evaluate: Evaluate): (String, List[String]) = {
+    @tailrec
+    def recurse(partial: String, restOrLines: List[String]): (String, List[String]) =
+      restOrLines match {
+        case Nil => (evaluate(partial), lines.tail)
+        case line :: rest =>
+          val signature = partial + " " + line
+          parsers.parseSignature(signature) match {
+            case Left(_)  => recurse(signature, rest)
+            case Right(_) => (evaluate(signature), rest)
+          }
+      }
+
+    recurse("", lines)
+  }
 }
