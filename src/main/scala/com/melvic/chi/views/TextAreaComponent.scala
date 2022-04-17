@@ -1,7 +1,7 @@
 package com.melvic.chi.views
 
 import com.melvic.chi.Config
-import org.fife.ui.rsyntaxtextarea.{RSyntaxTextArea, SyntaxConstants, Theme, TokenTypes}
+import org.fife.ui.rsyntaxtextarea.{AbstractTokenMakerFactory, RSyntaxTextArea, SyntaxConstants, Theme, TokenMakerFactory, TokenTypes}
 import org.fife.ui.rtextarea.RTextScrollPane
 
 import java.awt.{Color, Font}
@@ -11,13 +11,19 @@ import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
 class TextAreaComponent extends RSyntaxTextArea(50, 50) {
-  setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_SCALA)
-  setCodeFoldingEnabled(true)
-  setAntiAliasingEnabled(true)
+  setup()
 
   updateStyle()
   updateScheme()
   updateFont()
+
+  private def setup(): Unit = {
+    val atmf = TokenMakerFactory.getDefaultInstance.asInstanceOf[AbstractTokenMakerFactory]
+    atmf.putMapping("text/chi", "com.melvic.chi.views.ChiTokenMaker")
+    setSyntaxEditingStyle("text/chi")
+    setCodeFoldingEnabled(true)
+    setAntiAliasingEnabled(true)
+  }
 
   private def updateStyle(): Unit =
     try {
@@ -34,6 +40,11 @@ class TextAreaComponent extends RSyntaxTextArea(50, 50) {
     setBackground(Color.decode("#212020"))
     setCurrentLineHighlightColor(Color.decode("#191819"))
     scheme.getStyle(TokenTypes.RESERVED_WORD).foreground = Color.decode("#C792EA")
+    scheme.getStyle(TokenTypes.RESERVED_WORD_2).foreground = Color.decode("#C792EA")
+    scheme.getStyle(TokenTypes.DATA_TYPE).foreground = Color.decode("#FFCB6B")
+    scheme.getStyle(TokenTypes.OPERATOR).foreground = Color.decode("#89DDFF")
+    scheme.getStyle(TokenTypes.FUNCTION).foreground = Color.decode("#89DDFF")
+    scheme.getStyle(TokenTypes.SEPARATOR).foreground = Color.decode("#89DDFF")
     scheme.getStyle(TokenTypes.IDENTIFIER).foreground = Color.decode("#82AAFF")
 
     revalidate()
