@@ -39,7 +39,7 @@ object ChiTokenMaker {
       "lazy",
       "return"
     )
-    val functions = List("identity", "const", "compose", "andThen")
+    val functions = List("identity", "const", "compose", "andThen", "apply", "_1", "_2", "_3")
     val dataTypes = List(
       "int",
       "Int",
