@@ -1,10 +1,10 @@
 import Dependencies.dependencies
 
-ThisBuild / version := "0.3.0"
+ThisBuild / version := "0.4.0-SNAPSHOT"
 
 ThisBuild / scalaVersion := "2.13.8"
 
-assemblyJarName in assembly := "chi-0.3.0.jar"
+assemblyJarName in assembly := "chi-0.4.0-snapshot.jar"
 
 lazy val root = (project in file("."))
   .settings(
