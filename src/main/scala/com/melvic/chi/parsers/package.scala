@@ -6,8 +6,11 @@ import com.melvic.chi.config.Preferences
 package object parsers {
   type ParseSignature = Result[(Signature, Language)]
 
-  def parseSignature(signature: String): ParseSignature =
+  def parseLanguageSignature(signature: String): ParseSignature =
     JavaParser
       .parseSignature(signature)
       .orElse(ScalaParser.parseSignature(signature))
+
+  def validInput(input: String): Boolean =
+    parseLanguageSignature(input).orElse(IsomorphismParser.parseIso(input)).isRight
 }

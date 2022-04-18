@@ -36,7 +36,7 @@ object Generate {
 
   def codeFromSignatureString(signature: String)(implicit prefs: Preferences): Result[Definition] =
     parsers
-      .parseSignature(signature)
+      .parseLanguageSignature(signature)
       .flatMap {
         case (signature, lang) => codeFromSignature(signature, lang)
       }
@@ -71,10 +71,8 @@ object Generate {
         case Nil => (evaluate(partial), lines.tail)
         case line :: rest =>
           val signature = partial + " " + line
-          parsers.parseSignature(signature) match {
-            case Left(_)  => recurse(signature, rest)
-            case Right(_) => (evaluate(signature), rest)
-          }
+          if (parsers.validInput(signature)) (evaluate(signature), rest)
+          else recurse(signature, rest)
       }
 
     recurse("", lines)
