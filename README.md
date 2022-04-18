@@ -32,8 +32,7 @@ https://user-images.githubusercontent.com/4519785/163822959-a355db57-3dbe-4cc2-8
 
 Updated Image:
 
-<img width="1792" alt="Screen Shot 2022-04-18 at 2 23 53 AM" src="https://user-images.githubusercontent.com/4519785/163727478-aba2aa2f-1d72-4660-ae69-b37421f043f1.png">
-
+<img width="1792" alt="Screen Shot 2022-04-19 at 12 14 26 AM" src="https://user-images.githubusercontent.com/4519785/163839106-a85022e6-354f-462f-80b7-e4c3765c8714.png">
 
 ### Running the REPL
 Running the REPL is similar to running the UI except you need to pass an additional
@@ -119,7 +118,7 @@ def andThen[A, B, C](f: (A => B), g: (B => C)): (A => C) =
 # Isomorphism
 To see if two functions are isomorphic with each other, just place the `<=>` operator between them:
 
-<img width="1792" alt="Screen Shot 2022-04-18 at 9 41 39 PM" src="https://user-images.githubusercontent.com/4519785/163822726-434abce7-6417-4084-8eb1-7153b4a53a49.png">
+<img width="1792" alt="Screen Shot 2022-04-19 at 12 15 14 AM" src="https://user-images.githubusercontent.com/4519785/163838288-9132c085-ac24-4c09-a325-2543a646a032.png">
 
 # Supported Languages
 As mentioned above, Chi supports both Java and Scala. You only need
