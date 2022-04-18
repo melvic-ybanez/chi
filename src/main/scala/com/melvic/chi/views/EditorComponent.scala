@@ -10,8 +10,8 @@ import javax.swing.{JPanel, JSplitPane}
 import scala.annotation.tailrec
 
 class EditorComponent(implicit prefs: Preferences) extends JPanel {
-  val inputView = TextAreaComponent.withScrollPane
-  val outputView = {
+  val textAreaScroll = TextAreaComponent.withScrollPane
+  val outputScroll = {
     val out = TextAreaComponent.withScrollPane
     out.getTextArea.setEditable(false)
     out
@@ -19,34 +19,40 @@ class EditorComponent(implicit prefs: Preferences) extends JPanel {
 
   reloadPreferences()
 
+  setLayout(new BorderLayout)
+  add(splitPane, BorderLayout.CENTER)
+
   def reloadPreferences(): Unit = {
-    inputView.setLineNumbersEnabled(Preferences.showLineNumbers)
-    outputView.setLineNumbersEnabled(Preferences.showLineNumbers)
+    textAreaScroll.setLineNumbersEnabled(Preferences.showLineNumbers)
+    outputScroll.setLineNumbersEnabled(Preferences.showLineNumbers)
   }
 
-  private val splitPane = {
-    val splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, inputView, outputView)
+  private lazy val splitPane = {
+    val splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, textAreaScroll, outputScroll)
     splitPane.setOneTouchExpandable(true)
     splitPane.setResizeWeight(0.5)
     splitPane
   }
 
-  setLayout(new BorderLayout)
-  add(splitPane, BorderLayout.CENTER)
-
-  inputView.getTextArea.addKeyListener(new KeyAdapter {
+  textAreaScroll.getTextArea.addKeyListener(new KeyAdapter {
     override def keyReleased(e: KeyEvent): Unit =
       if (prefs.content.editor.evalOnType) run()
   })
 
+  def setInputText(text: String): Unit = {
+    textAreaScroll.getTextArea.setText(text)
+  }
+
+  def outputText: String = outputScroll.getTextArea.getText
+
   def run(): Unit = {
-    val lines = inputView.getTextArea.getText.split("\n")
-    val output = Generate.all(lines.toList).mkString("\n\n")
-    outputView.getTextArea.setText(output)
+    val lines = textAreaScroll.getTextArea.getText.split("\n")
+    val output = Generate.allToString(lines.toList)
+    outputScroll.getTextArea.setText(output)
   }
 
   def clear(): Unit = {
-    inputView.getTextArea.setText("")
-    outputView.getTextArea.setText("")
+    textAreaScroll.getTextArea.setText("")
+    outputScroll.getTextArea.setText("")
   }
 }

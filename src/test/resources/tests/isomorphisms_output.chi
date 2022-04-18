@@ -1,0 +1,31 @@
+foo[B] Is isomorphic to bar[B], for all types B
+
+id is NOT isomorphic to myConst
+
+as[C] Is isomorphic to bs[C], for all types C
+
+aToAs[C] Is isomorphic to bToBs[C], for all types C
+
+fRight[D, C] Is isomorphic to fLeft[D, C], for all types D, C
+
+powerOfProduct[D, C] Is isomorphic to productOfPower[C, D], for all types D, C
+
+f[F, E, D] Is isomorphic to g[F, E, D], for all types F, E, D
+
+Detected language: Scala
+Generated code:
+def fooToBar[A, B]: ((A => (A, B)) => ((A => A), (A => B))) =
+  f => (a => a, a => f(a)._2)
+
+Detected language: Scala
+Generated code:
+def barToFoo[A, B]: (((A => A), (A => B)) => (A => (A, B))) =
+  { case (f, g) =>
+    a => (a, g(a))
+  }
+
+len is NOT isomorphic to toString
+
+idA[B] Is isomorphic to idB[B], for all types B
+
+foo Is isomorphic to bar

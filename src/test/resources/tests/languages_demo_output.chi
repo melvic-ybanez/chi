@@ -1,0 +1,43 @@
+Detected language: Scala
+Generated code:
+def andThenDemo[A, B, C](f: (A => B), g: (B => C)): (A => C) =
+  g.compose(f)
+
+Detected language: Java
+Generated code:
+<A, B, C, D> BiFunction<A, D, C> foo(Function<A, B> f, Function<B, C> g) {
+    return (a, d) -> {
+        return g.apply(f.apply(a));
+    };
+}
+
+Detected language: Scala
+Generated code:
+def myApply: (String => (Int => Int)) =
+  s => identity
+
+Detected language: Java
+Generated code:
+Function<String, Integer> boxTypesDemo(
+  Function<String, Float> f,
+  Function<Float, Integer> g
+) {
+    return s -> g.apply(f.apply(s));
+}
+
+Detected language: Scala
+Generated code:
+def toInt: ((String => Int) => ((Float => Int) => (Either[String, Float] => Int))) =
+  f => g => {
+    case Left(s) => f(s)
+    case Right(h) => g(h)
+  }
+
+Detected language: Scala
+Generated code:
+def complexComposeDemo(
+  f: (String => Int),
+  g: (Double => (Int => Float)),
+  d: Double
+): (String => Float) =
+  g(d).compose(f)

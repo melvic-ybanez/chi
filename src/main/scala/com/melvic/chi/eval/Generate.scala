@@ -46,7 +46,7 @@ object Generate {
       case assert @ AssertIso(s, s1) => Signature.isomorphic(s, s1)
     }
 
-  def all(lines: List[String])(implicit preferences: Preferences): List[String] = {
+  def allToLines(lines: List[String])(implicit preferences: Preferences): List[String] = {
     val evaluate: Evaluate = if (Preferences.showOutputInfo) generateAndShowWithInfo else generateAndShowCode
     val definitions = parsers.Utils.removeComments(lines)
       .map(_.trim) // we need to trim again to remove extra spaces between a definition and a comment
@@ -63,6 +63,9 @@ object Generate {
 
     recurse(Nil, definitions).reverse
   }
+
+  def allToString(lines: List[String])(implicit preferences: Preferences): String =
+    allToLines(lines).mkString("\n\n")
 
   def fromLines(lines: List[String], evaluate: Evaluate): (String, List[String]) = {
     @tailrec
