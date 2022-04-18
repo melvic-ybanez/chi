@@ -37,15 +37,15 @@ class TextAreaComponent extends RSyntaxTextArea(50, 50) {
   private def updateScheme(): Unit = {
     val scheme = getSyntaxScheme
 
-    setBackground(Color.decode("#212021"))
-    setCurrentLineHighlightColor(Color.decode("#191819"))
-    scheme.getStyle(TokenTypes.RESERVED_WORD).foreground = Color.decode("#C792EB")
-    scheme.getStyle(TokenTypes.RESERVED_WORD_2).foreground = Color.decode("#C792EB")
-    scheme.getStyle(TokenTypes.DATA_TYPE).foreground = Color.decode("#FFCB6A")
-    scheme.getStyle(TokenTypes.OPERATOR).foreground = Color.decode("#89DDFE")
-    scheme.getStyle(TokenTypes.FUNCTION).foreground = Color.decode("#89DDFE")
-    scheme.getStyle(TokenTypes.SEPARATOR).foreground = Color.decode("#89DDFE")
-    scheme.getStyle(TokenTypes.IDENTIFIER).foreground = Color.decode("#82AAFE")
+    setBackground(Color.decode("#333333"))
+    setCurrentLineHighlightColor(Color.decode("#252525"))
+    scheme.getStyle(TokenTypes.RESERVED_WORD).foreground = Color.decode("#e57254")
+    scheme.getStyle(TokenTypes.RESERVED_WORD_2).foreground = Color.decode("#e57254")
+    scheme.getStyle(TokenTypes.DATA_TYPE).foreground = Color.decode("#52d273")
+    scheme.getStyle(TokenTypes.OPERATOR).foreground = Color.decode("#e5c454")
+    scheme.getStyle(TokenTypes.SEPARATOR).foreground = Color.decode("#e5c454")
+    scheme.getStyle(TokenTypes.FUNCTION).foreground = Color.decode("#46bcde")
+    scheme.getStyle(TokenTypes.IDENTIFIER).foreground = Color.decode("#46bcde")
 
     revalidate()
   }
