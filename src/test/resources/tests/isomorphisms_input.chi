@@ -1,0 +1,34 @@
+// check for an isomorphism between alpha-equivalent funcitons
+def foo[A, B]: A => (A, A) <=> def bar[C, D]: C => (C, C)
+
+// identity is not isomorphic to the current function
+def id[A]: A => A <=> def myConst[A, B]: A => B => A
+
+// conjunction associativity
+def as[A]: (A, (A, A)) <=> def bs[B]: (B, B, B)
+def aToAs[A]: A => (A, (A, A)) <=> def bToBs[B]: B => (B, B, B)
+
+// disjunction associativity
+def fRight[A, B]: Either[A, Either[A, B]] <=> def fLeft[A, B]: Either[Either[A, A], B]
+
+// In algebra, (ab)^a = (a^a)(b^a)
+def powerOfProduct[A, B]: A => (A, B) <=> def productOfPower[A, B]: (B => B, B => A)
+
+// In propositional logic: ((A => C) & (B => C)) <=> ((A | B) => C)
+// In algebra, this means (c^a)(c^b) = c^(a + b)
+def f[A, B, C]: (A => C, B => C) <=> def g[A, B, C]: Either[A, B] => C
+
+// According to the (ab)^a = (a^a)(b^a) example above, we (or Chi) should be able
+// to construct a function from (ab)^a to (a^a)(b^a) and vice-versa.
+def fooToBar[A, B]: (A => (A, B)) => (A => A, A => B)
+
+// and here's the second one
+def barToFoo[A, B]: (A => A, A => B) => A => (A, B)
+
+// named parameters are also allowed
+def len(str: String): Int <=> def toString(i: Int): String
+
+// two ways of writing identity
+def idA[A](value: A): A <=> def idB[A]: A => A
+
+def foo(a: String, b: Int): Float <=> def bar(b: Int, a: String): Float
