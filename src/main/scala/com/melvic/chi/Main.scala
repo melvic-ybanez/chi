@@ -2,7 +2,7 @@ package com.melvic.chi
 
 import com.github.weisj.darklaf.LafManager
 import com.github.weisj.darklaf.theme.DarculaTheme
-import com.melvic.chi.config.{Preferences, SettingsContent}
+import com.melvic.chi.config.Preferences
 import com.melvic.chi.views.MainWindow
 
 import javax.swing.SwingUtilities
@@ -13,7 +13,7 @@ object Main {
 
   def main(args: Array[String]): Unit =
     args match {
-      case Array("repl", _ @_*) => Repl
+      case Array("repl", _ @_*) => Repl.start
       case _                    => runUI()
     }
 
