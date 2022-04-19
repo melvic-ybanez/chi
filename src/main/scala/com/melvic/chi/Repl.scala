@@ -7,7 +7,7 @@ import scala.io.StdIn.readLine
 
 //noinspection SpellCheckingInspection
 object Repl {
-  def apply(implicit prefs: Preferences): Unit = {
+  def start(implicit prefs: Preferences): Unit = {
     println(
       "Welcome to the Chi Repl. Write your propositions or function signatures below " +
         "and press enter to see the results"
