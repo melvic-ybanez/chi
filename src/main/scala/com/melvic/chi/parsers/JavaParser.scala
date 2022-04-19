@@ -4,12 +4,12 @@ import com.melvic.chi.ast.Proof.Variable
 import com.melvic.chi.ast.Proposition.{Atom, Conjunction, Implication}
 import com.melvic.chi.ast.{Proposition, Signature}
 
-object JavaParser extends BaseParser {
+object JavaParser extends BaseParser with NamedParams {
   val language = Language.Java
 
   val typeParams: Parser[List[Atom]] = "<" ~> rep1sep(identifier, ",") <~ ">"
 
-  val param: Parser[Variable] = (proposition ~ nameParser) ^^ {
+  val param: Parser[Variable] = (proposition ~ ident) ^^ {
     case proposition ~ name => Variable(name, proposition)
   }
 
@@ -27,7 +27,7 @@ object JavaParser extends BaseParser {
   lazy val proposition: PackratParser[Proposition] = function | biFunction | identifier
 
   val signature: Parser[Signature] =
-    opt(typeParams) ~ proposition ~ nameParser ~ opt(paramList) ^^ {
+    opt(typeParams) ~ proposition ~ ident ~ opt(paramList) ^^ {
       case typeParams ~ returnType ~ name ~ params =>
         Signature(name, typeParams.getOrElse(Nil).map(_.value), params.getOrElse(Nil), returnType)
     }
