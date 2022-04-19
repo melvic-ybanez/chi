@@ -27,7 +27,7 @@ object JavaParser extends BaseParser with NamedParams {
   lazy val proposition: PackratParser[Proposition] = function | biFunction | identifier
 
   val signature: Parser[Signature] =
-    opt(typeParams) ~ proposition ~ ident ~ opt(paramList) ^^ {
+    opt(typeParams) ~ proposition ~ nameParser ~ opt(paramList) ^^ {
       case typeParams ~ returnType ~ name ~ params =>
         Signature(name, typeParams.getOrElse(Nil).map(_.value), params.getOrElse(Nil), returnType)
     }
