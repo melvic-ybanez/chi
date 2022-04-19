@@ -33,11 +33,19 @@ def toInt: (String => Int) => (Float => Int) => Either[String, Float] => Int =
     case Right(h) => g(h)
   }
 
-Detected language: Scala
+Detected language: Haskell
 Generated code:
-def complexComposeDemo(
-  f: String => Int,
-  g: Double => Int => Float,
-  d: Double
-): String => Float =
-  g(d).compose(f)
+foo :: (b -> c) -> (a -> b) -> a -> c
+foo f g a = f (g a)
+
+Detected language: Haskell
+Generated code:
+bar :: (a, b) -> b
+bar (a, b) = b
+
+Detected language: Haskell
+Generated code:
+foo :: (a -> c) -> (b -> c) -> Either a b -> c
+foo f g e = case e of
+        Left a -> f a
+        Right b -> g b
