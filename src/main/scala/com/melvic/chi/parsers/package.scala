@@ -10,7 +10,7 @@ package object parsers {
     JavaParser
       .parseSignature(signature)
       .orElse(HaskellParser.parseSignature(signature))
-      .orElse(ScalaParser.parseSignature(signature))
+      //.orElse(ScalaParser.parseSignature(signature))
 
   def validInput(input: String): Boolean =
     parseLanguageSignature(input).orElse(IsomorphismParser.parseIso(input)).isRight

@@ -14,9 +14,11 @@ trait BaseParser extends JavaTokenParsers with PackratParsers {
 
   val signature: Parser[Signature]
 
-  val identifier: Parser[Atom] = ident ^^ { Identifier }
+  val identifier: Parser[Atom] = nameParser ^^ { Identifier }
 
   val proposition: PackratParser[Proposition]
+
+  lazy val nameParser: Parser[String] = "[a-zA-Z]+[0-9]*".r
 
   def parseSignature(code: String): ParseSignature =
     parseAll(signature, new PackratReader(new CharSequenceReader(code))) match {

@@ -3,7 +3,6 @@ package com.melvic.chi.parsers
 import com.melvic.chi.ast.Proof.Variable
 import com.melvic.chi.ast.Proposition._
 import com.melvic.chi.ast.{Proposition, Signature}
-import com.melvic.chi.parsers.HaskellParser.{base, conjunction, opt}
 
 object ScalaParser extends ScalaParser {
   val signature: Parser[Signature] = scalaParser
@@ -25,13 +24,13 @@ trait ScalaParser extends BaseParser with NamedParams with TuplesInParens {
   lazy val proposition: PackratParser[Proposition] =
     implication | ("(" ~> implication <~ ")") | conjunction | disjunction | identifier
 
-  val param: Parser[Variable] = (ident ~ (":" ~> proposition)) ^^ {
+  val param: Parser[Variable] = (nameParser ~ (":" ~> proposition)) ^^ {
     case name ~ proposition =>
       Variable(name, proposition)
   }
 
   val scalaParser: Parser[Signature] =
-    "def" ~> ident ~ opt("[" ~> rep1sep(identifier, ",") <~ "]") ~ opt(paramList) ~ (":" ~> proposition) ^^ {
+    "def" ~> nameParser ~ opt("[" ~> rep1sep(identifier, ",") <~ "]") ~ opt(paramList) ~ (":" ~> proposition) ^^ {
       case name ~ typeParams ~ paramList ~ proposition =>
         val params = paramList.getOrElse(Nil)
         Signature(name, typeParams.getOrElse(Nil).map(_.value), params, proposition)

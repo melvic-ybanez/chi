@@ -9,7 +9,7 @@ object JavaParser extends BaseParser with NamedParams {
 
   val typeParams: Parser[List[Atom]] = "<" ~> rep1sep(identifier, ",") <~ ">"
 
-  val param: Parser[Variable] = (proposition ~ ident) ^^ {
+  val param: Parser[Variable] = (proposition ~ nameParser) ^^ {
     case proposition ~ name => Variable(name, proposition)
   }
 

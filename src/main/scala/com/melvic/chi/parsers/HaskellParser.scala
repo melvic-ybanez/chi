@@ -7,23 +7,28 @@ import com.melvic.chi.ast.Proposition.{Conjunction, Disjunction, Implication, PU
 object HaskellParser extends BaseParser with TuplesInParens {
   override val language = Language.Haskell
 
-  val disjunction: Parser[Disjunction] =
-    "Either" ~> proposition ~ proposition ^^ {
+  lazy val disjunction: PackratParser[Disjunction] = {
+    val component = base | implWithParens
+
+    "Either" ~> component ~ component ^^ {
       case left ~ right => Disjunction(left, right)
     }
-
-  val base: Parser[Proposition] = {
-    val base = conjunction | disjunction | identifier
-    base | ("(" ~> base <~ ")")
   }
 
-  lazy val proposition: PackratParser[Proposition] =
-    base ~ opt("->" ~> base) ^^ {
-      case in ~ Some(out) => Implication(in, out)
-      case in ~ None => in
+  lazy val implWithParens: PackratParser[Implication] =
+    ("(" ~> implication <~ ")")
+
+  lazy val base: PackratParser[Proposition] = disjunction | conjunction | identifier
+
+  lazy val implication: PackratParser[Implication] =
+    proposition ~ ("->" ~> proposition) ^^ {
+      case antecedent ~ consequent => Implication(antecedent, consequent)
     }
 
-  override val signature = ident ~ ("::" ~> proposition) ^^ {
+  lazy val proposition: PackratParser[Proposition] =
+    implication | implWithParens | base
+
+  override val signature = nameParser ~ ("::" ~> proposition) ^^ {
     case functionName ~ functionType =>
       val typeParams = Proposition.atoms(functionType).map(_.value)
       Signature(functionName, typeParams, Nil, functionType)
