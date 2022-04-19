@@ -32,7 +32,7 @@ https://user-images.githubusercontent.com/4519785/163822959-a355db57-3dbe-4cc2-8
 
 Updated Image:
 
-<img width="1792" alt="Screen Shot 2022-04-19 at 12 14 26 AM" src="https://user-images.githubusercontent.com/4519785/163839106-a85022e6-354f-462f-80b7-e4c3765c8714.png">
+<img width="1792" alt="Screen Shot 2022-04-20 at 2 58 30 AM" src="https://user-images.githubusercontent.com/4519785/164076324-a110a1e5-4591-4da6-9d4e-39c971bb2103.png">
 
 ### Running the REPL
 Running the REPL is similar to running the UI except you need to pass an additional
