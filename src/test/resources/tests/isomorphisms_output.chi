@@ -14,12 +14,12 @@ f[F, E, D] Is isomorphic to g[F, E, D], for all types F, E, D
 
 Detected language: Scala
 Generated code:
-def fooToBar[A, B]: ((A => (A, B)) => ((A => A), (A => B))) =
+def fooToBar[A, B]: (A => (A, B)) => (A => A, A => B) =
   f => (a => a, a => f(a)._2)
 
 Detected language: Scala
 Generated code:
-def barToFoo[A, B]: (((A => A), (A => B)) => (A => (A, B))) =
+def barToFoo[A, B]: (A => A, A => B) => A => (A, B) =
   { case (f, g) =>
     a => (a, g(a))
   }

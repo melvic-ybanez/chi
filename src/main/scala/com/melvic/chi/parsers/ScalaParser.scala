@@ -8,14 +8,8 @@ object ScalaParser extends ScalaParser {
   val signature: Parser[Signature] = scalaParser
 }
 
-trait ScalaParser extends BaseParser {
+trait ScalaParser extends BaseParser with NamedParams with TuplesInParens {
   val language = Language.Scala
-
-  val conjunction: Parser[Proposition] =
-    "(" ~> repsep(proposition, ",") <~ ")" ^^ {
-      case Nil         => PUnit
-      case proposition => Conjunction(proposition)
-    }
 
   val disjunction: Parser[Disjunction] =
     "Either" ~> "[" ~> proposition ~ ("," ~> proposition <~ "]") ^^ {
