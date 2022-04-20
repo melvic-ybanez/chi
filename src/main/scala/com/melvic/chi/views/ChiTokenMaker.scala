@@ -37,7 +37,11 @@ object ChiTokenMaker {
       "import",
       "trait",
       "lazy",
-      "return"
+      "return",
+      "of",
+      "Java",
+      "Scala",
+      "Haskell"
     )
     val functions = List("identity", "const", "compose", "andThen", "apply", "_1", "_2", "_3")
     val dataTypes = List(
