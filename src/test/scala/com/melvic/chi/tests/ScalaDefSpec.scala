@@ -5,35 +5,21 @@ import com.melvic.chi.{generateAndShowCode, generateAndShowWithInfo}
 class ScalaDefSpec extends BaseSpec {
   val language = "Scala"
 
+  def test(input: String, outputBody: String) =
+    generateAndShowWithInfo(input) should be(output(s"$input =\n  $outputBody"))
+
+  implicit class TestOps(input: String) {
+    def :=(outputBody: String) = test(input, outputBody)
+  }
+
   "A => A" should "map the input to itself" in {
-    generateAndShowWithInfo("def identity[A]: A => A") should be(
-      output(
-        """def identity[A]: A => A =
-          |  Predef.identity""".stripMargin
-      )
-    )
-    generateAndShowWithInfo("def identity[A](a: A): A") should be(
-      output(
-        """def identity[A](a: A): A =
-          |  a""".stripMargin
-      )
-    )
+    "def identity[A]: A => A" := "Predef.identity"
+    "def identity[A](a: A): A" := "a"
   }
 
   "(A => B) => A => B" should "apply the function to the input of the resulting function" in {
-    generateAndShowWithInfo("def apply[A, B](f: A => B, a: A): B") should be(
-      output(
-        """def apply[A, B](f: A => B, a: A): B =
-        |  f(a)""".stripMargin
-      )
-    )
-
-    generateAndShowWithInfo("def apply[A, B]: (A => B) => A => B") should be(
-      output(
-        """def apply[A, B]: (A => B) => A => B =
-          |  identity""".stripMargin
-      )
-    )
+    "def apply[A, B](f: A => B, a: A): B" := "f(a)"
+    "def apply[A, B]: (A => B) => A => B" := "identity"
   }
 
   "fst" should "return the first element" in {
@@ -59,99 +45,39 @@ class ScalaDefSpec extends BaseSpec {
   }
 
   "compose" should "apply the first function after the second" in {
-    generateAndShowWithInfo("def compose[A, B, C]: (B => C) => (A => B) => A => C") should be(
-      output(
-        """def compose[A, B, C]: (B => C) => (A => B) => A => C =
-          |  f => g => f.compose(g)""".stripMargin
-      )
+    test(
+      "def compose[A, B, C]: (B => C) => (A => B) => A => C",
+      "f => g => f.compose(g)",
     )
   }
 
   "andThen" should "apply the first function before the second" in {
-    generateAndShowWithInfo("def andThen[A, B, C]: (A => B) => (B => C) => A => C") should be(
-      output(
-        """def andThen[A, B, C]: (A => B) => (B => C) => A => C =
-          |  f => g => g.compose(f)""".stripMargin
-      )
-    )
-    generateAndShowWithInfo("def andThen[A, B, C](f: A => B, g: B => C): A => C") should be(
-      output(
-        """def andThen[A, B, C](f: A => B, g: B => C): A => C =
-          |  g.compose(f)""".stripMargin
-      )
-    )
+    "def andThen[A, B, C]: (A => B) => (B => C) => A => C" := "f => g => g.compose(f)"
+    "def andThen[A, B, C](f: A => B, g: B => C): A => C" := "g.compose(f)"
   }
 
   "unit" should "be provable with the universal value ()" in {
-    generateAndShowWithInfo("def unit: ()") should be(
-      output(
-        """def unit: () =
-          |  ()""".stripMargin
-      )
-    )
-    generateAndShowWithInfo("def unit[A]: (() => A) => A") should be(
-      output(
-        """def unit[A]: (() => A) => A =
-          |  f => f()""".stripMargin
-      )
-    )
+    "def unit: ()" := "()"
+    "def unit[A]: (() => A) => A" := "f => f()"
   }
 
   "conjunction" should "depend on the proofs of its components" in {
-    generateAndShowWithInfo("def foo[A, B]: A => (B => (A, B)) => B => (A, B)") should be(
-      output(
-        """def foo[A, B]: A => (B => (A, B)) => B => (A, B) =
-          |  a => f => b => (a, b)""".stripMargin
-      )
-    )
+    "def foo[A, B]: A => (B => (A, B)) => B => (A, B)" := "a => f => b => (a, b)"
   }
 
   "either" should "default to left when the evaluation succeeds" in {
-    generateAndShowWithInfo("def left[A]: A => Either[A, A]") should be(
-      output(
-        """def left[A]: A => Either[A, A] =
-          |  a => Left(a)""".stripMargin
-      )
-    )
-
-    generateAndShowWithInfo("def left[A, B]: A => Either[A, B]") should be(
-      output(
-        """def left[A, B]: A => Either[A, B] =
-          |  a => Left(a)""".stripMargin
-      )
-    )
-
-    generateAndShowWithInfo("def right[A, B]: B => Either[A, B]") should be(
-      output(
-        """def right[A, B]: B => Either[A, B] =
-          |  b => Right(b)""".stripMargin
-      )
-    )
+    "def left[A]: A => Either[A, A]" := "a => Left(a)"
+    "def left[A, B]: A => Either[A, B]" := "a => Left(a)"
+    "def right[A, B]: B => Either[A, B]" := "b => Right(b)"
   }
 
   "all assumptions" should "be considered" in {
-    generateAndShowWithInfo("def foo[A, B, C]: (A => C) => (B => C) => B => C") should be(
-      output(
-        """def foo[A, B, C]: (A => C) => (B => C) => B => C =
-          |  f => identity""".stripMargin
-      )
-    )
-
-    generateAndShowWithInfo("def foo[A, B, C]: (B => C) => (A => C) => B => C") should be(
-      output(
-        """def foo[A, B, C]: (B => C) => (A => C) => B => C =
-          |  f => g => f""".stripMargin
-      )
-    )
+    "def foo[A, B, C]: (A => C) => (B => C) => B => C" := "f => identity"
+    "def foo[A, B, C]: (B => C) => (A => C) => B => C" := "f => g => f"
   }
 
   "implication" should "evaluate it's antecedent recursive" in {
-    generateAndShowWithInfo("def foo[A, B, C]: (A => B) => ((A => B) => C) => C") should be(
-      output(
-        """def foo[A, B, C]: (A => B) => ((A => B) => C) => C =
-          |  f => g => g(f)""".stripMargin
-      )
-    )
+    "def foo[A, B, C]: (A => B) => ((A => B) => C) => C" := "f => g => g(f)"
   }
 
   "Unknown propositions" should "not be allowed" in {
@@ -216,13 +142,7 @@ class ScalaDefSpec extends BaseSpec {
   }
 
   "Function expressions" should "be simplified" in {
-    generateAndShowWithInfo("def foo(f: String => Int): String => Int") should be(
-      output(
-        """def foo(f: String => Int): String => Int =
-          |  f""".stripMargin
-      )
-    )
-
+    "def foo(f: String => Int): String => Int" := "f"
     generateAndShowWithInfo("def foo[A, B, C]: A => (A => (B => C)) => B => C") should be(
       output(
         """def foo[A, B, C]: A => (A => B => C) => B => C =
@@ -232,13 +152,7 @@ class ScalaDefSpec extends BaseSpec {
   }
 
   "Point-free style" should "use Scala's `compose` function" in {
-    generateAndShowWithInfo("def compose(f: String => Int, g: Int => Float): Double => String => Float") should be(
-      output(
-        """def compose(f: String => Int, g: Int => Float): Double => String => Float =
-          |  d => g.compose(f)""".stripMargin
-      )
-    )
-
+    "def compose(f: String => Int, g: Int => Float): Double => String => Float" := "d => g.compose(f)"
     generateAndShowWithInfo("def coolCompose(f: String => Int, g: Double => Int => Float, d: Double): String => Float") should be(
       output(
         """def coolCompose(
@@ -252,14 +166,7 @@ class ScalaDefSpec extends BaseSpec {
   }
 
   "component of a product consequent" should "be accessible if the function is applied" in {
-    generateAndShowCode("def foo[A, B, C]: (A => (C, B)) => A => C") should be(
-      """def foo[A, B, C]: (A => (C, B)) => A => C =
-        |  f => a => f(a)._1""".stripMargin
-    )
-
-    generateAndShowCode("def foo[A, B]: (A => (A, B)) => (A => A, A => B)") should be(
-      """def foo[A, B]: (A => (A, B)) => (A => A, A => B) =
-        |  f => (a => a, a => f(a)._2)""".stripMargin
-    )
+    "def foo[A, B, C]: (A => (C, B)) => A => C" := "f => a => f(a)._1"
+    "def foo[A, B]: (A => (A, B)) => (A => A, A => B)" := "f => (a => a, a => f(a)._2)"
   }
 }
