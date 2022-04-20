@@ -10,13 +10,13 @@ object HaskellParser extends BaseParser with TuplesInParens {
   lazy val disjunction: PackratParser[Disjunction] = {
     val component = base | implWithParens
 
-    "Either" ~> component ~ component ^^ {
+    "Either" ~> (component ~ component) ^^ {
       case left ~ right => Disjunction(left, right)
     }
   }
 
   lazy val implWithParens: PackratParser[Implication] =
-    ("(" ~> implication <~ ")")
+    "(" ~> implication <~ ")"
 
   lazy val base: PackratParser[Proposition] = disjunction | conjunction | identifier
 

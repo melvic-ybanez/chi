@@ -176,10 +176,12 @@ object Prover {
 
     // Check if we can prove the consequent with both components
     proveWithComponent(left).flatMap {
-      case (Variable(leftName, _), leftProof) =>
+      case (leftIn, leftOut) =>
         proveWithComponent(right).flatMap {
-          case (Variable(rightName, _), rightProof) =>
-            Result.success(EitherMatch(name, EitherCases((leftName, leftProof), (rightName, rightProof))))
+          case (rightIn, rightOut) =>
+            val left = Abstraction(leftIn, leftOut)
+            val right = Abstraction(rightIn, rightOut)
+            Result.success(EitherMatch(name, EitherCases(left, right)))
         }
     }
   }

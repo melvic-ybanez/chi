@@ -169,4 +169,16 @@ class ScalaDefSpec extends BaseSpec {
     "def foo[A, B, C]: (A => (C, B)) => A => C" := "f => a => f(a)._1"
     "def foo[A, B]: (A => (A, B)) => (A => A, A => B)" := "f => (a => a, a => f(a)._2)"
   }
+
+  "Either over tuples" should "deconstruct the tuples" in {
+    generateAndShowWithInfo("def foo[A, B]: Either[(A, B), A] => A") should be(
+      output(
+        """def foo[A, B]: Either[(A, B), A] => A =
+          |  {
+          |    case Left((a, b)) => a
+          |    case Right(a) => a
+          |  }""".stripMargin
+      )
+    )
+  }
 }
