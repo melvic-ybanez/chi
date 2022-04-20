@@ -54,4 +54,35 @@ class HaskellFunctionsSpec extends BaseSpec {
   "implication" should "evaluate it's antecedent recursive" in {
     test("foo :: (a -> b) -> ((a -> b) -> c) -> c", "foo f g = g (\\a -> f a)")
   }
+
+  "disjunction elimination" should "work as formalized in propositional logic" in {
+    generateAndShowWithInfo("foo :: (a -> c) -> (b -> c) -> Either a b -> c") should be(
+      output(
+        """foo :: (a -> c) -> (b -> c) -> Either a b -> c
+          |foo f g e = case e of
+          |    Left a -> f a
+          |    Right b -> g b""".stripMargin
+      )
+    )
+
+    generateAndShowWithInfo("foo :: Either a a -> a") should be(
+      output(
+        """foo :: Either a a -> a
+          |foo e = case e of
+          |    Left a -> a
+          |    Right a -> a""".stripMargin
+      )
+    )
+  }
+
+  "either over tuples" should "deconstruct the tuples" in {
+    generateAndShowWithInfo("foo :: Either (a, b) a -> a") should be(
+      output(
+        """foo :: Either (a, b) a -> a
+          |foo e = case e of
+          |    Left (a, b) -> a
+          |    Right a -> a""".stripMargin
+      )
+    )
+  }
 }
