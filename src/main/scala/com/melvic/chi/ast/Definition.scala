@@ -1,7 +1,7 @@
 package com.melvic.chi.ast
 
 import com.melvic.chi.config.Preferences
-import com.melvic.chi.out.Display
+import com.melvic.chi.output.Display
 import com.melvic.chi.parsers.Language
 
 final case class Definition(signature: Signature, body: Proof, language: Language)

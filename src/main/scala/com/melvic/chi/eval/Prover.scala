@@ -4,8 +4,8 @@ import com.melvic.chi.ast.Proof.{Conjunction => PConjunction, _}
 import com.melvic.chi.ast.Proposition._
 import com.melvic.chi.ast.{Proof, Proposition}
 import com.melvic.chi.env.Env
-import com.melvic.chi.out.Result.Result
-import com.melvic.chi.out.{Fault, Result}
+import com.melvic.chi.output.Result.Result
+import com.melvic.chi.output.{Fault, Result}
 
 object Prover {
   //noinspection SpellCheckingInspection
