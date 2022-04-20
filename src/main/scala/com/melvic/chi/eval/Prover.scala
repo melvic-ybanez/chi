@@ -102,9 +102,7 @@ object Prover {
       components: List[Proposition]
   ): Result[Proof] = {
     def recurse(proof: Proof, components: List[Proposition], index: Int): Result[Proof] = {
-      // Note: this might be too Scala-specific. Make sure to handle for
-      // languages that do not support this syntax.
-      lazy val attr = Attribute(proof, "_" + index)
+      lazy val attr = Indexed(proof, index)
 
       components match {
         case Nil                     => Result.success(attr)

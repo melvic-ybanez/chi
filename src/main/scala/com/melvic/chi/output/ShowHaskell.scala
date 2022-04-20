@@ -31,12 +31,21 @@ class ShowHaskell(functionName: String) extends Display {
   def showBodyProofWithLevel(proof: Proof, level: Option[Int]): String = {
     val indent = this.indent(level.map(_ + 1).orElse(Some(1)))
 
+    def showLambda: Abstraction => String = {
+      case Abstraction(in, out) => s"\\${showBodyProof(in)} -> ${showBodyProof(out)}"
+    }
+
     proof match {
-      case TUnit                    => "()"
-      case Variable(name, _)        => name
-      case PConjunction(components) => s"(${Utils.toCSV(components.map(showBodyProof))})"
-      case PRight(proof)            => s"Right ${showBodyProof(proof)}"
-      case PLeft(proof)             => s"Left ${showBodyProof(proof)}"
+      case TUnit             => "()"
+      case Variable(name, _) => name
+      case PConjunction(components) =>
+        def showParam: Proof => String = {
+          case abs: Abstraction => showLambda(abs)
+          case proof            => showBodyProof(proof)
+        }
+        s"(${Utils.toCSV(components.map(showParam))})"
+      case PRight(proof) => s"Right ${showBodyProof(proof)}"
+      case PLeft(proof)  => s"Left ${showBodyProof(proof)}"
       case EitherMatch(name, EitherCases(Abstraction(leftIn, leftOut), Abstraction(rightIn, rightOut))) =>
         val leftCase = s"Left ${showBodyProof(leftIn)} -> ${showBodyProof(leftOut)}"
         val rightCase = s"Right ${showBodyProof(rightIn)} -> ${showBodyProof(rightOut)}"
@@ -46,14 +55,17 @@ class ShowHaskell(functionName: String) extends Display {
       case Application(function, params) =>
         def showParam(param: Proof): String =
           param match {
-            case Abstraction(in, out) => s"(\\${showBodyProof(in)} -> ${showBodyProof(out)})"
-            case app: Application     => s"(${showBodyProof(app)})"
-            case left: PLeft          => s"(${showBodyProof(left)})"
-            case right: PRight        => s"(${showBodyProof(right)})"
-            case _                    => showBodyProof(param)
+            case abs: Abstraction => s"(${showLambda(abs)})"
+            case app: Application => s"(${showBodyProof(app)})"
+            case left: PLeft      => s"(${showBodyProof(left)})"
+            case right: PRight    => s"(${showBodyProof(right)})"
+            case _                => showBodyProof(param)
           }
         s"${showBodyProof(function)} ${params.map(showParam).mkString(" ")}"
-      case Attribute(proof, name) => s"${showProof(proof)}.$name"
+      // For now, we can only retrieve the 1st and 2nd element of a tuple
+      case Indexed(proof, index) =>
+        val function = if (index == 1) "fst" else "snd"
+        showBodyProofWithLevel(Proof.applyOne(Proof.atomicVariable(function), proof), level)
     }
   }
 
