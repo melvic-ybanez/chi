@@ -68,7 +68,7 @@ class ShowScala extends Display {
         s"$functionString($nextLine${params.map(showProofWithLevel(_, nextLevel)).mkString(", " + nextLine)}$nextLine$indent)"
       case Infix(left, right) =>
         s"${showProof(left)}.${showProof(right)}"
-      case Attribute(proof, name) => s"${showProof(proof)}.$name"
+      case Indexed(proof, index) => s"${showProof(proof)}._$index"
     }
 
     s"$indent$proofString"

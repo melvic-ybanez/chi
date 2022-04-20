@@ -93,6 +93,11 @@ class HaskellFunctionsSpec extends BaseSpec {
     )
   }
 
+  "component of a product consequent" should "be accessible if the function is applied" in {
+    test("foo :: (a -> (c, b)) -> a -> c", "foo f a = fst (f a)")
+    test("foo :: (a -> (a, b)) -> (a -> a, a -> b)", "foo f = (\\a -> a, \\a -> snd (f a))")
+  }
+
   "either over tuples" should "deconstruct the tuples" in {
     generateAndShowWithInfo("foo :: Either (a, b) a -> a") should be(
       output(
