@@ -73,6 +73,24 @@ class HaskellFunctionsSpec extends BaseSpec {
           |    Right a -> a""".stripMargin
       )
     )
+
+    generateAndShowWithInfo("foo :: Either (a -> c) b -> (b -> c) -> a -> c") should be(
+      output(
+        """foo :: Either (a -> c) b -> (b -> c) -> a -> c
+          |foo e f a = case e of
+          |    Left (g) -> g a
+          |    Right b -> f b""".stripMargin
+      )
+    )
+  }
+
+  "search for implication assumption" should "be recursive" in {
+    generateAndShowWithInfo("foo :: (a -> (b -> c)) -> ((a, b) -> c)") should be(
+      output(
+        """foo :: (a -> b -> c) -> (a, b) -> c
+          |foo f (a, b) = f a b""".stripMargin
+      )
+    )
   }
 
   "either over tuples" should "deconstruct the tuples" in {

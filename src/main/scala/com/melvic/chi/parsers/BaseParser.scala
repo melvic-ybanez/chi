@@ -2,7 +2,7 @@ package com.melvic.chi.parsers
 
 import com.melvic.chi.ast.Proposition.{Atom, Identifier}
 import com.melvic.chi.ast.{Proposition, Signature}
-import com.melvic.chi.out.Fault
+import com.melvic.chi.output.Fault
 
 import scala.util.parsing.combinator.{PackratParsers, RegexParsers}
 import scala.util.parsing.input.CharSequenceReader

@@ -1,8 +1,8 @@
 package com.melvic.chi.parsers
 
 import com.melvic.chi.ast.{AssertIso, Signature}
-import com.melvic.chi.out.Result.Result
-import com.melvic.chi.out.{Fault, Result}
+import com.melvic.chi.output.Result.Result
+import com.melvic.chi.output.{Fault, Result}
 
 import scala.reflect.internal.util.NoPosition.end
 import scala.util.parsing.input.CharSequenceReader
