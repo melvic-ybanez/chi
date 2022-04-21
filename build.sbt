@@ -4,14 +4,9 @@ ThisBuild / version := "0.5.0-SNAPSHOT"
 
 ThisBuild / scalaVersion := "2.13.8"
 
-<<<<<<< HEAD
-=======
-assemblyJarName in assembly := "chi-0.5.0-snapshot.jar"
-
->>>>>>> 7edb07a443d01a30766099e3b70f02bbf588913a
 lazy val root = (project in file("."))
   .settings(
-    assembly / assemblyJarName := "chi-0.4.0-snapshot.jar",
+    assembly / assemblyJarName := "chi-0.5.0-snapshot.jar",
     name := "chi",
     libraryDependencies ++= dependencies
   )
