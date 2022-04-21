@@ -44,13 +44,13 @@ Within the REPL, inputs are evaluated when you press enter:
 chi> def apply[A, B]: (A => B) => A => B
 Detected language: Scala
 Generated code:
-def apply[A, B]: ((A => B) => (A => B)) =
+def apply[A, B]: (A => B) => A => B =
   identity
   
 chi> def fst[A, B]: (A, B) => A
 Detected language: Scala
 Generated code:
-def fst[A, B]: ((A, B) => A) =
+def fst[A, B]: (A, B) => A =
   { case (a, b) =>
     a
   }
@@ -58,25 +58,25 @@ def fst[A, B]: ((A, B) => A) =
 chi> def const[A, B]: A => (B => A)
 Detected language: Scala
 Generated code:
-def const[A, B]: (A => (B => A)) =
+def const[A, B]: A => B => A =
   a => b => a
 
 chi> def compose[A, B, C]: (B => C) => (A => B) => A => C
 Detected language: Scala
 Generated code:
-def compose[A, B, C]: ((B => C) => ((A => B) => (A => C))) =
+def compose[A, B, C]: (B => C) => (A => B) => A => C =
   f => g => f.compose(g)
 
 chi> def andThen[A, B, C]: (A => B) => (B => C) => A => C
 Detected language: Scala
 Generated code:
-def andThen[A, B, C]: ((A => B) => ((B => C) => (A => C))) =
+def andThen[A, B, C]: (A => B) => (B => C) => A => C =
   f => g => g.compose(f)
 
 chi> def foo[A, B, C]: (A => C) => (B => C) => Either[A, B] => C
 Detected language: Scala
 Generated code:
-def foo[A, B, C]: ((A => C) => ((B => C) => (Either[A, B] => C))) =
+def foo[A, B, C]: (A => C) => (B => C) => Either[A, B] => C =
   f => g => {
     case Left(a) => f(a)
     case Right(b) => g(b)
@@ -85,7 +85,7 @@ def foo[A, B, C]: ((A => C) => ((B => C) => (Either[A, B] => C))) =
 chi> def foo[A]: Either[A, A] => A
 Detected language: Scala
 Generated code:
-def foo[A]: (Either[A, A] => A) =
+def foo[A]: Either[A, A] => A =
   {
     case Left(a) => a
     case Right(a) => a
@@ -94,7 +94,7 @@ def foo[A]: (Either[A, A] => A) =
 chi> def foo[A, B, C]: (A => C) => (B => C) => B => C
 Detected language: Scala
 Generated code:
-def foo[A, B, C]: ((A => C) => ((B => C) => (B => C))) =
+def foo[A, B, C]: (A => C) => (B => C) => B => C =
   f => identity
 
 chi> exit
@@ -108,8 +108,8 @@ chi> def identity(a: A): A
 def identity(a: A): A =
   a
 
-chi> def andThen[A, B, C](f: (A => B), g: (B => C)): A => C
-def andThen[A, B, C](f: (A => B), g: (B => C)): (A => C) =
+chi> def andThen[A, B, C](f: A => B, g: B => C): A => C
+def andThen[A, B, C](f: A => B, g: B => C): A => C =
   g.compose(f)
 
 ```
@@ -129,9 +129,9 @@ chi> def disjunctionElimination[A, B, C](f: A => C, g: B => C): Either[A, B] => 
 Detected language: Scala
 Generated code:
 def disjunctionElimination[A, B, C](
-    f: (A => C),
-    g: (B => C)
-): (Either[A, B] => C) =
+    f: A => C,
+    g: B => C
+): Either[A, B] => C =
   {
     case Left(a) => f(a)
     case Right(b) => g(b)
