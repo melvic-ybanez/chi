@@ -33,6 +33,13 @@ Updated Image:
 
 <img width="1792" alt="Screen Shot 2022-04-20 at 3 21 44 AM" src="https://user-images.githubusercontent.com/4519785/164452479-de207458-e69d-49a8-9011-4c367e4e3907.png">
 
+For the Pure FP enthusiasts, here's Scala vs Haskell:
+
+<img width="1792" alt="Screen Shot 2022-04-21 at 8 49 17 PM" src="https://user-images.githubusercontent.com/4519785/164462291-ea3b7d4f-a91d-45df-a223-a4b32d69025e.png">
+
+Note that in the last example above, the extra info like `"Detected Language"` are gone. Chi provides an option to hide it. Just go to `Preferences > Editor` and toggle "Show extra output information". 
+
+
 ### Running the REPL
 Running the REPL is similar to running the UI except you need to pass an additional
 `repl` argument:
