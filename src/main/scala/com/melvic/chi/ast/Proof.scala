@@ -14,10 +14,10 @@ object Proof {
   final case class PLeft(proof: Proof) extends Proof
 
   /**
-    * A disjunction that utilizes both components, unlike what [[PRight]] and [[PLeft]] are for.
-    * Each component is a pair: the components name and the component itself.
+    * A pair of abstractions. This is used when there are two ways to construct a proof
+    * (e.g. Scala's Either pattern match)
     */
-  final case class EitherCases(left: (String, Proof), right: (String, Proof)) extends Proof
+  final case class EitherCases(left: Abstraction, right: Abstraction) extends Proof
 
   final case class EitherMatch(name: String, disjunction: EitherCases) extends Proof
 
@@ -31,7 +31,7 @@ object Proof {
 
   final case class Infix(left: Proof, right: Proof) extends Proof
 
-  final case class Attribute(function: Proof, name: String) extends Proof
+  final case class Indexed(function: Proof, index: Int) extends Proof
 
   def atomicVariable(name: String): Variable =
     Variable(name, PUnit)

@@ -21,7 +21,7 @@ object Transform {
   )(implicit prefs: Preferences, localFnName: String): Proof =
     language match {
       case Language.Scala => transformScala(proof)
-      case Language.Java  => proof
+      case _  => proof
     }
 
   def transformScala(proof: Proof)(implicit scalaPrefs: ScalaSettings, localFnName: String): Proof =

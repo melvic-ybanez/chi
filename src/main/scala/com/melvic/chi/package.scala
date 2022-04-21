@@ -1,7 +1,7 @@
 package com.melvic
 
 import com.melvic.chi.config.Preferences
-import com.melvic.chi.out.Result
+import com.melvic.chi.output.Result
 
 package object chi {
   type Result[A] = Result.Result[A]

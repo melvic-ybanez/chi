@@ -2,8 +2,8 @@ package com.melvic.chi
 
 import com.melvic.chi.ast.Definition
 import com.melvic.chi.config.Preferences
-import com.melvic.chi.out.Fault.ParseError
-import com.melvic.chi.out.Result
+import com.melvic.chi.output.Fault.ParseError
+import com.melvic.chi.output.Result
 
 package object eval {
   type Evaluate = String => String

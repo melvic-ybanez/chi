@@ -16,9 +16,12 @@ Function<String, Integer> boxTypesDemo(
 // Disjunction Elimination for some of Scala's built-in types
 def toInt: (String => Int) => (Float => Int) => Either[String, Float] => Int
 
-// A slightly more complicated example showing composition
-def complexComposeDemo(
-	f: String => Int,
-	g: Double => Int => Float,
-	d: Double
-): String => Float
+// Haskell syntax is now supported!
+foo :: (b -> c) -> (a -> b) -> a -> c
+
+// More Haskell
+bar :: (a, b) -> b
+foo :: (a -> c) -> (b -> c) -> Either a b -> c
+
+
+
