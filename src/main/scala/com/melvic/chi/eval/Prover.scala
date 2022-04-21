@@ -4,8 +4,8 @@ import com.melvic.chi.ast.Proof.{Conjunction => PConjunction, _}
 import com.melvic.chi.ast.Proposition._
 import com.melvic.chi.ast.{Proof, Proposition}
 import com.melvic.chi.env.Env
-import com.melvic.chi.out.Result.Result
-import com.melvic.chi.out.{Fault, Result}
+import com.melvic.chi.output.Result.Result
+import com.melvic.chi.output.{Fault, Result}
 
 object Prover {
   //noinspection SpellCheckingInspection
@@ -102,9 +102,7 @@ object Prover {
       components: List[Proposition]
   ): Result[Proof] = {
     def recurse(proof: Proof, components: List[Proposition], index: Int): Result[Proof] = {
-      // Note: this might be too Scala-specific. Make sure to handle for
-      // languages that do not support this syntax.
-      lazy val attr = Attribute(proof, "_" + index)
+      lazy val attr = Indexed(proof, index)
 
       components match {
         case Nil                     => Result.success(attr)
@@ -176,10 +174,12 @@ object Prover {
 
     // Check if we can prove the consequent with both components
     proveWithComponent(left).flatMap {
-      case (Variable(leftName, _), leftProof) =>
+      case (leftIn, leftOut) =>
         proveWithComponent(right).flatMap {
-          case (Variable(rightName, _), rightProof) =>
-            Result.success(EitherMatch(name, EitherCases((leftName, leftProof), (rightName, rightProof))))
+          case (rightIn, rightOut) =>
+            val left = Abstraction(leftIn, leftOut)
+            val right = Abstraction(rightIn, rightOut)
+            Result.success(EitherMatch(name, EitherCases(left, right)))
         }
     }
   }

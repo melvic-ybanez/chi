@@ -1,6 +1,6 @@
 Detected language: Scala
 Generated code:
-def andThenDemo[A, B, C](f: (A => B), g: (B => C)): (A => C) =
+def andThenDemo[A, B, C](f: A => B, g: B => C): A => C =
   g.compose(f)
 
 Detected language: Java
@@ -13,7 +13,7 @@ Generated code:
 
 Detected language: Scala
 Generated code:
-def myApply: (String => (Int => Int)) =
+def myApply: String => Int => Int =
   s => identity
 
 Detected language: Java
@@ -27,17 +27,25 @@ Function<String, Integer> boxTypesDemo(
 
 Detected language: Scala
 Generated code:
-def toInt: ((String => Int) => ((Float => Int) => (Either[String, Float] => Int))) =
+def toInt: (String => Int) => (Float => Int) => Either[String, Float] => Int =
   f => g => {
     case Left(s) => f(s)
     case Right(h) => g(h)
   }
 
-Detected language: Scala
+Detected language: Haskell
 Generated code:
-def complexComposeDemo(
-  f: (String => Int),
-  g: (Double => (Int => Float)),
-  d: Double
-): (String => Float) =
-  g(d).compose(f)
+foo :: (b -> c) -> (a -> b) -> a -> c
+foo f g a = f (g a)
+
+Detected language: Haskell
+Generated code:
+bar :: (a, b) -> b
+bar (a, b) = b
+
+Detected language: Haskell
+Generated code:
+foo :: (a -> c) -> (b -> c) -> Either a b -> c
+foo f g e = case e of
+    Left a -> f a
+    Right b -> g b

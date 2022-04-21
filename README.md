@@ -10,8 +10,7 @@ This program started as a proof-of-concept to see the mechanical nature of the p
 deriving function implementations when the types involved serve as logical propositions under the Curry-Howard Isomorphism.
 
 Chi takes in a function signature and generates the function implementation. At 
-the time of this writing, Chi supports both Java and Scala. Future support for 
-other languages are considered. 
+the time of this writing, Chi supports Java, Haskell, and Scala. 
 
 Chi can also check if two functions are isomorphic. See the [Isomorphism](#isomorphism) section for more details on this.
 
@@ -28,11 +27,18 @@ Chi supports both UI and REPL.
 
 Here's how it currently looks:
 
-https://user-images.githubusercontent.com/4519785/163822959-a355db57-3dbe-4cc2-866c-906f7900cfa0.mov
+https://user-images.githubusercontent.com/4519785/164452277-a87db5d8-0e5a-4716-bc3a-efb7f7f30065.mov
 
 Updated Image:
 
-<img width="1792" alt="Screen Shot 2022-04-19 at 12 14 26 AM" src="https://user-images.githubusercontent.com/4519785/163839106-a85022e6-354f-462f-80b7-e4c3765c8714.png">
+<img width="1792" alt="Screen Shot 2022-04-20 at 3 21 44 AM" src="https://user-images.githubusercontent.com/4519785/164452479-de207458-e69d-49a8-9011-4c367e4e3907.png">
+
+For the Pure FP enthusiasts, here's Scala vs Haskell:
+
+<img width="1792" alt="Screen Shot 2022-04-21 at 8 49 17 PM" src="https://user-images.githubusercontent.com/4519785/164462291-ea3b7d4f-a91d-45df-a223-a4b32d69025e.png">
+
+Note that in the last example above, the extra info like `"Detected Language"` are gone. Chi provides an option to hide it. Just go to `Preferences > Editor` and toggle "Show extra output information". 
+
 
 ### Running the REPL
 Running the REPL is similar to running the UI except you need to pass an additional
@@ -45,13 +51,13 @@ Within the REPL, inputs are evaluated when you press enter:
 chi> def apply[A, B]: (A => B) => A => B
 Detected language: Scala
 Generated code:
-def apply[A, B]: ((A => B) => (A => B)) =
+def apply[A, B]: (A => B) => A => B =
   identity
   
 chi> def fst[A, B]: (A, B) => A
 Detected language: Scala
 Generated code:
-def fst[A, B]: ((A, B) => A) =
+def fst[A, B]: (A, B) => A =
   { case (a, b) =>
     a
   }
@@ -59,25 +65,25 @@ def fst[A, B]: ((A, B) => A) =
 chi> def const[A, B]: A => (B => A)
 Detected language: Scala
 Generated code:
-def const[A, B]: (A => (B => A)) =
+def const[A, B]: A => B => A =
   a => b => a
 
 chi> def compose[A, B, C]: (B => C) => (A => B) => A => C
 Detected language: Scala
 Generated code:
-def compose[A, B, C]: ((B => C) => ((A => B) => (A => C))) =
+def compose[A, B, C]: (B => C) => (A => B) => A => C =
   f => g => f.compose(g)
 
 chi> def andThen[A, B, C]: (A => B) => (B => C) => A => C
 Detected language: Scala
 Generated code:
-def andThen[A, B, C]: ((A => B) => ((B => C) => (A => C))) =
+def andThen[A, B, C]: (A => B) => (B => C) => A => C =
   f => g => g.compose(f)
 
 chi> def foo[A, B, C]: (A => C) => (B => C) => Either[A, B] => C
 Detected language: Scala
 Generated code:
-def foo[A, B, C]: ((A => C) => ((B => C) => (Either[A, B] => C))) =
+def foo[A, B, C]: (A => C) => (B => C) => Either[A, B] => C =
   f => g => {
     case Left(a) => f(a)
     case Right(b) => g(b)
@@ -86,7 +92,7 @@ def foo[A, B, C]: ((A => C) => ((B => C) => (Either[A, B] => C))) =
 chi> def foo[A]: Either[A, A] => A
 Detected language: Scala
 Generated code:
-def foo[A]: (Either[A, A] => A) =
+def foo[A]: Either[A, A] => A =
   {
     case Left(a) => a
     case Right(a) => a
@@ -95,7 +101,7 @@ def foo[A]: (Either[A, A] => A) =
 chi> def foo[A, B, C]: (A => C) => (B => C) => B => C
 Detected language: Scala
 Generated code:
-def foo[A, B, C]: ((A => C) => ((B => C) => (B => C))) =
+def foo[A, B, C]: (A => C) => (B => C) => B => C =
   f => identity
 
 chi> exit
@@ -109,8 +115,8 @@ chi> def identity(a: A): A
 def identity(a: A): A =
   a
 
-chi> def andThen[A, B, C](f: (A => B), g: (B => C)): A => C
-def andThen[A, B, C](f: (A => B), g: (B => C)): (A => C) =
+chi> def andThen[A, B, C](f: A => B, g: B => C): A => C
+def andThen[A, B, C](f: A => B, g: B => C): A => C =
   g.compose(f)
 
 ```
@@ -121,7 +127,7 @@ To see if two functions are isomorphic with each other, just place the `<=>` ope
 <img width="1792" alt="Screen Shot 2022-04-19 at 12 15 14 AM" src="https://user-images.githubusercontent.com/4519785/163838288-9132c085-ac24-4c09-a325-2543a646a032.png">
 
 # Supported Languages
-As mentioned above, Chi supports both Java and Scala. You only need
+As mentioned above, Chi supports Java, Scala and Haskell. You only need
 to input the signature and Chi will automatically detect the language used
 (though it will prioritize Scala syntax)
 
@@ -130,9 +136,9 @@ chi> def disjunctionElimination[A, B, C](f: A => C, g: B => C): Either[A, B] => 
 Detected language: Scala
 Generated code:
 def disjunctionElimination[A, B, C](
-    f: (A => C),
-    g: (B => C)
-): (Either[A, B] => C) =
+    f: A => C,
+    g: B => C
+): Either[A, B] => C =
   {
     case Left(a) => f(a)
     case Right(b) => g(b)
@@ -160,6 +166,14 @@ Generated code:
         return f.apply(a);
     };
 }
+
+chi> foo :: Either (a, b) a -> a 
+Detected language: Haskell
+Generated code: 
+foo :: Either (a, b) a -> a
+foo e = case e of
+    Left (a, b) -> a
+    Right a -> a
 ```
 
 # Built-in types

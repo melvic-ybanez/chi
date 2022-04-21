@@ -4,9 +4,9 @@ import com.melvic.chi.ast.Proposition.{Atom, Identifier, PUnit}
 import com.melvic.chi.ast.{AssertIso, Definition, Proposition, Signature}
 import com.melvic.chi.config.Preferences
 import com.melvic.chi.env.Env
-import com.melvic.chi.out.Fault.UnknownPropositions
-import com.melvic.chi.out.Result.Result
-import com.melvic.chi.out.{IsoResult, Result}
+import com.melvic.chi.output.Fault.UnknownPropositions
+import com.melvic.chi.output.Result.Result
+import com.melvic.chi.output.{IsoResult, Result}
 import com.melvic.chi.parsers
 import com.melvic.chi.parsers.{IsomorphismParser, Language}
 

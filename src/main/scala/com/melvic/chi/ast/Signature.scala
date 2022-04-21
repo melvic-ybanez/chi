@@ -3,7 +3,7 @@ package com.melvic.chi.ast
 import com.melvic.chi.ast.Proof.Variable
 import com.melvic.chi.ast.Proposition.{Atom, Identifier, PUnit}
 import com.melvic.chi.env.Env
-import com.melvic.chi.out.IsoResult
+import com.melvic.chi.output.IsoResult
 
 final case class Signature(
     name: String,
