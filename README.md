@@ -27,11 +27,11 @@ Chi supports both UI and REPL.
 
 Here's how it currently looks:
 
-https://user-images.githubusercontent.com/4519785/163822959-a355db57-3dbe-4cc2-866c-906f7900cfa0.mov
+https://user-images.githubusercontent.com/4519785/164452277-a87db5d8-0e5a-4716-bc3a-efb7f7f30065.mov
 
 Updated Image:
 
-<img width="1792" alt="Screen Shot 2022-04-20 at 2 58 30 AM" src="https://user-images.githubusercontent.com/4519785/164076324-a110a1e5-4591-4da6-9d4e-39c971bb2103.png">
+<img width="1792" alt="Screen Shot 2022-04-20 at 3 21 44 AM" src="https://user-images.githubusercontent.com/4519785/164452479-de207458-e69d-49a8-9011-4c367e4e3907.png">
 
 ### Running the REPL
 Running the REPL is similar to running the UI except you need to pass an additional
@@ -120,7 +120,7 @@ To see if two functions are isomorphic with each other, just place the `<=>` ope
 <img width="1792" alt="Screen Shot 2022-04-19 at 12 15 14 AM" src="https://user-images.githubusercontent.com/4519785/163838288-9132c085-ac24-4c09-a325-2543a646a032.png">
 
 # Supported Languages
-As mentioned above, Chi supports both Java and Scala. You only need
+As mentioned above, Chi supports Java, Scala and Haskell. You only need
 to input the signature and Chi will automatically detect the language used
 (though it will prioritize Scala syntax)
 
@@ -159,6 +159,14 @@ Generated code:
         return f.apply(a);
     };
 }
+
+chi> foo :: Either (a, b) a -> a 
+Detected language: Haskell
+Generated code: 
+foo :: Either (a, b) a -> a
+foo e = case e of
+    Left (a, b) -> a
+    Right a -> a
 ```
 
 # Built-in types
