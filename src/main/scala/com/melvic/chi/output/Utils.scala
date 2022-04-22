@@ -10,6 +10,6 @@ object Utils {
     s"$prefix${params.mkString(separator)}$suffix"
   }
 
-  def toCSV[A](items: List[A]): String =
-    items.mkString(", ")
+  def toCSV[A](items: List[A], separator: String = ", "): String =
+    items.mkString(separator)
 }

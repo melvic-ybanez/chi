@@ -1,22 +1,23 @@
 package com.melvic.chi.eval
 
 import com.melvic.chi.ast.Proposition.{Atom, Identifier, PUnit}
-import com.melvic.chi.ast.{AssertIso, Definition, Proposition, Signature}
+import com.melvic.chi.ast._
 import com.melvic.chi.config.Preferences
 import com.melvic.chi.env.Env
 import com.melvic.chi.output.Fault.UnknownPropositions
+import com.melvic.chi.output.Result
 import com.melvic.chi.output.Result.Result
-import com.melvic.chi.output.{IsoResult, Result}
 import com.melvic.chi.parsers
-import com.melvic.chi.parsers.{IsomorphismParser, Language}
+import com.melvic.chi.parsers.{AssumptionParser, Language}
 
 import scala.annotation.tailrec
 
 object Generate {
   def codeFromSignature(signature: Signature, language: Language)(
-      implicit prefs: Preferences
+      implicit prefs: Preferences,
+      env: Env
   ): Result[Definition] = {
-    val Signature(name, typeParams, params, proposition) = signature
+    val Signature(name, typeParams, _, proposition) = signature
 
     implicit val localFnName: String = name
 
@@ -29,28 +30,28 @@ object Generate {
     if (unknownTypes.nonEmpty) Result.fail(UnknownPropositions(unknownTypes))
     else
       Prover
-        .proveProposition(proposition)(Env.fromListWithDefault(params))
+        .proveProposition(proposition)
         .map(Transform.from(_, language))
         .map(Definition(signature, _, language))
   }
 
-  def codeFromSignatureString(signature: String)(implicit prefs: Preferences): Result[Definition] =
+  def codeFromSignatureString(signature: String)(implicit prefs: Preferences, env: Env): Result[Definition] =
     parsers
       .parseLanguageSignature(signature)
       .flatMap {
         case (signature, lang) => codeFromSignature(signature, lang)
       }
 
-  def assertIso(signature: String): Result[IsoResult] =
-    IsomorphismParser.parseIso(signature).map {
-      case assert @ AssertIso(s, s1) => Signature.isomorphic(s, s1)
-    }
-
   def allToLines(lines: List[String])(implicit preferences: Preferences): List[String] = {
-    val evaluate: Evaluate = if (Preferences.showOutputInfo) generateAndShowWithInfo else generateAndShowCode
-    val definitions = parsers.Utils.removeComments(lines)
+    val definitions = parsers.Utils
+      .removeComments(lines)
       .map(_.trim) // we need to trim again to remove extra spaces between a definition and a comment
       .filter(_.nonEmpty)
+
+    implicit val env: Env = fetchAssumptions(definitions)
+
+    val evaluate: Evaluate =
+      if (Preferences.showOutputInfo) generateAndShowWithInfo else generateAndShowCode
 
     @tailrec
     def recurse(outputs: List[String], definitions: List[String]): List[String] =
@@ -74,10 +75,22 @@ object Generate {
         case Nil => (evaluate(partial), lines.tail)
         case line :: rest =>
           val signature = partial + " " + line
-          if (parsers.validInput(signature)) (evaluate(signature), rest)
+          // Note: this is not very efficient as we are doing the parsing twice
+          // here with the validation and the evaluation.
+          // Perhaps I didn't think this through :(
+          if (parsers.validateInput(signature)) (evaluate(signature), rest)
           else recurse(signature, rest)
       }
 
     recurse("", lines)
   }
+
+  def fetchAssumptions(definitions: List[String]): Env =
+    definitions.foldLeft(Env.default) {
+      case (env, definition) =>
+        AssumptionParser
+          .parseAssumption(definition)
+          .map(Env.addProof(_)(env))
+          .getOrElse(env)
+    }
 }

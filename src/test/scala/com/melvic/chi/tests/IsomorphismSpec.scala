@@ -1,6 +1,7 @@
 package com.melvic.chi.tests
 
 import com.melvic.chi.config.Preferences
+import com.melvic.chi.env.Env
 import com.melvic.chi.eval.{Generate, generateAndShowCode, generateWith}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should
@@ -19,6 +20,7 @@ class IsomorphismSpec extends AnyFlatSpec with should.Matchers {
     s"$leftName is NOT isomorphic to $rightName"
 
   implicit val preferences: Preferences = Preferences.loadDefaults
+  implicit val env: Env = Env.default
 
   def generate(signatureString: String) = generateAndShowCode(signatureString)
 

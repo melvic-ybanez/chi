@@ -1,11 +1,18 @@
 package com.melvic.chi.output
 
-import com.melvic.chi.ast.{AssertIso, Definition}
+import com.melvic.chi.ast.Definition
+import com.melvic.chi.ast.Proof.Variable
 import com.melvic.chi.config.Preferences
 import com.melvic.chi.parsers.Language
 
 object Result {
   type Result[A] = Either[Fault, A]
+
+  def show[A](result: Result[A])(f: A => String): String =
+    result match {
+      case Left(fault) => Fault.show(fault)
+      case Right(r)    => f(r)
+    }
 
   def showCodeWithInfo(result: Result[Definition])(implicit preferences: Preferences): String =
     showCodeWith(result) { (code, lang) =>
@@ -16,9 +23,8 @@ object Result {
   def showCodeWith(
       result: Result[Definition]
   )(f: (String, Language) => String)(implicit preferences: Preferences): String =
-    result match {
-      case Left(fault)                              => Fault.show(fault)
-      case Right(code @ Definition(_, _, language)) => f(Definition.show(code), language)
+    show(result) {
+      case code @ Definition(_, _, language) => f(Definition.show(code), language)
     }
 
   /**
@@ -27,16 +33,18 @@ object Result {
   def showCode(result: Result[Definition])(implicit preferences: Preferences): String =
     showCodeWith(result)((code, _) => code)
 
-  def showIso(result: Result[(IsoResult)]): String =
-    result match {
-      case Left(fault) => Fault.show(fault)
-      case Right(IsoResult.Fail(left, right)) =>
+  def showIso(result: Result[IsoResult]): String =
+    show(result) {
+      case IsoResult.Fail(left, right) =>
         s"$left is NOT isomorphic to $right"
-      case Right(IsoResult.Success((leftName, leftArgs), (rightName, rightArgs))) =>
+      case IsoResult.Success((leftName, leftArgs), (rightName, rightArgs)) =>
         def argsString(args: List[String]) = if (args.nonEmpty) s"[${Utils.toCSV(args)}]" else ""
         val forall = if (rightArgs.nonEmpty) s", for all types ${Utils.toCSV(leftArgs)}" else ""
         s"$leftName${argsString(leftArgs)} Is isomorphic to $rightName${argsString(rightArgs)}$forall"
     }
+
+  def showAssumption(assumption: Result[Variable]): String =
+    show(assumption)(ShowAssumption.apply)
 
   def success[A](value: A): Result[A] = Right(value)
 

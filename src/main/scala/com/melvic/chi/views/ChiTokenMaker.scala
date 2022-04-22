@@ -1,5 +1,6 @@
 package com.melvic.chi.views
 
+import com.melvic.chi.parsers.{AssumptionParser, Language}
 import com.melvic.chi.views.ChiTokenMaker.extraTokens
 import org.fife.ui.rsyntaxtextarea.modes.CPlusPlusTokenMaker
 import org.fife.ui.rsyntaxtextarea.{TokenMap, TokenTypes}
@@ -39,9 +40,10 @@ object ChiTokenMaker {
       "lazy",
       "return",
       "of",
-      "Java",
-      "Scala",
-      "Haskell"
+      AssumptionParser.AssumeOperator,
+      Language.Java.displayName,
+      Language.Scala.displayName,
+      Language.Haskell.displayName,
     )
     val functions = List("identity", "const", "compose", "andThen", "apply", "_1", "_2", "_3")
     val dataTypes = List(
