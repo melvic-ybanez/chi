@@ -30,9 +30,10 @@ object Prover {
 
   def proveAtom(atom: Atom)(implicit env: Env): Result[Proof] =
     proveFromAtom(atom)
+      .orElse(proveFromProduct(atom))
       .orElse(proveFromFunction(atom))
-      .orElse(proveFromFunctionToProduct(atom))
-      .orElse(proveFromFunctionToEither(atom))
+      .orElse(proveFromProductConsequent(atom))
+      .orElse(proveFromEither(atom))
 
   def proveFromAtom(atom: Atom)(implicit env: Env): Result[Proof] =
     Env
@@ -55,7 +56,7 @@ object Prover {
   }
 
   /**
-    * Recursively apply the function until the rightmost proposition.
+    * Recursively apply the function to get to the rightmost proposition.
     * This is in case the function is curried and requires multiple applications.
     */
   private def applyRecurse(atom: Atom, function: Proof, in: Proposition, out: Proposition, env: Env)(
@@ -70,7 +71,13 @@ object Prover {
         }
       }
 
-  def proveFromFunctionToProduct(atom: Atom)(implicit env: Env): Result[Proof] = {
+  def proveFromProduct(atom: Atom)(implicit env: Env): Result[Proof] =
+    findAndThen(atom, { case Variable(_, _: Conjunction) => true }) {
+      case Variable(name, conjunction: Conjunction) =>
+        proveProposition(Implication(conjunction, atom)).map(Match(name, _))
+    }
+
+  def proveFromProductConsequent(atom: Atom)(implicit env: Env): Result[Proof] = {
     val predicate: PartialFunction[Proof, Boolean] = {
       case Variable(_, function: Implication) =>
         Proposition.rightMostOf(function) match {
@@ -91,14 +98,15 @@ object Prover {
       case variable @ Variable(_, Implication(in, out)) =>
         val newEnv = Env.without(variable)
         applyRecurse(atom, variable, in, out, newEnv) {
-          case (Conjunction(components), application) => proveFromConjunction(atom, application, components)
+          case (Conjunction(components), application) =>
+            proveFromProductComponents(atom, application, components)
         }.orElse(proveAtom(atom)(newEnv))
     }
   }
 
-  def proveFromConjunction(
+  def proveFromProductComponents(
       atom: Atom,
-      application: Application,
+      application: Proof,
       components: List[Proposition]
   ): Result[Proof] = {
     def recurse(proof: Proof, components: List[Proposition], index: Int): Result[Proof] = {
@@ -115,10 +123,10 @@ object Prover {
     recurse(application, components, 1)
   }
 
-  def proveFromFunctionToEither(atom: Atom)(implicit env: Env): Result[Proof] =
+  def proveFromEither(atom: Atom)(implicit env: Env): Result[Proof] =
     findAndThen(atom, { case Variable(_, _: Disjunction) => true }) {
       case variable @ Variable(name, disjunction: Disjunction) =>
-        proveFromDisjunction(name, disjunction, atom)(Env.without(variable))
+        proveWithEither(name, disjunction, atom)(Env.without(variable))
     }
 
   def findAndThen(atom: Atom, predicate: PartialFunction[Proof, Boolean])(
@@ -158,7 +166,7 @@ object Prover {
       case param                    => Application(function, List(param))
     }
 
-  def proveFromDisjunction(name: String, disjunction: Disjunction, consequent: Proposition)(
+  def proveWithEither(name: String, disjunction: Disjunction, consequent: Proposition)(
       implicit env: Env
   ): Result[Proof] = {
 
@@ -179,7 +187,7 @@ object Prover {
           case (rightIn, rightOut) =>
             val left = Abstraction(leftIn, leftOut)
             val right = Abstraction(rightIn, rightOut)
-            Result.success(EitherMatch(name, EitherCases(left, right)))
+            Result.success(Match(name, EitherCases(left, right)))
         }
     }
   }

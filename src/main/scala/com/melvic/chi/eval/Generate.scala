@@ -17,7 +17,7 @@ object Generate {
       implicit prefs: Preferences,
       env: Env
   ): Result[Definition] = {
-    val Signature(name, typeParams, _, proposition) = signature
+    val Signature(name, typeParams, params, proposition) = signature
 
     implicit val localFnName: String = name
 
@@ -30,7 +30,7 @@ object Generate {
     if (unknownTypes.nonEmpty) Result.fail(UnknownPropositions(unknownTypes))
     else
       Prover
-        .proveProposition(proposition)
+        .proveProposition(proposition)(Env.addPoofs(params))
         .map(Transform.from(_, language))
         .map(Definition(signature, _, language))
   }

@@ -19,7 +19,7 @@ object Proof {
     */
   final case class EitherCases(left: Abstraction, right: Abstraction) extends Proof
 
-  final case class EitherMatch(name: String, disjunction: EitherCases) extends Proof
+  final case class Match(name: String, proof: Proof) extends Proof
 
   final case class Abstraction(domain: Proof, codomain: Proof) extends Proof
 

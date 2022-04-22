@@ -149,8 +149,8 @@ object Proposition {
       case Implication(Disjunction(left, right), out) =>
         normalize(Conjunction(normalize(Implication(left, out)) :: normalize(Implication(right, out)) :: Nil))
       case Implication(in, disjunction: Disjunction) => normalize(Implication(in, normalize(disjunction)))
-      case disjunction: Disjunction => Union.fromDisjunction(disjunction)
-      case _                        => proposition
+      case disjunction: Disjunction                  => Union.fromDisjunction(disjunction)
+      case _                                         => proposition
     }
 
   def isomorphic(proposition: Proposition, proposition1: Proposition): Boolean = {
@@ -185,5 +185,13 @@ object Proposition {
 
       Union(recurse(disjunction, Nil))
     }
+  }
+
+  object Disjunction {
+    def fromList(left: Proposition, right: Proposition, rest: List[Proposition]): Disjunction =
+      rest match {
+        case Nil          => Disjunction(left, right)
+        case head :: rest => Disjunction(left, fromList(right, head, rest))
+      }
   }
 }
