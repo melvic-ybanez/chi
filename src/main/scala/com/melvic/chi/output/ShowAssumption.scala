@@ -12,8 +12,7 @@ object ShowAssumption {
     proposition match {
       case Atom(value)              => value
       case Conjunction(components)  => Utils.toCSV(components.map(showComponent), " & ")
-      case disjunction: Disjunction => showProposition(Union.fromDisjunction(disjunction))
-      case Union(components)        => Utils.toCSV(components.map(showComponent), " | ")
+      case Disjunction(left, right) => showComponent(left) + " | " + showComponent(right)
       case Implication(antecedent, consequent) =>
         s"${showComponent(antecedent)} => ${showProposition(consequent)}"
     }
