@@ -14,6 +14,12 @@ the time of this writing, Chi supports Java, Haskell, and Scala.
 
 Chi can also check if two functions are isomorphic. See the [Isomorphism](#isomorphism) section for more details on this.
 
+### Contents
+1. [Installation](#installation)
+2. [Running](#running-chi)
+3. [Isomorphisms](#isomorphism)
+4. [Assumptions](#assumptions)
+
 # Installation
 The simplest way to install Chi is to download the distribution from the
 [release](https://github.com/melvic-ybanez/chi/releases) page.
@@ -195,3 +201,10 @@ def foo(f: (String => Int), g: (Float => Int)): (Either[String, Float] => Int) =
     case Right(h) => g(h)
   }
 ```
+
+# Assumptions
+
+You can also declare _assumptions_ that you can use to construct your proofs:
+
+<img width="1792" alt="Screen Shot 2022-04-23 at 10 05 46 PM" src="https://user-images.githubusercontent.com/4519785/164909427-79572b3c-0a71-4711-963c-158fbfd348b5.png">
+
