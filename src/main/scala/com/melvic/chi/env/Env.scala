@@ -59,7 +59,7 @@ object Env {
       implicit env: Env
   ): (Proof, Env) = {
     val variable = Variable(generateName(base), proposition)
-    (variable, fromList(variable :: env.proofs))
+    (variable, Env.addProof(variable))
   }
 
   /**

@@ -1,5 +1,6 @@
 package com.melvic.chi.eval
 
+import com.melvic.chi.ast.Proof.Variable
 import com.melvic.chi.ast.Proposition.{Atom, Identifier, PUnit}
 import com.melvic.chi.ast._
 import com.melvic.chi.config.Preferences

@@ -46,10 +46,12 @@ class ShowHaskell(functionName: String) extends Display {
         s"(${Utils.toCSV(components.map(showParam))})"
       case PRight(proof) => s"Right ${showBodyProof(proof)}"
       case PLeft(proof)  => s"Left ${showBodyProof(proof)}"
-      case Match(name, EitherCases(Abstraction(leftIn, leftOut), Abstraction(rightIn, rightOut))) =>
+      case EitherCases(Abstraction(leftIn, leftOut), Abstraction(rightIn, rightOut)) =>
         val leftCase = s"Left ${showBodyProof(leftIn)} -> ${showBodyProof(leftOut)}"
         val rightCase = s"Right ${showBodyProof(rightIn)} -> ${showBodyProof(rightOut)}"
-        s"case $name of\n$indent$leftCase\n$indent$rightCase"
+        s"$leftCase\n$indent$rightCase"
+      case Match(name, term: Proof) =>
+        s"case $name of\n$indent${showBodyProof(term)}"
       case Abstraction(in, out: Abstraction) => s"${showBodyProof(in)} ${showBodyProof(out)}"
       case Abstraction(in, out)              => s"${showBodyProof(in)} = ${showBodyProof(out)}"
       case Application(function, params) =>
