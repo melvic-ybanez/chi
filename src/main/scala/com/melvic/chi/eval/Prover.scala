@@ -36,11 +36,7 @@ object Prover {
       .orElse(proveFromEither(atom))
 
   def proveFromAtom(atom: Atom)(implicit env: Env): Result[Proof] =
-    Env
-      .find {
-        case Variable(_, `atom`) => true
-      }
-      .toRight(Fault.cannotProve(atom))
+    findAndThen(atom, { case Variable(_, `atom`) => true })(Result.success)
 
   def proveFromFunction(atom: Atom)(implicit env: Env): Result[Proof] = {
     val implicationOpt = Env.filterByConsequent(atom).headOption
@@ -73,8 +69,8 @@ object Prover {
 
   def proveFromProduct(atom: Atom)(implicit env: Env): Result[Proof] =
     findAndThen(atom, { case Variable(_, _: Conjunction) => true }) {
-      case Variable(name, conjunction: Conjunction) =>
-        proveProposition(Implication(conjunction, atom)).map(Match(name, _))
+      case variable @ Variable(name, conjunction: Conjunction) =>
+        proveProposition(Implication(conjunction, atom))(Env.without(variable)).map(Match(name, _))
     }
 
   def proveFromProductConsequent(atom: Atom)(implicit env: Env): Result[Proof] = {
