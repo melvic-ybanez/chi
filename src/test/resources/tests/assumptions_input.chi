@@ -1,0 +1,32 @@
+// Assumptions. Think of assumptions as "abstract functions". You use
+// them without worrying about how they are implemented.
+// Note that the syntax for declaring assumptions is language-agnostic
+assume eitherToC: (A | B) => C
+assume pairToD: (A & B) => D
+assume length: String => Int
+
+// We can't prove this by itself, not without the assumptions above
+def foo[A, B, C]: A => B => C
+
+def bar[A, B, D]: A => B => D
+
+assume hello: String
+
+def aString: String
+
+def strToFloat(str: String, f: Int => Float): Float
+
+assume eToF: E => F
+
+def andThen[D, E, F]: (D => E) => D => F
+
+
+assume either: a | c
+
+de :: (a -> c) -> (b -> c) -> c
+
+
+// assumptions do not have to come to be declared before the its usage
+f :: e
+
+assume eAndF: e & f

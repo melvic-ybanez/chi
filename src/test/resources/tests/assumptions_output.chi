@@ -1,0 +1,60 @@
+Assume eitherToC: (A | B) => C
+
+Assume pairToD: (A & B) => D
+
+Assume length: String => Int
+
+Detected language: Scala
+Generated code:
+def foo[A, B, C]: A => B => C =
+  a => b => eAndF match { case (e, f) =>
+    eitherToC(Left(a))
+  }
+
+Detected language: Scala
+Generated code:
+def bar[A, B, D]: A => B => D =
+  a => b => eAndF match { case (e, f) =>
+    pairToD(a, b)
+  }
+
+Assume hello: String
+
+Detected language: Scala
+Generated code:
+def aString: String =
+  hello
+
+Detected language: Scala
+Generated code:
+def strToFloat(str: String, f: Int => Float): Float =
+  eAndF match { case (e, g) =>
+    f(length(hello))
+  }
+
+Assume eToF: E => F
+
+Detected language: Scala
+Generated code:
+def andThen[D, E, F]: (D => E) => D => F =
+  f => d => eAndF match { case (e, g) =>
+    eToF(f(d))
+  }
+
+Assume either: a | c
+
+Detected language: Haskell
+Generated code:
+de :: (a -> c) -> (b -> c) -> c
+de f g = case eAndF of
+    (e, h) = case either of
+    Left a -> f a
+    Right c -> c
+
+Detected language: Haskell
+Generated code:
+f :: e
+f case eAndF of
+    (e, f) = e
+
+Assume eAndF: e & f
