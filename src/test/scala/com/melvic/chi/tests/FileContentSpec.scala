@@ -25,4 +25,10 @@ class FileContentSpec extends AnyFlatSpec with should.Matchers {
       readFileContent("isomorphisms_output.chi").mkString("\n")
     )
   }
+
+  it should "support assumptions" in {
+    Generate.allToString(readFileContent("assumptions_input.chi")) should be(
+      readFileContent("assumptions_output.chi").mkString("\n")
+    )
+  }
 }

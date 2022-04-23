@@ -57,7 +57,7 @@ class ShowScala extends Display {
         val leftCase = s"case Left(${showProof(leftIn)}) => ${showProof(leftOut)}"
         val rightCase = s"case Right(${showProof(rightIn)}) => ${showProof(rightOut)}"
         s"{\n$bodyIndent$leftCase\n$bodyIndent$rightCase\n$endCurlyIndent}"
-      case EitherMatch(name, term: EitherCases) =>
+      case Match(name, term: Proof) =>
         s"$name match ${showProofWithLevel(term, level)}"
       case Abstraction(params: Proof.Conjunction, codomain) =>
         s"{ case ${showProof(params)} =>\n$bodyIndent${showProof(codomain)}\n$endCurlyIndent}"

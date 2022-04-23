@@ -1,7 +1,6 @@
 package com.melvic.chi
 
 import com.melvic.chi.ast.Signature
-import com.melvic.chi.config.Preferences
 
 package object parsers {
   type ParseSignature = Result[(Signature, Language)]
@@ -12,6 +11,9 @@ package object parsers {
       .orElse(HaskellParser.parseSignature(signature))
       .orElse(ScalaParser.parseSignature(signature))
 
-  def validInput(input: String): Boolean =
-    parseLanguageSignature(input).orElse(IsomorphismParser.parseIso(input)).isRight
+  def validateInput(input: String): Boolean =
+    parseLanguageSignature(input)
+      .orElse(IsomorphismParser.parseIso(input))
+      .orElse(AssumptionParser.parseAssumption(input))
+      .isRight
 }

@@ -1,28 +1,12 @@
 package com.melvic.chi.parsers
 
 import com.melvic.chi.ast.Proof.Variable
-import com.melvic.chi.ast.Proposition._
-import com.melvic.chi.ast.{Proposition, Signature}
+import com.melvic.chi.ast.Signature
 
-object ScalaParser extends ScalaParser {
-  val signature: Parser[Signature] = scalaParser
-}
+object ScalaParser extends ScalaParser
 
-trait ScalaParser extends BaseParser with NamedParams with TuplesInParens {
+trait ScalaParser extends LanguageParser with ScalaLikeParser with NamedParams with TuplesInParens {
   val language = Language.Scala
-
-  val disjunction: Parser[Disjunction] =
-    "Either" ~> "[" ~> proposition ~ ("," ~> proposition <~ "]") ^^ {
-      case left ~ right => Disjunction(left, right)
-    }
-
-  lazy val implication: PackratParser[Implication] =
-    proposition ~ ("=>" ~> proposition) ^^ {
-      case antecedent ~ consequent => Implication(antecedent, consequent)
-    }
-
-  lazy val proposition: PackratParser[Proposition] =
-    implication | ("(" ~> implication <~ ")") | conjunction | disjunction | identifier
 
   val param: Parser[Variable] = (nameParser ~ (":" ~> proposition)) ^^ {
     case name ~ proposition =>
@@ -35,4 +19,6 @@ trait ScalaParser extends BaseParser with NamedParams with TuplesInParens {
         val params = paramList.getOrElse(Nil)
         Signature(name, typeParams.getOrElse(Nil).map(_.value), params, proposition)
     }
+
+  val signature: Parser[Signature] = scalaParser
 }

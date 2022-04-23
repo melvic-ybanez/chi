@@ -1,7 +1,7 @@
 package com.melvic.chi.eval
 
 import com.melvic.chi.ast.Proof
-import com.melvic.chi.ast.Proof.{Abstraction, Application, EitherCases, EitherMatch, Infix, Variable}
+import com.melvic.chi.ast.Proof._
 import com.melvic.chi.config.Preferences
 import com.melvic.chi.config.SettingsContent.ScalaSettings
 import com.melvic.chi.parsers.Language
@@ -21,7 +21,7 @@ object Transform {
   )(implicit prefs: Preferences, localFnName: String): Proof =
     language match {
       case Language.Scala => transformScala(proof)
-      case _  => proof
+      case _              => proof
     }
 
   def transformScala(proof: Proof)(implicit scalaPrefs: ScalaSettings, localFnName: String): Proof =
@@ -29,8 +29,8 @@ object Transform {
       // e.g. `a => f(a)` becomes `f`
       case Abstraction(in, Application(function, param :: Nil)) if param == in =>
         Transform(function).whenWith(scalaPrefs.pointFree)(transformScala)
-      case f @ Abstraction(Variable(inName, _), EitherMatch(name, eitherCases)) if inName == name =>
-        Transform(f).when(scalaPrefs.simplifyMatch)(transformScala(eitherCases))
+      case f @ Abstraction(Variable(inName, _), Match(name, proof)) if inName == name =>
+        Transform(f).when(scalaPrefs.simplifyMatch)(transformScala(proof))
       // e.g. `a => g(f(a))` becomes `g.compose(f)`
       case fg @ Abstraction(in, Application(f, Application(g, out :: Nil) :: Nil)) if in == out =>
         Transform(fg).when(scalaPrefs.pointFree) {
@@ -49,12 +49,8 @@ object Transform {
         if (result == function) result else transformScala(result)
       case Application(function, params) =>
         Application(transformScala(function), params.map(transformScala))
-      case EitherMatch(name, eitherCases) =>
-        transformScala(eitherCases) match {
-          case e: EitherCases => EitherMatch(name, e)
-          case proof => proof
-        }
-      case _ => proof
+      case Match(name, proof) => Match(name, transformScala(proof))
+      case _                  => proof
     }
 
   def resolveConflict(fnName: String, namespace: String)(implicit localFnName: String): String =

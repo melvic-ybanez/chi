@@ -4,7 +4,7 @@ import com.melvic.chi.ast.Proof.Variable
 import com.melvic.chi.ast.Proposition.{Atom, Conjunction, Implication}
 import com.melvic.chi.ast.{Proposition, Signature}
 
-object JavaParser extends BaseParser with NamedParams {
+object JavaParser extends LanguageParser with NamedParams {
   val language = Language.Java
 
   val typeParams: Parser[List[Atom]] = "<" ~> rep1sep(identifier, ",") <~ ">"

@@ -35,6 +35,9 @@ object Env {
   def addProof(proof: Proof)(implicit env: Env): Env =
     fromList(proof :: env.proofs)
 
+  def addPoofs(proofs: List[Proof])(implicit env: Env): Env =
+    fromList(env.proofs ++ proofs)
+
   /**
     * Assigns a variable to the proposition and registers it into the environment
     */
@@ -56,7 +59,7 @@ object Env {
       implicit env: Env
   ): (Proof, Env) = {
     val variable = Variable(generateName(base), proposition)
-    (variable, fromList(variable :: env.proofs))
+    (variable, Env.addProof(variable))
   }
 
   /**

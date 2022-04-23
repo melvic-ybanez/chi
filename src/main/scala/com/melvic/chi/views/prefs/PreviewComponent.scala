@@ -1,6 +1,7 @@
 package com.melvic.chi.views.prefs
 
 import com.melvic.chi.config.Preferences
+import com.melvic.chi.env.Env
 import com.melvic.chi.eval.generateAndShowCode
 import com.melvic.chi.views.{FontUtils, TextAreaComponent}
 import com.melvic.chi.{Evaluate, generateAndShowWithInfo}
@@ -27,10 +28,12 @@ class PreviewComponent(showExtraInfo: Boolean)(implicit prefs: Preferences)
   run(prefs)
 
   def run(preferences: Preferences): Unit = {
+    val env: Env = Env.default
     setLineNumbersEnabled(preferences.content.editor.showLineNumbers)
     val evaluate: Evaluate =
-      if (showExtraInfo && preferences.content.editor.showOutputInfo) generateAndShowWithInfo(_)(preferences)
-      else generateAndShowCode(_)(preferences)
+      if (showExtraInfo && preferences.content.editor.showOutputInfo)
+        generateAndShowWithInfo(_)(preferences, env)
+      else generateAndShowCode(_)(preferences, env)
     val output = inputs.map(evaluate).mkString("\n\n")
     textArea.setText(output)
   }

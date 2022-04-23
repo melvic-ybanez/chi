@@ -2,12 +2,10 @@ package com.melvic.chi.views
 
 import com.melvic.chi.config.Preferences
 import com.melvic.chi.eval.Generate
-import com.melvic.chi.{Evaluate, generateAndShowCode, generateAndShowWithInfo, parsers}
 
 import java.awt.BorderLayout
 import java.awt.event.{KeyAdapter, KeyEvent}
 import javax.swing.{JPanel, JSplitPane}
-import scala.annotation.tailrec
 
 class EditorComponent(implicit prefs: Preferences) extends JPanel {
   val textAreaScroll = TextAreaComponent.withScrollPane

@@ -4,7 +4,7 @@ import com.melvic.chi.ast.Proof.Variable
 import com.melvic.chi.ast.{Proposition, Signature}
 import com.melvic.chi.ast.Proposition.{Conjunction, Disjunction, Implication, PUnit}
 
-object HaskellParser extends BaseParser with TuplesInParens {
+object HaskellParser extends LanguageParser with TuplesInParens {
   override val language = Language.Haskell
 
   lazy val disjunction: PackratParser[Disjunction] = {
