@@ -12,6 +12,9 @@ class ReplSpec extends AnyFlatSpec with should.Matchers {
     var result: String = ""
 
     val print: Repl.Print = printed =>
+      // perform assertion after each print, but do this only if
+      // the output to print is not empty and is likely not the
+      // welcome message
       if (printed.nonEmpty && !printed.startsWith("Welcome"))
         printed should be(result)
     val readLine: Repl.ReadLine = { _ =>
@@ -64,6 +67,27 @@ class ReplSpec extends AnyFlatSpec with should.Matchers {
     val outputs = Iterator(
       "foo[C] Is isomorphic to bar[C], for all types C",
       "foo is NOT isomorphic to bar",
+      "Bye!"
+    )
+    test(inputs, outputs)
+  }
+
+  it should "support declaration of assumptions" in {
+    val inputs = Iterator(
+      "assume either: A | B",
+      "def foo[A, B, C]: (A => C) => (B => C) => C",
+      "exit"
+    )
+    val outputs = Iterator(
+      "Assume either: A | B",
+      output(
+        """def foo[A, B, C]: (A => C) => (B => C) => C =
+          |  f => g => either match {
+          |    case Left(a) => f(a)
+          |    case Right(b) => g(b)
+          |  }""".stripMargin,
+        Language.Scala
+      ),
       "Bye!"
     )
     test(inputs, outputs)
