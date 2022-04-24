@@ -23,8 +23,9 @@ object Repl {
       case "exit" => println("Bye!")
       case ""     => loop
       case input =>
-        println(generateAndShowWithInfo(input))
+        val newEnv: Env = Env.fetchAssumptions(input :: Nil)
+        println(eval.generateAndShow(input))
         println()
-        loop
+        loop(prefs, newEnv)
     }
 }

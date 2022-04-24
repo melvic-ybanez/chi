@@ -1,6 +1,6 @@
 package com.melvic.chi.tests
 
-import com.melvic.chi.generateAndShowWithInfo
+import com.melvic.chi.eval.generateAndShowWithInfo
 
 class HaskellFunctionsSpec extends BaseSpec {
   val language = "Haskell"
