@@ -1,9 +1,10 @@
 package com.melvic.chi.tests
 
 import com.melvic.chi.eval.generateAndShowWithInfo
+import com.melvic.chi.parsers.Language
 
 class JavaFunctionsSpec extends BaseSpec {
-  val language = "Java"
+  val language = Language.Java
 
   "function application" should "work according to the implication elimination rule" in {
     generateAndShowWithInfo("<A, B> B apply(A a, Function<A, B> f)") should be(
