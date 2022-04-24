@@ -1,9 +1,10 @@
 package com.melvic.chi.tests
 
-import com.melvic.chi.{generateAndShowCode, generateAndShowWithInfo}
+import com.melvic.chi.eval.generateAndShowWithInfo
+import com.melvic.chi.parsers.Language
 
 class ScalaDefSpec extends BaseSpec {
-  val language = "Scala"
+  val language = Language.Scala
 
   def test(input: String, outputBody: String) =
     generateAndShowWithInfo(input) should be(output(s"$input =\n  $outputBody"))
@@ -47,7 +48,7 @@ class ScalaDefSpec extends BaseSpec {
   "compose" should "apply the first function after the second" in {
     test(
       "def compose[A, B, C]: (B => C) => (A => B) => A => C",
-      "f => g => f.compose(g)",
+      "f => g => f.compose(g)"
     )
   }
 
@@ -153,7 +154,9 @@ class ScalaDefSpec extends BaseSpec {
 
   "Point-free style" should "use Scala's `compose` function" in {
     "def compose(f: String => Int, g: Int => Float): Double => String => Float" := "d => g.compose(f)"
-    generateAndShowWithInfo("def coolCompose(f: String => Int, g: Double => Int => Float, d: Double): String => Float") should be(
+    generateAndShowWithInfo(
+      "def coolCompose(f: String => Int, g: Double => Int => Float, d: Double): String => Float"
+    ) should be(
       output(
         """def coolCompose(
           |  f: String => Int,

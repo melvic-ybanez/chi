@@ -3,6 +3,7 @@ package com.melvic.chi
 import com.melvic.chi.ast.Proof.Variable
 import com.melvic.chi.ast.{AssertIso, Definition, Signature}
 import com.melvic.chi.config.Preferences
+import com.melvic.chi.config.Preferences.showOutputInfo
 import com.melvic.chi.env.Env
 import com.melvic.chi.output.Fault.ParseError
 import com.melvic.chi.output.Result.Result
@@ -11,6 +12,10 @@ import com.melvic.chi.parsers.{AssumptionParser, IsomorphismParser}
 
 package object eval {
   type Evaluate = String => String
+
+  def generateAndShow(source: String)(implicit preferences: Preferences, env: Env): String =
+    if (Preferences.showOutputInfo) generateAndShowWithInfo(source)
+    else generateAndShowCode(source)
 
   def generateWith(signature: String)(f: Result[Definition] => String)(
       implicit prefs: Preferences,

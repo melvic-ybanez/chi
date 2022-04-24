@@ -6,6 +6,7 @@ import com.melvic.chi.config.Preferences
 import com.melvic.chi.views.MainWindow
 
 import javax.swing.SwingUtilities
+import scala.io.StdIn.readLine
 
 //noinspection SpellCheckingInspection
 object Main {
@@ -13,7 +14,7 @@ object Main {
 
   def main(args: Array[String]): Unit =
     args match {
-      case Array("repl", _ @_*) => Repl.start
+      case Array("repl", _ @_*) => Repl.start(println, readLine(_))
       case _                    => runUI()
     }
 

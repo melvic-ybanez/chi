@@ -1,9 +1,10 @@
 package com.melvic.chi.tests
 
-import com.melvic.chi.generateAndShowWithInfo
+import com.melvic.chi.eval.generateAndShowWithInfo
+import com.melvic.chi.parsers.Language
 
 class HaskellFunctionsSpec extends BaseSpec {
-  val language = "Haskell"
+  val language = Language.Haskell
 
   def test(input: String, outputBody: String) =
     generateAndShowWithInfo(input) should be(output(s"$input\n$outputBody"))

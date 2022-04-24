@@ -49,17 +49,14 @@ object Generate {
       .map(_.trim) // we need to trim again to remove extra spaces between a definition and a comment
       .filter(_.nonEmpty)
 
-    implicit val env: Env = fetchAssumptions(definitions)
-
-    val evaluate: Evaluate =
-      if (Preferences.showOutputInfo) generateAndShowWithInfo else generateAndShowCode
+    implicit val env: Env = Env.fetchAssumptions(definitions)(Env.default)
 
     @tailrec
     def recurse(outputs: List[String], definitions: List[String]): List[String] =
       definitions match {
         case Nil => outputs
         case _ =>
-          val (output, rest) = Generate.fromLines(definitions, evaluate)
+          val (output, rest) = Generate.fromLines(definitions, generateAndShow)
           recurse(output :: outputs, rest)
       }
 
@@ -85,13 +82,4 @@ object Generate {
 
     recurse("", lines)
   }
-
-  def fetchAssumptions(definitions: List[String]): Env =
-    definitions.foldLeft(Env.default) {
-      case (env, definition) =>
-        AssumptionParser
-          .parseAssumption(definition)
-          .map(Env.addProof(_)(env))
-          .getOrElse(env)
-    }
 }

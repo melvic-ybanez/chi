@@ -3,6 +3,7 @@ package com.melvic.chi.env
 import com.melvic.chi.ast.Proof.{TUnit, Variable}
 import com.melvic.chi.ast.Proposition._
 import com.melvic.chi.ast.{Proof, Proposition}
+import com.melvic.chi.parsers.AssumptionParser
 
 /**
   * The set of assumptions and discharged formulae.
@@ -81,4 +82,13 @@ object Env {
       }
       .getOrElse(name)
   }
+
+  def fetchAssumptions(definitions: List[String])(implicit env: Env): Env =
+    definitions.foldLeft(env) {
+      case (env, definition) =>
+        AssumptionParser
+          .parseAssumption(definition)
+          .map(Env.addProof(_)(env))
+          .getOrElse(env)
+    }
 }
