@@ -8,13 +8,13 @@ object Language {
   case object Java extends Language
   case object Scala extends Language
   case object Haskell extends Language
+  case object Python extends Language
 
-  def builtInTypes(language: Language): List[String] = {
-    val builtinTypeString = language match {
-      case Scala => "Char,Byte,Short,Int,Long,Float,Double,String"
-      case Java  => "Byte,Boolean,Character,Float,Integer,Long,Short,Double,String"
-      case _     => ""
+  def builtInTypes(language: Language): List[String] =
+    language match {
+      case Scala => List("Char", "Byte", "Short", "Int", "Long", "Float", "Double", "String")
+      case Java  => List("Byte", "Boolean", "Character", "Float", "Integer", "Long", "Short", "Double", "String")
+      case Python => List("bool", "float", "int", "complex", "str")
+      case _     => Nil
     }
-    builtinTypeString.split(",").toList
-  }
 }
