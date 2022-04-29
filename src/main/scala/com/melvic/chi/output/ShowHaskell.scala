@@ -3,20 +3,20 @@ import com.melvic.chi.ast.Proof.{Conjunction => PConjunction, _}
 import com.melvic.chi.ast.Proposition.{Atom, Conjunction, Disjunction, Implication}
 import com.melvic.chi.ast.{Proof, Proposition, Signature}
 
-class ShowHaskell(functionName: String) extends Display {
-  override def showSignature(signature: Signature, split: Boolean) =
-    s"${signature.name} :: ${showProposition(signature.returnType)}"
+class ShowHaskell(functionName: String) extends Show { show =>
+  override def signature(signature: Signature, split: Boolean) =
+    s"${signature.name} :: ${show.proposition(signature.returnType)}"
 
-  override def showProposition(proposition: Proposition) =
+  override def proposition(proposition: Proposition) =
     proposition match {
       case Atom(value)                         => value
-      case Conjunction(components)             => "(" + Utils.toCSV(components.map(showProposition)) + ")"
-      case Disjunction(left, right)            => s"Either ${showProposition(left)} ${showProposition(right)}"
-      case Implication(impl: Implication, out) => s"(${showProposition(impl)}) -> ${showProposition(out)}"
-      case Implication(in, out)                => s"${showProposition(in)} -> ${showProposition(out)}"
+      case Conjunction(components)             => "(" + Show.toCSV(components.map(show.proposition)) + ")"
+      case Disjunction(left, right)            => s"Either ${show.proposition(left)} ${show.proposition(right)}"
+      case Implication(impl: Implication, out) => s"(${show.proposition(impl)}) -> ${show.proposition(out)}"
+      case Implication(in, out)                => s"${show.proposition(in)} -> ${show.proposition(out)}"
     }
 
-  override def showProofWithLevel(proof: Proof, level: Option[Int]) = {
+  override def proofWithLevel(proof: Proof, level: Option[Int]) = {
     val proofString = showBodyProofWithLevel(proof, level)
     val sep = proof match {
       case TUnit => " = "
@@ -26,7 +26,7 @@ class ShowHaskell(functionName: String) extends Display {
   }
 
   /**
-    * Like [[showProofWithLevel]], but without the function name
+    * Like [[proofWithLevel]], but without the function name
     */
   def showBodyProofWithLevel(proof: Proof, level: Option[Int]): String = {
     val indent = this.indent(level.map(_ + 1).orElse(Some(1)))
@@ -43,7 +43,7 @@ class ShowHaskell(functionName: String) extends Display {
           case abs: Abstraction => showLambda(abs)
           case proof            => showBodyProof(proof)
         }
-        s"(${Utils.toCSV(components.map(showParam))})"
+        s"(${Show.toCSV(components.map(showParam))})"
       case PRight(proof) => s"Right ${showBodyProof(proof)}"
       case PLeft(proof)  => s"Left ${showBodyProof(proof)}"
       case EitherCases(Abstraction(leftIn, leftOut), Abstraction(rightIn, rightOut)) =>
@@ -73,8 +73,8 @@ class ShowHaskell(functionName: String) extends Display {
 
   def showBodyProof(proof: Proof): String = showBodyProofWithLevel(proof, None)
 
-  override def showDefinition(signature: String, body: String, pretty: Boolean) =
+  override def definition(signature: String, body: String, pretty: Boolean) =
     s"$signature\n$body"
 
-  override def numberOfSpacesForIndent = 4
+  override def indentWidth = 4
 }

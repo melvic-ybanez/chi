@@ -1,14 +1,16 @@
 package com.melvic.chi.parsers
 
+import com.melvic.chi.ast.Proposition._
 import com.melvic.chi.ast.{Proposition, Signature}
-import com.melvic.chi.ast.Proposition.{Atom, Conjunction, Disjunction, Implication}
 
 object PythonParser extends LanguageParser with NamedParams {
   override val language = Language.Python
 
   val conjunction: Parser[Proposition] = {
-    val emptyParens: Parser[List[Atom]] = "(" ~ ")" ^^ { _ => Nil }
-    "Tuple" ~> "[" ~> ( emptyParens | rep1sep(identifier, ",")) <~ "]" ^^ (types => Conjunction(types))
+    val emptyParens: Parser[List[Atom]] = "(" ~ ")" ^^ { _ =>
+      Nil
+    }
+    "Tuple" ~> "[" ~> (emptyParens | rep1sep(identifier, ",")) <~ "]" ^^ (types => Conjunction(types))
   }
 
   val disjunction: Parser[Proposition] =
@@ -17,7 +19,8 @@ object PythonParser extends LanguageParser with NamedParams {
     }
 
   lazy val implication: PackratParser[Proposition] =
-    "Callable" ~> "[" ~> "[" ~> rep1sep(proposition, ",") ~ ("]" ~> "," ~> proposition <~ "]")  ^^ {
+    "Callable" ~> "[" ~> "[" ~> repsep(proposition, ",") ~ ("]" ~> "," ~> proposition <~ "]") ^^ {
+      case Nil ~ returnType    => Implication(PUnit, returnType)
       case params ~ returnType => Implication(Conjunction(params), returnType)
     }
 

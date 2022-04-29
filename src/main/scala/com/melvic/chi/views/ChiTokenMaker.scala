@@ -74,7 +74,8 @@ object ChiTokenMaker {
       "Left",
       "Right",
       "Tuple",
-      "Union"
+      "Union",
+      "Callback"
     )
 
     reservedWords.foreach(tokens.put(_, TokenTypes.RESERVED_WORD))

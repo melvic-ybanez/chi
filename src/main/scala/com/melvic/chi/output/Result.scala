@@ -38,8 +38,8 @@ object Result {
       case IsoResult.Fail(left, right) =>
         s"$left is NOT isomorphic to $right"
       case IsoResult.Success((leftName, leftArgs), (rightName, rightArgs)) =>
-        def argsString(args: List[String]) = if (args.nonEmpty) s"[${Utils.toCSV(args)}]" else ""
-        val forall = if (rightArgs.nonEmpty) s", for all types ${Utils.toCSV(leftArgs)}" else ""
+        def argsString(args: List[String]) = if (args.nonEmpty) s"[${Show.toCSV(args)}]" else ""
+        val forall = if (rightArgs.nonEmpty) s", for all types ${Show.toCSV(leftArgs)}" else ""
         s"$leftName${argsString(leftArgs)} Is isomorphic to $rightName${argsString(rightArgs)}$forall"
     }
 

@@ -30,8 +30,8 @@ object Generate {
 
     if (unknownTypes.nonEmpty) Result.fail(UnknownPropositions(unknownTypes))
     else
-      Prover
-        .proveProposition(proposition)(Env.addPoofs(params))
+      Prove
+        .proposition(proposition)(Env.addPoofs(params))
         .map(Transform.from(_, language))
         .map(Definition(signature, _, language))
   }

@@ -4,39 +4,34 @@ import com.melvic.chi.ast.Proof.{Conjunction => _, _}
 import com.melvic.chi.ast.Proposition._
 import com.melvic.chi.ast.{Proof, Proposition, Signature}
 
-class ShowScala extends Display {
-  override def showSignature(signature: Signature, split: Boolean = false): String = {
+class ShowScala extends Show { show =>
+  override def signature(signature: Signature, split: Boolean = false): String = {
     val typeParamsString = signature.typeParams match {
       case Nil        => ""
-      case typeParams => s"[${Utils.toCSV(typeParams)}]"
+      case typeParams => s"[${Show.toCSV(typeParams)}]"
     }
     val paramsString = signature.params match {
       case Nil => ""
-      case params =>
-        val vars = params.map {
-          case Variable(name, proposition) =>
-            s"$name: ${showProposition(proposition)}"
-        }
-        s"(${Utils.splitParams(vars, split)})"
+      case params => paramsList(params, split)
     }
 
-    s"def ${signature.name}$typeParamsString$paramsString: ${showProposition(signature.returnType)}"
+    s"def ${signature.name}$typeParamsString$paramsString: ${show.proposition(signature.returnType)}"
   }
 
-  override def showProposition(proposition: Proposition) =
+  override def proposition(proposition: Proposition) =
     proposition match {
       case Atom(value)                         => value
-      case Conjunction(components)             => "(" + Utils.toCSV(components.map(showProposition)) + ")"
-      case Disjunction(left, right)            => s"Either[${showProposition(left)}, ${showProposition(right)}]"
-      case Implication(impl: Implication, out) => s"(${showProposition(impl)}) => ${showProposition(out)}"
+      case Conjunction(components)             => "(" + Show.toCSV(components.map(show.proposition)) + ")"
+      case Disjunction(left, right)            => s"Either[${show.proposition(left)}, ${show.proposition(right)}]"
+      case Implication(impl: Implication, out) => s"(${show.proposition(impl)}) => ${show.proposition(out)}"
       case Implication(antecedent, consequent) =>
-        s"${showProposition(antecedent)} => ${showProposition(consequent)}"
+        s"${show.proposition(antecedent)} => ${show.proposition(consequent)}"
     }
 
-  override def numberOfSpacesForIndent = 2
+  override def indentWidth = 2
 
   //noinspection SpellCheckingInspection
-  override def showProofWithLevel(proof: Proof, level: Option[Int]) = {
+  override def proofWithLevel(proof: Proof, level: Option[Int]) = {
     val indent = this.indent(level)
     val nextLine = level.map(_ => "\n").getOrElse("")
     val nextLevel = level.map(_ + 1)
@@ -48,33 +43,33 @@ class ShowScala extends Display {
       case Variable(name, _) => name
       case Proof.Conjunction(terms) =>
         val termsString = terms
-          .map(showProofWithLevel(_, nextLevel))
+          .map(proofWithLevel(_, nextLevel))
           .mkString(", " + nextLine)
         "(" + nextLine + termsString + nextLine + indent + ")"
-      case PRight(term) => s"Right(${showProof(term)})"
-      case PLeft(term)  => s"Left(${showProof(term)})"
+      case PRight(term) => s"Right(${show.proof(term)})"
+      case PLeft(term)  => s"Left(${show.proof(term)})"
       case EitherCases(Abstraction(leftIn, leftOut), Abstraction(rightIn, rightOut)) =>
-        val leftCase = s"case Left(${showProof(leftIn)}) => ${showProof(leftOut)}"
-        val rightCase = s"case Right(${showProof(rightIn)}) => ${showProof(rightOut)}"
+        val leftCase = s"case Left(${show.proof(leftIn)}) => ${show.proof(leftOut)}"
+        val rightCase = s"case Right(${show.proof(rightIn)}) => ${show.proof(rightOut)}"
         s"{\n$bodyIndent$leftCase\n$bodyIndent$rightCase\n$endCurlyIndent}"
       case Match(name, term: Proof) =>
-        s"$name match ${showProofWithLevel(term, level)}"
+        s"$name match ${proofWithLevel(term, level)}"
       case Abstraction(params: Proof.Conjunction, codomain) =>
-        s"{ case ${showProof(params)} =>\n$bodyIndent${showProof(codomain)}\n$endCurlyIndent}"
+        s"{ case ${show.proof(params)} =>\n$bodyIndent${show.proof(codomain)}\n$endCurlyIndent}"
       case Abstraction(domain, codomain) =>
-        s"${showProof(domain)} => $nextLine${showProofWithLevel(codomain, nextLevel)}"
+        s"${show.proof(domain)} => $nextLine${proofWithLevel(codomain, nextLevel)}"
       case Application(function, params) =>
-        val functionString = showProof(function)
-        s"$functionString($nextLine${params.map(showProofWithLevel(_, nextLevel)).mkString(", " + nextLine)}$nextLine$indent)"
+        val functionString = show.proof(function)
+        s"$functionString($nextLine${params.map(proofWithLevel(_, nextLevel)).mkString(", " + nextLine)}$nextLine$indent)"
       case Infix(left, right) =>
-        s"${showProof(left)}.${showProof(right)}"
-      case Indexed(proof, index) => s"${showProof(proof)}._$index"
+        s"${show.proof(left)}.${show.proof(right)}"
+      case Indexed(proof, index) => s"${show.proof(proof)}._$index"
     }
 
     s"$indent$proofString"
   }
 
-  override def showDefinition(signature: String, body: String, pretty: Boolean) = {
+  override def definition(signature: String, body: String, pretty: Boolean) = {
     val prettyBody = if (pretty) body else "  " + body
     s"$signature =\n$prettyBody"
   }
