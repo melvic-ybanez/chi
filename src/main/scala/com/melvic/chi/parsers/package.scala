@@ -8,7 +8,6 @@ package object parsers {
   def parseLanguageSignature(signature: String): ParseSignature =
     JavaParser
       .parseSignature(signature)
-      .orElse(PythonParser.parseSignature(signature))
       .orElse(HaskellParser.parseSignature(signature))
       .orElse(ScalaParser.parseSignature(signature))
 
