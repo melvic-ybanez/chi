@@ -2,6 +2,7 @@ package com.melvic.chi.output
 
 import com.melvic.chi.ast.Proposition
 import com.melvic.chi.ast.Proposition.Atom
+import com.melvic.chi.config.Preferences
 import com.melvic.chi.parsers.Language
 
 sealed trait Fault
@@ -17,19 +18,19 @@ object Fault {
   def parseError(msg: String): Fault =
     ParseError(msg)
 
-  def show(fault: Fault): String = {
+  def show(fault: Fault)(implicit preferences: Preferences): String = {
     // For the mean time, let's just use Scala's syntax for the
     // error reporting of propositions. I mean, this project is
     // Scala-biased anyway.
-    val display = Display.fromLanguage(Language.Scala, "")
+    val display = Show.fromLanguage(Language.Scala, "")
 
     fault match {
       case CannotProve(proposition) =>
-        val propositionString = display.showProposition(proposition)
+        val propositionString = display.proposition(proposition)
         s"Can not prove the following proposition: $propositionString"
       case ParseError(msg) => s"Parse Error: $msg"
       case UnknownPropositions(identifiers) =>
-        s"Unknown propositions: ${Utils.toCSV(identifiers.map(display.showProposition(_)))}"
+        s"Unknown propositions: ${Show.toCSV(identifiers.map(display.proposition(_)))}"
     }
   }
 }

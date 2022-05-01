@@ -24,9 +24,3 @@ def andThen[D, E, F]: (D => E) => D => F
 assume either: a | c
 
 de :: (a -> c) -> (b -> c) -> c
-
-
-// assumptions do not have to come to be declared before the its usage
-f :: e
-
-assume eAndF: e & f

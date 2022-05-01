@@ -48,6 +48,9 @@ object ChiTokenMaker {
     val functions = List("identity", "const", "compose", "andThen", "apply", "_1", "_2", "_3")
     val dataTypes = List(
       "int",
+      "str",
+      "bool",
+      "complex",
       "Int",
       "Integer",
       "float",
@@ -69,7 +72,10 @@ object ChiTokenMaker {
       "BiFunction",
       "Either",
       "Left",
-      "Right"
+      "Right",
+      "Tuple",
+      "Union",
+      "Callback"
     )
 
     reservedWords.foreach(tokens.put(_, TokenTypes.RESERVED_WORD))

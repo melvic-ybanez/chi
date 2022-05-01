@@ -7,38 +7,36 @@ import com.melvic.chi.env.Env
 import com.melvic.chi.output.Result.Result
 import com.melvic.chi.output.{Fault, Result}
 
-object Prover {
+object Prove {
   //noinspection SpellCheckingInspection
-  def proveProposition(proposition: Proposition)(implicit env: Env): Result[Proof] =
+  def proposition(proposition: Proposition)(implicit env: Env): Result[Proof] =
     proposition match {
       case PUnit                    => Result.success(TUnit)
-      case atom: Atom               => proveAtom(atom)
-      case conjunction: Conjunction => proveConjunction(conjunction)
+      case atom: Atom               => Prove.atom(atom)
+      case conjunction: Conjunction => Prove.fromConjunction(conjunction)
       case Disjunction(left, right) =>
-        proveProposition(left)
+        Prove
+          .proposition(left)
           .map(PLeft)
-          .orElse(proveProposition(right).map(PRight))
-      case Implication(antecedent, consequent) => proveImplication(antecedent, consequent)
+          .orElse(Prove.proposition(right).map(PRight))
+      case Implication(antecedent, consequent) => implication(antecedent, consequent)
     }
 
-  def proveImplication(antecedent: Proposition, consequent: Proposition)(
+  def implication(antecedent: Proposition, consequent: Proposition)(
       implicit env: Env
   ): Result[Proof] = {
     val (term, newEnv) = Env.register(antecedent)
-    proveProposition(consequent)(newEnv).map(Abstraction(term, _))
+    Prove.proposition(consequent)(newEnv).map(Abstraction(term, _))
   }
 
-  def proveAtom(atom: Atom)(implicit env: Env): Result[Proof] =
-    proveFromAtom(atom)
-      .orElse(proveFromProduct(atom))
-      .orElse(proveFromFunction(atom))
-      .orElse(proveFromProductConsequent(atom))
-      .orElse(proveFromEither(atom))
-
-  def proveFromAtom(atom: Atom)(implicit env: Env): Result[Proof] =
+  def atom(atom: Atom)(implicit env: Env): Result[Proof] =
     findAndThen(atom, { case Variable(_, `atom`) => true })(Result.success)
+      .orElse(atomFromProduct(atom))
+      .orElse(atomFromFunction(atom))
+      .orElse(atomFromProductConsequent(atom))
+      .orElse(atomFromEither(atom))
 
-  def proveFromFunction(atom: Atom)(implicit env: Env): Result[Proof] = {
+  def atomFromFunction(atom: Atom)(implicit env: Env): Result[Proof] = {
     val implicationOpt = Env.filterByConsequent(atom).headOption
     implicationOpt
       .toRight(Fault.cannotProve(atom))
@@ -47,7 +45,7 @@ object Prover {
           val newEnv = Env.without(variable)
           applyRecurse(atom, variable, antecedent, consequent, newEnv) {
             case (`atom`, application) => Result.success(application)
-          }.orElse(proveAtom(atom)(newEnv))
+          }.orElse(Prove.atom(atom)(newEnv))
       }
   }
 
@@ -58,7 +56,8 @@ object Prover {
   private def applyRecurse(atom: Atom, function: Proof, in: Proposition, out: Proposition, env: Env)(
       f: (Proposition, Application) => Result[Proof]
   ): Result[Proof] =
-    proveProposition(in)(env)
+    Prove
+      .proposition(in)(env)
       .map(implicationElimination(function, _))
       .flatMap { application =>
         out match {
@@ -67,13 +66,13 @@ object Prover {
         }
       }
 
-  def proveFromProduct(atom: Atom)(implicit env: Env): Result[Proof] =
+  def atomFromProduct(atom: Atom)(implicit env: Env): Result[Proof] =
     findAndThen(atom, { case Variable(_, _: Conjunction) => true }) {
       case variable @ Variable(name, conjunction: Conjunction) =>
-        proveProposition(Implication(conjunction, atom))(Env.without(variable)).map(Match(name, _))
+        Prove.proposition(Implication(conjunction, atom))(Env.without(variable)).map(Match(name, _))
     }
 
-  def proveFromProductConsequent(atom: Atom)(implicit env: Env): Result[Proof] = {
+  def atomFromProductConsequent(atom: Atom)(implicit env: Env): Result[Proof] = {
     val predicate: PartialFunction[Proof, Boolean] = {
       case Variable(_, function: Implication) =>
         Proposition.rightMostOf(function) match {
@@ -95,12 +94,12 @@ object Prover {
         val newEnv = Env.without(variable)
         applyRecurse(atom, variable, in, out, newEnv) {
           case (Conjunction(components), application) =>
-            proveFromProductComponents(atom, application, components)
-        }.orElse(proveAtom(atom)(newEnv))
+            atomFromProductComponents(atom, application, components)
+        }.orElse(Prove.atom(atom)(newEnv))
     }
   }
 
-  def proveFromProductComponents(
+  def atomFromProductComponents(
       atom: Atom,
       application: Proof,
       components: List[Proposition]
@@ -119,10 +118,10 @@ object Prover {
     recurse(application, components, 1)
   }
 
-  def proveFromEither(atom: Atom)(implicit env: Env): Result[Proof] =
+  def atomFromEither(atom: Atom)(implicit env: Env): Result[Proof] =
     findAndThen(atom, { case Variable(_, _: Disjunction) => true }) {
       case variable @ Variable(name, disjunction: Disjunction) =>
-        proveWithEither(name, disjunction, atom)(Env.without(variable))
+        Prove.withEither(name, disjunction, atom)(Env.without(variable))
     }
 
   def findAndThen(atom: Atom, predicate: PartialFunction[Proof, Boolean])(
@@ -134,12 +133,12 @@ object Prover {
     * Finds proof for the components and use them to construct the proof for the
     * conjunction.
     */
-  def proveConjunction(conjunction: Conjunction)(implicit env: Env): Result[Proof] = {
+  def fromConjunction(conjunction: Conjunction)(implicit env: Env): Result[Proof] = {
     def recurse(result: List[Proof], components: List[Proposition]): Result[List[Proof]] =
       components match {
         case Nil => Result.success(result)
         case component :: rest =>
-          proveProposition(component).flatMap(proof => recurse(proof :: result, rest))
+          proposition(component).flatMap(proof => recurse(proof :: result, rest))
       }
 
     val evaluatedComponents = recurse(Nil, conjunction.components)
@@ -162,7 +161,7 @@ object Prover {
       case param                    => Application(function, List(param))
     }
 
-  def proveWithEither(name: String, disjunction: Disjunction, consequent: Proposition)(
+  def withEither(name: String, disjunction: Disjunction, consequent: Proposition)(
       implicit env: Env
   ): Result[Proof] = {
 
@@ -171,7 +170,7 @@ object Prover {
       */
     def proveWithComponent(component: Proposition): Result[(Proof, Proof)] = {
       val (proofId, newEnv) = Env.register(component)
-      proveProposition(consequent)(newEnv).map((proofId, _))
+      proposition(consequent)(newEnv).map((proofId, _))
     }
 
     val Disjunction(left, right) = disjunction

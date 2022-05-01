@@ -8,11 +8,6 @@ object ScalaParser extends ScalaParser
 trait ScalaParser extends LanguageParser with ScalaLikeParser with NamedParams with TuplesInParens {
   val language = Language.Scala
 
-  val param: Parser[Variable] = (nameParser ~ (":" ~> proposition)) ^^ {
-    case name ~ proposition =>
-      Variable(name, proposition)
-  }
-
   val scalaParser: Parser[Signature] =
     "def" ~> nameParser ~ opt("[" ~> rep1sep(identifier, ",") <~ "]") ~ opt(paramList) ~ (":" ~> proposition) ^^ {
       case name ~ typeParams ~ paramList ~ proposition =>

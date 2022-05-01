@@ -61,8 +61,8 @@ class HaskellFunctionsSpec extends BaseSpec {
       output(
         """foo :: (a -> c) -> (b -> c) -> Either a b -> c
           |foo f g e = case e of
-          |    Left a -> f a
-          |    Right b -> g b""".stripMargin
+          |  Left a -> f a
+          |  Right b -> g b""".stripMargin
       )
     )
 
@@ -70,8 +70,8 @@ class HaskellFunctionsSpec extends BaseSpec {
       output(
         """foo :: Either a a -> a
           |foo e = case e of
-          |    Left a -> a
-          |    Right a -> a""".stripMargin
+          |  Left a -> a
+          |  Right a -> a""".stripMargin
       )
     )
 
@@ -79,8 +79,8 @@ class HaskellFunctionsSpec extends BaseSpec {
       output(
         """foo :: Either (a -> c) b -> (b -> c) -> a -> c
           |foo e f a = case e of
-          |    Left (g) -> g a
-          |    Right b -> f b""".stripMargin
+          |  Left (g) -> g a
+          |  Right b -> f b""".stripMargin
       )
     )
   }
@@ -104,8 +104,8 @@ class HaskellFunctionsSpec extends BaseSpec {
       output(
         """foo :: Either (a, b) a -> a
           |foo e = case e of
-          |    Left (a, b) -> a
-          |    Right a -> a""".stripMargin
+          |  Left (a, b) -> a
+          |  Right a -> a""".stripMargin
       )
     )
   }

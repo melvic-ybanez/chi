@@ -1,23 +1,24 @@
 package com.melvic.chi.output
 import com.melvic.chi.ast.Proof.{Conjunction => PConjunction, _}
 import com.melvic.chi.ast.Proposition.{Atom, Conjunction, Disjunction, Implication}
-import com.melvic.chi.ast.{Proof, Proposition, Signature}
+import com.melvic.chi.ast.{Proof, Proposition}
+import com.melvic.chi.config.Preferences
 
-class ShowHaskell(functionName: String) extends Display {
-  override def showSignature(signature: Signature, split: Boolean) =
-    s"${signature.name} :: ${showProposition(signature.returnType)}"
+class ShowHaskell(functionName: String)(implicit val prefs: Preferences) extends Show { show =>
+  override def signature: SignatureLayout =
+    signature => s"${signature.name} :: ${show.proposition(signature.returnType)}"
 
-  override def showProposition(proposition: Proposition) =
+  override def proposition(proposition: Proposition) =
     proposition match {
       case Atom(value)                         => value
-      case Conjunction(components)             => "(" + Utils.toCSV(components.map(showProposition)) + ")"
-      case Disjunction(left, right)            => s"Either ${showProposition(left)} ${showProposition(right)}"
-      case Implication(impl: Implication, out) => s"(${showProposition(impl)}) -> ${showProposition(out)}"
-      case Implication(in, out)                => s"${showProposition(in)} -> ${showProposition(out)}"
+      case Conjunction(components)             => "(" + Show.toCSV(components.map(show.proposition)) + ")"
+      case Disjunction(left, right)            => s"Either ${show.proposition(left)} ${show.proposition(right)}"
+      case Implication(impl: Implication, out) => s"(${show.proposition(impl)}) -> ${show.proposition(out)}"
+      case Implication(in, out)                => s"${show.proposition(in)} -> ${show.proposition(out)}"
     }
 
-  override def showProofWithLevel(proof: Proof, level: Option[Int]) = {
-    val proofString = showBodyProofWithLevel(proof, level)
+  def body: ProofLayout = { proof =>
+    val proofString = namelessBody(proof)
     val sep = proof match {
       case TUnit => " = "
       case _     => " "
@@ -25,14 +26,14 @@ class ShowHaskell(functionName: String) extends Display {
     s"$functionName$sep$proofString"
   }
 
-  /**
-    * Like [[showProofWithLevel]], but without the function name
-    */
-  def showBodyProofWithLevel(proof: Proof, level: Option[Int]): String = {
-    val indent = this.indent(level.map(_ + 1).orElse(Some(1)))
+  override def bodyLayouts: List[ProofLayout] = body :: Nil
 
+  /**
+    * Like [[show.body]], but without the function name
+    */
+  def namelessBody(proof: Proof): String = {
     def showLambda: Abstraction => String = {
-      case Abstraction(in, out) => s"\\${showBodyProof(in)} -> ${showBodyProof(out)}"
+      case Abstraction(in, out) => s"\\${namelessBody(in)} -> ${namelessBody(out)}"
     }
 
     proof match {
@@ -41,40 +42,41 @@ class ShowHaskell(functionName: String) extends Display {
       case PConjunction(components) =>
         def showParam: Proof => String = {
           case abs: Abstraction => showLambda(abs)
-          case proof            => showBodyProof(proof)
+          case proof            => namelessBody(proof)
         }
-        s"(${Utils.toCSV(components.map(showParam))})"
-      case PRight(proof) => s"Right ${showBodyProof(proof)}"
-      case PLeft(proof)  => s"Left ${showBodyProof(proof)}"
+        s"(${Show.toCSV(components.map(showParam))})"
+      case PRight(proof) => s"Right ${namelessBody(proof)}"
+      case PLeft(proof)  => s"Left ${namelessBody(proof)}"
       case EitherCases(Abstraction(leftIn, leftOut), Abstraction(rightIn, rightOut)) =>
-        val leftCase = s"Left ${showBodyProof(leftIn)} -> ${showBodyProof(leftOut)}"
-        val rightCase = s"Right ${showBodyProof(rightIn)} -> ${showBodyProof(rightOut)}"
-        s"$leftCase\n$indent$rightCase"
+        val leftCase = s"Left ${namelessBody(leftIn)} -> ${namelessBody(leftOut)}"
+        val rightCase = s"Right ${namelessBody(rightIn)} -> ${namelessBody(rightOut)}"
+        s"$leftCase$line$rightCase"
       case Match(name, term: Proof) =>
-        s"case $name of\n$indent${showBodyProof(term)}"
-      case Abstraction(in, out: Abstraction) => s"${showBodyProof(in)} ${showBodyProof(out)}"
-      case Abstraction(in, out)              => s"${showBodyProof(in)} = ${showBodyProof(out)}"
+        val cases = nest(line + namelessBody(term))
+        s"case $name of$cases"
+      case Abstraction(in, out: Abstraction) => s"${namelessBody(in)} ${namelessBody(out)}"
+      case Abstraction(in, out)              => s"${namelessBody(in)} = ${namelessBody(out)}"
       case Application(function, params) =>
         def showParam(param: Proof): String =
           param match {
             case abs: Abstraction => s"(${showLambda(abs)})"
-            case app: Application => s"(${showBodyProof(app)})"
-            case left: PLeft      => s"(${showBodyProof(left)})"
-            case right: PRight    => s"(${showBodyProof(right)})"
-            case _                => showBodyProof(param)
+            case app: Application => s"(${namelessBody(app)})"
+            case left: PLeft      => s"(${namelessBody(left)})"
+            case right: PRight    => s"(${namelessBody(right)})"
+            case _                => namelessBody(param)
           }
-        s"${showBodyProof(function)} ${params.map(showParam).mkString(" ")}"
+        s"${namelessBody(function)} ${params.map(showParam).mkString(" ")}"
       // For now, we can only retrieve the 1st and 2nd element of a tuple
       case Indexed(proof, index) =>
         val function = if (index == 1) "fst" else "snd"
-        showBodyProofWithLevel(Proof.applyOne(Proof.atomicVariable(function), proof), level)
+        namelessBody(Proof.applyOne(Proof.atomicVariable(function), proof))
     }
   }
 
-  def showBodyProof(proof: Proof): String = showBodyProofWithLevel(proof, None)
+  override def prettySignature = signature
 
-  override def showDefinition(signature: String, body: String, pretty: Boolean) =
-    s"$signature\n$body"
+  override def indentWidth = 2
 
-  override def numberOfSpacesForIndent = 4
+  override def makeDef(signature: String, body: String) =
+    signature + line + body
 }
