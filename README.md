@@ -206,5 +206,5 @@ def foo(f: (String => Int), g: (Float => Int)): (Either[String, Float] => Int) =
 
 You can also declare _assumptions_ that you can use to construct your proofs:
 
-<img width="1792" alt="Screen Shot 2022-04-23 at 10 05 46 PM" src="https://user-images.githubusercontent.com/4519785/164909427-79572b3c-0a71-4711-963c-158fbfd348b5.png">
+<img width="1792" alt="Screen Shot 2022-05-02 at 2 29 46 AM" src="https://user-images.githubusercontent.com/4519785/166159476-60c154c9-94e2-4a5f-99fa-8eb93fefe8d0.png">
 
