@@ -48,8 +48,8 @@ class ReplSpec extends AnyFlatSpec with should.Matchers {
       output(
         """foo :: Either (a, b) a -> a
           |foo e = case e of
-          |    Left (a, b) -> a
-          |    Right a -> a""".stripMargin,
+          |  Left (a, b) -> a
+          |  Right a -> a""".stripMargin,
         Language.Haskell
       ),
       "Bye!"

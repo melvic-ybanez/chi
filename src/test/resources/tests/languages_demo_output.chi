@@ -19,8 +19,8 @@ def myApply: String => Int => Int =
 Detected language: Java
 Generated code:
 Function<String, Integer> boxTypesDemo(
-  Function<String, Float> f,
-  Function<Float, Integer> g
+    Function<String, Float> f,
+    Function<Float, Integer> g
 ) {
     return s -> g.apply(f.apply(s));
 }
@@ -47,5 +47,5 @@ Detected language: Haskell
 Generated code:
 foo :: (a -> c) -> (b -> c) -> Either a b -> c
 foo f g e = case e of
-    Left a -> f a
-    Right b -> g b
+  Left a -> f a
+  Right b -> g b

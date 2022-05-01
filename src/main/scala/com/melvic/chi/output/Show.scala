@@ -1,30 +1,43 @@
 package com.melvic.chi.output
 
 import com.melvic.chi.ast.Proof.Variable
-import com.melvic.chi.ast.{Proof, Proposition, Signature}
+import com.melvic.chi.ast.{Definition, Proof, Proposition, Signature}
+import com.melvic.chi.config.Preferences
 import com.melvic.chi.parsers.Language
 
 trait Show { show =>
-  def signature(signature: Signature, split: Boolean = false): String
+  implicit val prefs: Preferences
+
+  def bodyLayouts: List[ProofLayout]
+
+  def signature: SignatureLayout
+
+  def prettySignature: SignatureLayout
 
   def proposition(proposition: Proposition): String
 
-  def proofWithLevel(proof: Proof, level: Option[Int]): String
-
-  def proof(proof: Proof): String = proofWithLevel(proof, None)
-
-  def definition(signature: String, body: String, pretty: Boolean): String
-
   def indentWidth: Int
 
-  def singleIndent: String = " " * indentWidth
+  def line: String = "\n"
 
-  def indent(level: Option[Int]) = level.map(singleIndent * _).getOrElse("")
+  def makeDef(signature: String, body: String): String
 
-  def bodyIndent(level: Option[Int]): String = {
-    val indent = this.indent(level)
-    if (indent.nonEmpty) indent + singleIndent else singleIndent * 2
+  def definition: DefLayout = {
+    case Definition(signature, body, language) =>
+      val signatureLayout = show.signature(signature)
+      val signatureLayoutPretty =
+        if (maxLineWidth(signatureLayout) > Preferences.maxColumn) prettySignature(signature)
+        else signatureLayout
+
+      val appliedBodyLayouts = bodyLayouts
+        .map(f => f(body))
+      val bodyLayout = appliedBodyLayouts
+        .find(maxLineWidth(_) <= Preferences.maxColumn)
+        .getOrElse(appliedBodyLayouts.last)
+      makeDef(signatureLayoutPretty, bodyLayout)
   }
+
+  def maxLineWidth(layout: String): Int = layout.split("\n").maxBy(_.length).length
 
   def paramsList(params: List[Variable], split: Boolean): String = {
     val vars = params.map {
@@ -33,18 +46,23 @@ trait Show { show =>
     }
     s"(${Show.splitParams(vars, split)})"
   }
+
+  def nestWithIndent(doc: String, i: Int): String =
+    doc.replace(line, line + (" " * i))
+
+  def nest(doc: String): String = nestWithIndent(doc, indentWidth)
 }
 
 object Show {
-  def fromLanguage(language: Language, functionName: String): Show =
+  def fromLanguage(language: Language, functionName: String)(implicit prefs: Preferences): Show =
     language match {
       case Language.Java    => new ShowJava
       case Language.Haskell => new ShowHaskell(functionName)
       case _                => new ShowScala
     }
 
-  def splitParams(params: List[String], split: Boolean) = {
-    val newLine = "\n  "
+  def splitParams(params: List[String], split: Boolean, indent: Int = 2) = {
+    val newLine = "\n" + (" " * indent)
     val separator = if (split) "," + newLine else ", "
     val prefix = if (split) newLine else ""
     val suffix = if (split) "\n" else ""

@@ -1,14 +1,14 @@
 package com.melvic.chi.output
 
-import com.melvic.chi.ast.Definition
 import com.melvic.chi.ast.Proof.Variable
+import com.melvic.chi.ast.{Definition, Signature}
 import com.melvic.chi.config.Preferences
 import com.melvic.chi.parsers.Language
 
 object Result {
   type Result[A] = Either[Fault, A]
 
-  def show[A](result: Result[A])(f: A => String): String =
+  def show[A](result: Result[A])(f: A => String)(implicit preferences: Preferences): String =
     result match {
       case Left(fault) => Fault.show(fault)
       case Right(r)    => f(r)
@@ -24,7 +24,9 @@ object Result {
       result: Result[Definition]
   )(f: (String, Language) => String)(implicit preferences: Preferences): String =
     show(result) {
-      case code @ Definition(_, _, language) => f(Definition.show(code), language)
+      case code @ Definition(Signature(functionName, _, _, _), _, language) =>
+        val show = Show.fromLanguage(language, functionName)
+        f(show.definition(code), language)
     }
 
   /**
@@ -33,7 +35,7 @@ object Result {
   def showCode(result: Result[Definition])(implicit preferences: Preferences): String =
     showCodeWith(result)((code, _) => code)
 
-  def showIso(result: Result[IsoResult]): String =
+  def showIso(result: Result[IsoResult])(implicit preferences: Preferences): String =
     show(result) {
       case IsoResult.Fail(left, right) =>
         s"$left is NOT isomorphic to $right"
@@ -43,7 +45,7 @@ object Result {
         s"$leftName${argsString(leftArgs)} Is isomorphic to $rightName${argsString(rightArgs)}$forall"
     }
 
-  def showAssumption(assumption: Result[Variable]): String =
+  def showAssumption(assumption: Result[Variable])(implicit preferences: Preferences): String =
     show(assumption)(ShowAssumption.apply)
 
   def success[A](value: A): Result[A] = Right(value)
