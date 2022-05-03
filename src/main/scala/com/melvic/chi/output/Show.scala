@@ -1,7 +1,7 @@
 package com.melvic.chi.output
 
 import com.melvic.chi.ast.Proof.Variable
-import com.melvic.chi.ast.{Definition, Proof, Proposition, Signature}
+import com.melvic.chi.ast.{Definition, Proposition}
 import com.melvic.chi.config.Preferences
 import com.melvic.chi.parsers.Language
 
@@ -44,13 +44,22 @@ trait Show { show =>
       case Variable(name, proposition) =>
         s"$name: ${show.proposition(proposition)}"
     }
-    s"(${Show.splitParams(vars, split)})"
+    s"(${Show.splitParams(vars, split, indentWidth)})"
   }
 
   def nestWithIndent(doc: String, i: Int): String =
     doc.replace(line, line + (" " * i))
 
   def nest(doc: String): String = nestWithIndent(doc, indentWidth)
+
+  def propositionCSV(components: List[Proposition]): String =
+    csv(components)(show.proposition)
+
+  def csv[A](components: List[A])(f: A => String): String =
+    Show.toCSV(components.map(f))
+
+  def formatParams(format: Boolean): (String, Int) =
+    if (format) (line, indentWidth) else ("", 0)
 }
 
 object Show {
@@ -58,6 +67,7 @@ object Show {
     language match {
       case Language.Java    => new ShowJava
       case Language.Haskell => new ShowHaskell(functionName)
+      case Language.Python  => new ShowPython
       case _                => new ShowScala
     }
 

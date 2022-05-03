@@ -10,7 +10,7 @@ This program started as a proof-of-concept to see the mechanical nature of the p
 deriving function implementations when the types involved serve as logical propositions under the Curry-Howard Isomorphism.
 
 Chi takes in a function signature and generates the function implementation. At 
-the time of this writing, Chi supports Java, Haskell, and Scala. 
+the time of this writing, Chi supports Java, Haskell, Python, and Scala. 
 
 Chi can also check if two functions are isomorphic. See the [Isomorphism](#isomorphism) section for more details on this.
 
@@ -37,7 +37,8 @@ https://user-images.githubusercontent.com/4519785/164452277-a87db5d8-0e5a-4716-b
 
 Updated Image:
 
-<img width="1792" alt="Screen Shot 2022-04-20 at 3 21 44 AM" src="https://user-images.githubusercontent.com/4519785/164452479-de207458-e69d-49a8-9011-4c367e4e3907.png">
+<img width="1792" alt="Screen Shot 2022-05-03 at 11 14 29 PM" src="https://user-images.githubusercontent.com/4519785/166482450-c6221b5b-76ac-4799-93bd-615068298d37.png">
+
 
 For the Pure FP enthusiasts, here's Scala vs Haskell:
 
@@ -133,7 +134,7 @@ To see if two functions are isomorphic with each other, just place the `<=>` ope
 <img width="1792" alt="Screen Shot 2022-04-19 at 12 15 14 AM" src="https://user-images.githubusercontent.com/4519785/163838288-9132c085-ac24-4c09-a325-2543a646a032.png">
 
 # Supported Languages
-As mentioned above, Chi supports Java, Scala and Haskell. You only need
+As mentioned above, Chi supports Java, Haskell, Python and Scala. You only need
 to input the signature and Chi will automatically detect the language used
 (though it will prioritize Scala syntax)
 

@@ -11,11 +11,6 @@ Generated code:
     };
 }
 
-Detected language: Scala
-Generated code:
-def myApply: String => Int => Int =
-  s => identity
-
 Detected language: Java
 Generated code:
 Function<String, Integer> boxTypesDemo(
@@ -40,12 +35,20 @@ foo f g a = f (g a)
 
 Detected language: Haskell
 Generated code:
-bar :: (a, b) -> b
-bar (a, b) = b
-
-Detected language: Haskell
-Generated code:
-foo :: (a -> c) -> (b -> c) -> Either a b -> c
-foo f g e = case e of
+bar :: (a -> c) -> (b -> c) -> Either a b -> c
+bar f g e = case e of
   Left a -> f a
   Right b -> g b
+
+Detected language: Python
+Generated code:
+def de(
+    f: Callable[[float], int],
+    g: Callable[[str], int]
+) -> Callable[[Union[float, str]], int]:
+    return lambda e: f(e) if type(e) is float else g(e)
+
+Detected language: Python
+Generated code:
+def foo(f: Callable[[A], Tuple[C, B]], a: A) -> C:
+    return f(a)[0]

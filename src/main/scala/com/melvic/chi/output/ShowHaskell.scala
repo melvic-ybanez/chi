@@ -17,7 +17,7 @@ class ShowHaskell(functionName: String)(implicit val prefs: Preferences) extends
       case Implication(in, out)                => s"${show.proposition(in)} -> ${show.proposition(out)}"
     }
 
-  def body: ProofLayout = { proof =>
+  def proof: ProofLayout = { proof =>
     val proofString = namelessBody(proof)
     val sep = proof match {
       case TUnit => " = "
@@ -26,10 +26,10 @@ class ShowHaskell(functionName: String)(implicit val prefs: Preferences) extends
     s"$functionName$sep$proofString"
   }
 
-  override def bodyLayouts: List[ProofLayout] = body :: Nil
+  override def bodyLayouts: List[ProofLayout] = proof :: Nil
 
   /**
-    * Like [[show.body]], but without the function name
+    * Like [[show.proof]], but without the function name
     */
   def namelessBody(proof: Proof): String = {
     def showLambda: Abstraction => String = {
@@ -69,7 +69,7 @@ class ShowHaskell(functionName: String)(implicit val prefs: Preferences) extends
       // For now, we can only retrieve the 1st and 2nd element of a tuple
       case Indexed(proof, index) =>
         val function = if (index == 1) "fst" else "snd"
-        namelessBody(Proof.applyOne(Proof.atomicVariable(function), proof))
+        namelessBody(Application.oneArg(Variable.fromName(function), proof))
     }
   }
 
