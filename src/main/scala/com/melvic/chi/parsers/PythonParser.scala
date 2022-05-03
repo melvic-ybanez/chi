@@ -20,7 +20,6 @@ object PythonParser extends LanguageParser with NamedParams {
 
   lazy val implication: PackratParser[Proposition] =
     "Callable" ~> "[" ~> "[" ~> repsep(proposition, ",") ~ ("]" ~> "," ~> proposition <~ "]") ^^ {
-      case Nil ~ returnType    => Implication(PUnit, returnType)
       case params ~ returnType => Implication(Conjunction(params), returnType)
     }
 

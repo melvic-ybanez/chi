@@ -36,22 +36,22 @@ class ShowJava(implicit val prefs: Preferences) extends Show { show =>
       case _ => ""
     }
 
-  def body: ProofLayout = {
+  def proof: ProofLayout = {
     case Variable(name, _) => name
     case Abstraction(Proof.Conjunction(a :: b :: Nil), antecedent) =>
-      val outString = show.body(antecedent)
+      val outString = show.proof(antecedent)
       val bodyString = nest(line + "return " + outString)
-      s"(${show.body(a)}, ${show.body(b)}) -> {$bodyString;$line}"
+      s"(${show.proof(a)}, ${show.proof(b)}) -> {$bodyString;$line}"
     case Abstraction(in, out) =>
-      s"${show.body(in)} -> ${show.body(out)}"
+      s"${show.proof(in)} -> ${show.proof(out)}"
     case Application(function, params) =>
-      val functionString = show.body(function)
-      s"$functionString.apply(${Show.toCSV(params.map(show.body))})"
+      val functionString = show.proof(function)
+      s"$functionString.apply(${Show.toCSV(params.map(show.proof))})"
     case _ => ""
   }
 
   def bodyWithBraces: ProofLayout =
-    proof => "{" + nest(line + "return " + show.body(proof)) + ";" + line + "}"
+    proof => "{" + nest(line + "return " + show.proof(proof)) + ";" + line + "}"
 
   override def bodyLayouts: List[ProofLayout] = bodyWithBraces :: Nil
 

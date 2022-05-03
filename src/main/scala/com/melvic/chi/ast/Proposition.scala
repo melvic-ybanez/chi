@@ -65,7 +65,10 @@ object Proposition {
   def rename(proposition: Proposition, atoms: List[Atom], newAtoms: List[Atom]): Proposition =
     atoms.zip(newAtoms).foldLeft(proposition) {
       case (acc, (atom, newAtom)) =>
-        map(acc)(a => if (a == atom) newAtom else a)
+        map(acc) {
+          case `atom` => newAtom
+          case atom   => atom
+        }
     }
 
   def fold[A](proposition: Proposition, init: A)(f: (A, Atom) => A): A =

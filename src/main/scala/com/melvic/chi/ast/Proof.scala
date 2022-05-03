@@ -33,9 +33,49 @@ object Proof {
 
   final case class Indexed(function: Proof, index: Int) extends Proof
 
-  def atomicVariable(name: String): Variable =
-    Variable(name, PUnit)
+  def rename(proof: Proof, vars: List[Variable], newVars: List[Variable]): Proof =
+    vars.zip(newVars).foldLeft(proof) {
+      case (acc, (variable, newVar)) =>
+        map(acc) {
+          case `variable` => newVar
+          case variable   => variable
+        }
+    }
 
-  def applyOne(function: Proof, arg: Proof): Application =
-    Application(function, arg :: Nil)
+  def map(proof: Proof)(f: Variable => Proof): Proof =
+    proof match {
+      case v: Variable                   => f(v)
+      case Conjunction(components)       => Conjunction(components.map(map(_)(f)))
+      case PLeft(proof)                  => PLeft(map(proof)(f))
+      case PRight(proof)                 => PRight(map(proof)(f))
+      case Abstraction(in, out)          => Abstraction(map(in)(f), map(out)(f))
+      case Application(function, params) => Application(map(function)(f), params.map(map(_)(f)))
+    }
+
+  def fold[A](proof: Proof, init: A)(f: (A, Variable) => A): A =
+    proof match {
+      case unit: TUnit => init
+      case v: Variable => f(init, v)
+      case Conjunction(components) =>
+        components.foldLeft(init) { (acc, proof) =>
+          fold(proof, acc)(f)
+        }
+      case PLeft(proof)         => fold(proof, init)(f)
+      case PRight(proof)        => fold(proof, init)(f)
+      case Abstraction(in, out) => fold(out, fold(in, init)(f))(f)
+      case Application(function, params) =>
+        params.foldLeft(fold(function, init)(f)) { (acc, proof) =>
+          fold(proof, acc)(f)
+        }
+    }
+
+  object Variable {
+    def fromName(name: String): Variable =
+      Variable(name, PUnit)
+  }
+
+  object Application {
+    def oneArg(function: Proof, arg: Proof): Application =
+      Application(function, arg :: Nil)
+  }
 }

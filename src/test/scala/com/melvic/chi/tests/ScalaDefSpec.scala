@@ -184,4 +184,31 @@ class ScalaDefSpec extends BaseSpec {
       )
     )
   }
+
+  "Either over either" should "perform nested pattern matching" in {
+    generateAndShowWithInfo("def foo[A, B]: Either[Either[A, B], A] => (B => A) => A") should be(
+      output(
+        """def foo[A, B]: Either[Either[A, B], A] => (B => A) => A =
+          |  e => f => e match {
+          |    case Left(e) => e match {
+          |      case Left(a) => a
+          |      case Right(b) => f(b)
+          |    }
+          |    case Right(a) => a
+          |  }""".stripMargin
+      )
+    )
+  }
+
+  "Tuple over function from either" should "perform nested pattern matching" in {
+    generateAndShowWithInfo("def foo[A, B, C, D]: (A => C) => (B => C) => D => (Either[A, B] => C, D)") should be(
+      output(
+        """def foo[A, B, C, D]: (A => C) => (B => C) => D => (Either[A, B] => C, D) =
+          |  f => g => d => (e => e match {
+          |    case Left(a) => f(a)
+          |    case Right(b) => g(b)
+          |  }, d)""".stripMargin
+      )
+    )
+  }
 }

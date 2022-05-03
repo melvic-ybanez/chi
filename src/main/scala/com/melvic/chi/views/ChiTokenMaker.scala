@@ -40,6 +40,7 @@ object ChiTokenMaker {
       "lazy",
       "return",
       "of",
+      "isinstance",
       AssumptionParser.AssumeOperator,
       Language.Java.displayName,
       Language.Scala.displayName,

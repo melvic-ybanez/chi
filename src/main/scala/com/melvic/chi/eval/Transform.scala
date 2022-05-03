@@ -34,11 +34,11 @@ object Transform {
       // e.g. `a => g(f(a))` becomes `g.compose(f)`
       case fg @ Abstraction(in, Application(f, Application(g, out :: Nil) :: Nil)) if in == out =>
         Transform(fg).when(scalaPrefs.pointFree) {
-          Infix(f, Proof.applyOne(Proof.atomicVariable("compose"), g))
+          Infix(f, Application.oneArg(Variable.fromName("compose"), g))
         }
       case f @ Abstraction(in, out) if in == out =>
         Transform(f).when(scalaPrefs.usePredef) {
-          Proof.atomicVariable(resolveConflict("identity", "Predef"))
+          Variable.fromName(resolveConflict("identity", "Predef"))
         }
       case function @ Abstraction(in, out) =>
         val result = Abstraction(transformScala(in), transformScala(out))
