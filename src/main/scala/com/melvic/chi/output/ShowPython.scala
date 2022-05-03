@@ -39,9 +39,12 @@ class ShowPython(implicit val prefs: Preferences) extends Show { show =>
       val rigthResult = Proof.rename(right, Variable.fromName(rName) :: Nil, newVars)
 
       s"$leftResult if isinstance($name, $lType) else $rigthResult"
-    case Match(name, proof: Proof)                  => show.proof(proof)
+    case Match(name, function @ Abstraction(_: PConjunction, _)) =>
+      show.proof(Application.oneArg(function, Variable.fromName("*" + name)))
     case Abstraction(PConjunction(Nil), out)        => s"lambda: ${show.proof(out)}"
     case Abstraction(PConjunction(components), out) => s"lambda ${bodyCSV(components)}: ${show.proof(out)}"
+    case Application(function: Abstraction, params) =>
+      s"(${show.proof(function)})(${bodyCSV(params)})"
     case Application(function, params) =>
       s"${show.proof(function)}(${bodyCSV(params)})"
     case Infix(left, right) =>
