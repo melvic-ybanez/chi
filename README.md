@@ -37,7 +37,7 @@ https://user-images.githubusercontent.com/4519785/164452277-a87db5d8-0e5a-4716-b
 
 Updated Image:
 
-<img width="1792" alt="Screen Shot 2022-05-03 at 11 14 29 PM" src="https://user-images.githubusercontent.com/4519785/166482450-c6221b5b-76ac-4799-93bd-615068298d37.png">
+<img width="1792" alt="Screen Shot 2022-05-03 at 11 53 39 PM" src="https://user-images.githubusercontent.com/4519785/166489451-ba3cf4d5-66df-447c-9672-86bd7320fa6d.png">
 
 
 For the Pure FP enthusiasts, here's Scala vs Haskell:
