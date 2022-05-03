@@ -4,9 +4,6 @@ def andThenDemo[A, B, C](f: A => B, g: B => C): A => C
 // Java syntax is supported too!
 <A, B, C, D> BiFunction<A, D, C> foo(Function<A, B> f, Function<B, C> g)
 
-// Demo for `Predef.identity`
-def myApply: String => Int => Int
-
 // Shows support for Java's standard boxed types
 Function<String, Integer> boxTypesDemo(
 	Function<String, Float> f,
@@ -18,10 +15,16 @@ def toInt: (String => Int) => (Float => Int) => Either[String, Float] => Int
 
 // Haskell syntax is now supported!
 foo :: (b -> c) -> (a -> b) -> a -> c
+bar :: (a -> c) -> (b -> c) -> Either a b -> c
 
-// More Haskell
-bar :: (a, b) -> b
-foo :: (a -> c) -> (b -> c) -> Either a b -> c
+// Python syntax
+def de(
+	f: Callable[[float], int],
+	g: Callable[[str], int]
+) -> Callable[[Union[float, str]], int]
 
-
-
+// Type variables
+A = TypeVar('A')
+B = TypeVar('B')
+C = TypeVar('C')
+def foo(f: Callable[[A], Tuple[C, B]], a: A) -> C

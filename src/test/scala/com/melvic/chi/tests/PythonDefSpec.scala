@@ -106,4 +106,13 @@ class PythonDefSpec extends BaseSpec {
       )
     )
   }
+
+  "component of a product consequent" should "be accessible if the function is applied" in {
+    input("A" :: "B" :: "C" :: Nil, "def foo(f: Callable[[A], Tuple[C, B]], a: A) -> C") should be(
+      output(
+        """def foo(f: Callable[[A], Tuple[C, B]], a: A) -> C:
+          |    return f(a)[0]""".stripMargin
+      )
+    )
+  }
 }
