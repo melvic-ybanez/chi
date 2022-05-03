@@ -3,6 +3,7 @@ import com.melvic.chi.ast.Proof.{EitherCases, Conjunction => PConjunction, _}
 import com.melvic.chi.ast.Proposition._
 import com.melvic.chi.ast.{Proof, Proposition, Signature}
 import com.melvic.chi.config.Preferences
+import com.melvic.chi.parsers.Language
 
 class ShowPython(implicit val prefs: Preferences) extends Show { show =>
   override def bodyLayouts = proof :: Nil
@@ -28,17 +29,17 @@ class ShowPython(implicit val prefs: Preferences) extends Show { show =>
     case PConjunction(components) => s"(${bodyCSV(components)})"
     case PLeft(proof)             => show.proof(proof)
     case PRight(proof)            => show.proof(proof)
-    case Match(name, e @ EitherCases(Abstraction(_: Variable, _), Abstraction(_: Variable, _))) =>
+    case Match(name, ec @ EitherCases(Abstraction(_: Variable, _), Abstraction(_: Variable, _))) =>
       val newVars = Variable.fromName(name) :: Nil
       val EitherCases(
         Abstraction(Variable(lName, lType), left),
         Abstraction(Variable(rName, rType), right)
-      ) = e
+      ) = ec
 
-      val leftResult = Proof.rename(left, Variable.fromName(lName) :: Nil, newVars)
-      val rigthResult = Proof.rename(right, Variable.fromName(rName) :: Nil, newVars)
+      val leftResult = show.proof(Proof.rename(left, Variable.fromName(lName) :: Nil, newVars))
+      val rightResult = show.proof(Proof.rename(right, Variable.fromName(rName) :: Nil, newVars))
 
-      s"$leftResult if isinstance($name, $lType) else $rigthResult"
+      s"$leftResult if type($name) is ${show.proposition(lType)} else $rightResult"
     case Match(name, function @ Abstraction(_: PConjunction, _)) =>
       show.proof(Application.oneArg(function, Variable.fromName("*" + name)))
     case Abstraction(PConjunction(Nil), out)        => s"lambda: ${show.proof(out)}"

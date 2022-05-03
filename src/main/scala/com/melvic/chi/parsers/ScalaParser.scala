@@ -9,10 +9,10 @@ trait ScalaParser extends LanguageParser with ScalaLikeParser with NamedParams w
   val language = Language.Scala
 
   val scalaParser: Parser[Signature] =
-    "def" ~> nameParser ~ opt("[" ~> rep1sep(identifier, ",") <~ "]") ~ opt(paramList) ~ (":" ~> proposition) ^^ {
+    "def" ~> nameParser ~ opt("[" ~> rep1sep(nameParser, ",") <~ "]") ~ opt(paramList) ~ (":" ~> proposition) ^^ {
       case name ~ typeParams ~ paramList ~ proposition =>
         val params = paramList.getOrElse(Nil)
-        Signature(name, typeParams.getOrElse(Nil).map(_.value), params, proposition)
+        Signature(name, typeParams.getOrElse(Nil), params, proposition)
     }
 
   val signature: Parser[Signature] = scalaParser

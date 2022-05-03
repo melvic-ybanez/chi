@@ -35,10 +35,10 @@ object Proof {
 
   def rename(proof: Proof, vars: List[Variable], newVars: List[Variable]): Proof =
     vars.zip(newVars).foldLeft(proof) {
-      case (acc, (variable, newVar)) =>
+      case (acc, (Variable(name, _), newVar)) =>
         map(acc) {
-          case `variable` => newVar
-          case variable   => variable
+          case Variable(`name`, _) => newVar
+          case variable            => variable
         }
     }
 

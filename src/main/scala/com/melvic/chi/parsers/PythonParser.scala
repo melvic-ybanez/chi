@@ -14,7 +14,7 @@ object PythonParser extends LanguageParser with NamedParams {
   }
 
   val disjunction: Parser[Proposition] =
-    "Union" ~> "[" ~> (identifier ~ rep1sep(identifier, ",")) <~ "]" ^^ {
+    "Union" ~> "[" ~> ((identifier <~ ",") ~ rep1sep(identifier, ",")) <~ "]" ^^ {
       case left ~ (right :: rest) => Disjunction.fromList(left, right, rest)
     }
 
@@ -26,8 +26,12 @@ object PythonParser extends LanguageParser with NamedParams {
   override val proposition: PackratParser[Proposition] =
     implication | conjunction | disjunction | identifier
 
+  val typeVar: Parser[String] = nameParser <~ "=" <~ "TypeVar" <~ "(" <~ "'" <~ nameParser <~ "'" <~ ")"
+
+  val typeVars: Parser[List[String]] = rep(typeVar)
+
   override val signature: Parser[Signature] =
-    "def" ~> nameParser ~ paramList ~ ("->" ~> proposition) ^^ {
-      case name ~ params ~ returnType => Signature(name, Nil, params, returnType)
+    (typeVars <~ "def") ~ nameParser ~ paramList ~ ("->" ~> proposition) ^^ {
+      case typeVars ~ name ~ params ~ returnType => Signature(name, typeVars, params, returnType)
     }
 }
