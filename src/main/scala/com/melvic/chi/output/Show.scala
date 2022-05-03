@@ -44,7 +44,7 @@ trait Show { show =>
       case Variable(name, proposition) =>
         s"$name: ${show.proposition(proposition)}"
     }
-    s"(${Show.splitParams(vars, split)})"
+    s"(${Show.splitParams(vars, split, indentWidth)})"
   }
 
   def nestWithIndent(doc: String, i: Int): String =

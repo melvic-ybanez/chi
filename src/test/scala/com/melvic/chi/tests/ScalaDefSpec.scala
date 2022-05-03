@@ -13,7 +13,7 @@ class ScalaDefSpec extends BaseSpec {
     def :=(outputBody: String) = test(input, outputBody)
   }
 
-  "A => A" should "map the input to itself" in {
+  "identity" should "map the input to itself" in {
     "def identity[A]: A => A" := "Predef.identity"
     "def identity[A](a: A): A" := "a"
   }
