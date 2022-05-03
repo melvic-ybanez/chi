@@ -41,10 +41,12 @@ object ChiTokenMaker {
       "return",
       "of",
       "isinstance",
+      "lambda",
       AssumptionParser.AssumeOperator,
       Language.Java.displayName,
       Language.Scala.displayName,
       Language.Haskell.displayName,
+      Language.Python.displayName,
     )
     val functions = List("identity", "const", "compose", "andThen", "apply", "_1", "_2", "_3")
     val dataTypes = List(
@@ -76,7 +78,7 @@ object ChiTokenMaker {
       "Right",
       "Tuple",
       "Union",
-      "Callback"
+      "Callable"
     )
 
     reservedWords.foreach(tokens.put(_, TokenTypes.RESERVED_WORD))
