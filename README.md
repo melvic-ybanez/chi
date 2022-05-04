@@ -17,8 +17,9 @@ Chi can also check if two functions are isomorphic. See the [Isomorphism](#isomo
 ### Contents
 1. [Installation](#installation)
 2. [Running](#running-chi)
-3. [Isomorphisms](#isomorphism)
-4. [Assumptions](#assumptions)
+3. [More Examples](#more-examples)
+4. [Isomorphisms](#isomorphism)
+5. [Assumptions](#assumptions)
 
 # Installation
 The simplest way to install Chi is to download the distribution from the
@@ -35,16 +36,9 @@ Here's how it currently looks:
 
 https://user-images.githubusercontent.com/4519785/164452277-a87db5d8-0e5a-4716-bc3a-efb7f7f30065.mov
 
-Updated Image:
+Updated image:
 
 <img width="1792" alt="Screen Shot 2022-05-03 at 11 53 39 PM" src="https://user-images.githubusercontent.com/4519785/166489451-ba3cf4d5-66df-447c-9672-86bd7320fa6d.png">
-
-
-For the Pure FP enthusiasts, here's Scala vs Haskell:
-
-<img width="1792" alt="Screen Shot 2022-04-21 at 8 49 17 PM" src="https://user-images.githubusercontent.com/4519785/164462291-ea3b7d4f-a91d-45df-a223-a4b32d69025e.png">
-
-Note that in the last example above, the extra info like `"Detected Language"` are gone. Chi provides an option to hide it. Just go to `Preferences > Editor` and toggle "Show extra output information". 
 
 
 ### Running the REPL
@@ -115,6 +109,21 @@ chi> exit
 Bye!
 ```
 
+### More Examples
+
+For the Pure FP enthusiasts, here's Scala vs Haskell:
+
+<img width="1792" alt="Screen Shot 2022-04-21 at 8 49 17 PM" src="https://user-images.githubusercontent.com/4519785/164462291-ea3b7d4f-a91d-45df-a223-a4b32d69025e.png">
+
+Note that in the last example above, the extra info like `"Detected Language"` are gone. Chi provides an option to hide it. Just go to `Preferences > Editor` and toggle "Show extra output information". 
+
+#### Python support:
+
+<img width="1792" alt="Screen Shot 2022-05-03 at 11 49 38 PM" src="https://user-images.githubusercontent.com/4519785/166741934-ce3413ed-8352-4df3-a403-97c438ec14a7.png">
+
+
+#### Named Parameters
+
 Named parameters are also supported:
 
 ```scala
@@ -128,12 +137,30 @@ def andThen[A, B, C](f: A => B, g: B => C): A => C =
 
 ```
 
-# Isomorphism
-To see if two functions are isomorphic with each other, just place the `<=>` operator between them:
+#### Built-in types
 
-<img width="1792" alt="Screen Shot 2022-04-19 at 12 15 14 AM" src="https://user-images.githubusercontent.com/4519785/163838288-9132c085-ac24-4c09-a325-2543a646a032.png">
+Chi also recognize built-in and standard types:
 
-# Supported Languages
+```scala
+chi> String idString(String s)
+Detected language: Java
+Generated code:
+String idString(String s) {
+    return s;
+}
+
+chi> def foo(f: String => Int, g: Float => Int): Either[String, Float] => Int
+Detected language: Scala
+Generated code:
+def foo(f: (String => Int), g: (Float => Int)): (Either[String, Float] => Int) =
+  {
+    case Left(s) => f(s)
+    case Right(h) => g(h)
+  }
+```
+For Java though, you need to use boxed types.
+
+#### Supported Languages
 As mentioned above, Chi supports Java, Haskell, Python and Scala. You only need
 to input the signature and Chi will automatically detect the language used
 (though it will prioritize Scala syntax)
@@ -183,25 +210,10 @@ foo e = case e of
     Right a -> a
 ```
 
-# Built-in types
-Chi also recognize built-in types:
-```scala
-chi> String idString(String s)
-Detected language: Java
-Generated code:
-String idString(String s) {
-    return s;
-}
+# Isomorphism
+To see if two functions are isomorphic with each other, just place the `<=>` operator between them:
 
-chi> def foo(f: String => Int, g: Float => Int): Either[String, Float] => Int
-Detected language: Scala
-Generated code:
-def foo(f: (String => Int), g: (Float => Int)): (Either[String, Float] => Int) =
-  {
-    case Left(s) => f(s)
-    case Right(h) => g(h)
-  }
-```
+<img width="1792" alt="Screen Shot 2022-04-19 at 12 15 14 AM" src="https://user-images.githubusercontent.com/4519785/163838288-9132c085-ac24-4c09-a325-2543a646a032.png">
 
 # Assumptions
 
