@@ -5,7 +5,7 @@ import com.melvic.chi.config.SettingsContent.EditorSettings
 import com.melvic.chi.views.prefs.Utils.createCheckBox
 import net.miginfocom.swing.MigLayout
 
-import java.awt.event.{KeyAdapter, KeyEvent, KeyListener}
+import java.awt.event.{KeyAdapter, KeyEvent}
 import javax.swing.{JLabel, JPanel}
 
 class EditorSettingsComponent(implicit preferences: Preferences) extends JPanel {

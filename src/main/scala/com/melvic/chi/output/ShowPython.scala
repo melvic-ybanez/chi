@@ -3,7 +3,6 @@ import com.melvic.chi.ast.Proof.{EitherCases, Conjunction => PConjunction, _}
 import com.melvic.chi.ast.Proposition._
 import com.melvic.chi.ast.{Proof, Proposition, Signature}
 import com.melvic.chi.config.Preferences
-import com.melvic.chi.parsers.Language
 
 class ShowPython(implicit val prefs: Preferences) extends Show { show =>
   override def bodyLayouts = proof :: Nil
@@ -41,7 +40,7 @@ class ShowPython(implicit val prefs: Preferences) extends Show { show =>
 
       s"$leftResult if type($name) is ${show.proposition(lType)} else $rightResult"
     case Match(name, function @ Abstraction(_: PConjunction, _)) =>
-      show.proof(Application.oneArg(function, Variable.fromName("*" + name)))
+      show.proof(Application.ofUnary(function, Variable.fromName("*" + name)))
     case Abstraction(PConjunction(Nil), out)        => s"lambda: ${show.proof(out)}"
     case Abstraction(PConjunction(components), out) => s"lambda ${bodyCSV(components)}: ${show.proof(out)}"
     case Application(function: Abstraction, params) =>

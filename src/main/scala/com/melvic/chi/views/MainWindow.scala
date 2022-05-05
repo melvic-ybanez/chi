@@ -1,9 +1,8 @@
 package com.melvic.chi.views
 
-import com.melvic.chi.Evaluate
 import com.melvic.chi.config.Preferences
-import com.melvic.chi.views.prefs.PreferencesDialog
 import com.melvic.chi.views.menus.MenuBar
+import com.melvic.chi.views.prefs.PreferencesDialog
 
 import java.awt._
 import javax.swing._

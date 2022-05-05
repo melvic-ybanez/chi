@@ -75,7 +75,7 @@ object Proof {
   }
 
   object Application {
-    def oneArg(function: Proof, arg: Proof): Application =
+    def ofUnary(function: Proof, arg: Proof): Application =
       Application(function, arg :: Nil)
   }
 }

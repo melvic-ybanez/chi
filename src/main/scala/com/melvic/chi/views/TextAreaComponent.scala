@@ -1,11 +1,11 @@
 package com.melvic.chi.views
 
 import com.melvic.chi.Config
-import org.fife.ui.rsyntaxtextarea.{AbstractTokenMakerFactory, RSyntaxTextArea, SyntaxConstants, Theme, TokenMakerFactory, TokenTypes}
+import org.fife.ui.rsyntaxtextarea._
 import org.fife.ui.rtextarea.RTextScrollPane
 
-import java.awt.{Color, Font}
 import java.awt.font.TextAttribute
+import java.awt.{Color, Font}
 import java.io.IOException
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._

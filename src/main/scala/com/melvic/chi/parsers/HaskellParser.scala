@@ -1,8 +1,7 @@
 package com.melvic.chi.parsers
 
-import com.melvic.chi.ast.Proof.Variable
+import com.melvic.chi.ast.Proposition.{Disjunction, Implication}
 import com.melvic.chi.ast.{Proposition, Signature}
-import com.melvic.chi.ast.Proposition.{Conjunction, Disjunction, Implication, PUnit}
 
 object HaskellParser extends LanguageParser with TuplesInParens {
   override val language = Language.Haskell

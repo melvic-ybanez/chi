@@ -69,7 +69,7 @@ class ShowHaskell(functionName: String)(implicit val prefs: Preferences) extends
       // For now, we can only retrieve the 1st and 2nd element of a tuple
       case Indexed(proof, index) =>
         val function = if (index == 1) "fst" else "snd"
-        namelessBody(Application.oneArg(Variable.fromName(function), proof))
+        namelessBody(Application.ofUnary(Variable.fromName(function), proof))
     }
   }
 

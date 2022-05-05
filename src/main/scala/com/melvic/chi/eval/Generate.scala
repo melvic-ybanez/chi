@@ -1,6 +1,5 @@
 package com.melvic.chi.eval
 
-import com.melvic.chi.ast.Proof.Variable
 import com.melvic.chi.ast.Proposition.{Atom, Identifier, PUnit}
 import com.melvic.chi.ast._
 import com.melvic.chi.config.Preferences
@@ -9,7 +8,7 @@ import com.melvic.chi.output.Fault.UnknownPropositions
 import com.melvic.chi.output.Result
 import com.melvic.chi.output.Result.Result
 import com.melvic.chi.parsers
-import com.melvic.chi.parsers.{AssumptionParser, Language}
+import com.melvic.chi.parsers.Language
 
 import scala.annotation.tailrec
 
