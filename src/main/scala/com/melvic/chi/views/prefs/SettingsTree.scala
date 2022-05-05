@@ -2,7 +2,6 @@ package com.melvic.chi.views.prefs
 
 import com.melvic.chi.views.FontUtils
 
-import java.awt.Dimension
 import javax.swing.JTree
 import javax.swing.tree.{DefaultMutableTreeNode, DefaultTreeCellRenderer, TreeSelectionModel}
 

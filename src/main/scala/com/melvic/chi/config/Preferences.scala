@@ -1,8 +1,5 @@
 package com.melvic.chi.config
 
-import com.melvic.chi.config.SettingsContent.save
-import os.Path
-
 class Preferences {
   var content: SettingsContent = SettingsContent.dummy
 

@@ -34,7 +34,7 @@ object Transform {
       // e.g. `a => g(f(a))` becomes `g.compose(f)`
       case fg @ Abstraction(in, Application(f, Application(g, out :: Nil) :: Nil)) if in == out =>
         Transform(fg).when(scalaPrefs.pointFree) {
-          Infix(f, Application.oneArg(Variable.fromName("compose"), g))
+          Infix(f, Application.ofUnary(Variable.fromName("compose"), g))
         }
       case f @ Abstraction(in, out) if in == out =>
         Transform(f).when(scalaPrefs.usePredef) {

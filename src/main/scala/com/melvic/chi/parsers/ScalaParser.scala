@@ -1,6 +1,5 @@
 package com.melvic.chi.parsers
 
-import com.melvic.chi.ast.Proof.Variable
 import com.melvic.chi.ast.Signature
 
 object ScalaParser extends ScalaParser
