@@ -10,11 +10,11 @@ object PythonParser extends LanguageParser with NamedParams {
     val emptyParens: Parser[List[Atom]] = "(" ~ ")" ^^ { _ =>
       Nil
     }
-    "Tuple" ~> "[" ~> (emptyParens | rep1sep(identifier, ",")) <~ "]" ^^ (types => Conjunction(types))
+    "Tuple" ~> "[" ~> (emptyParens | rep1sep(proposition, ",")) <~ "]" ^^ (types => Conjunction(types))
   }
 
   val disjunction: Parser[Proposition] =
-    "Union" ~> "[" ~> ((identifier <~ ",") ~ rep1sep(identifier, ",")) <~ "]" ^^ {
+    "Union" ~> "[" ~> ((proposition <~ ",") ~ rep1sep(proposition, ",")) <~ "]" ^^ {
       case left ~ (right :: rest) => Disjunction.fromList(left, right, rest)
     }
 
@@ -23,7 +23,7 @@ object PythonParser extends LanguageParser with NamedParams {
       case params ~ returnType => Implication(Conjunction(params), returnType)
     }
 
-  override val proposition: PackratParser[Proposition] =
+  override lazy val proposition: PackratParser[Proposition] =
     implication | conjunction | disjunction | identifier
 
   val typeVar: Parser[String] = nameParser <~ "=" <~ "TypeVar" <~ "(" <~ "'" <~ nameParser <~ "'" <~ ")"
