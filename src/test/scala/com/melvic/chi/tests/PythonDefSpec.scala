@@ -46,6 +46,12 @@ class PythonDefSpec extends BaseSpec {
           |    return (a, b)""".stripMargin
       )
     )
+    generateAndShowWithInfo("def foo(t: Tuple[Callable[[int], str], float], i: int) -> str") should be(
+      output(
+        """def foo(t: Tuple[Callable[[int], str], float], i: int) -> str:
+          |    return (lambda f, g: f(i))(*t)""".stripMargin
+      )
+    )
   }
 
   "either" should "default to left when the evaluation succeeds" in {
@@ -82,7 +88,10 @@ class PythonDefSpec extends BaseSpec {
   }
 
   "disjunction elimination" should "work as formalized in propositional logic" in {
-    input("A" :: "B" :: "C" :: Nil, "def de(f: Callable[[A], C], g: Callable[[B], C]) -> Callable[[Union[A, B]], C]") should be(
+    input(
+      "A" :: "B" :: "C" :: Nil,
+      "def de(f: Callable[[A], C], g: Callable[[B], C]) -> Callable[[Union[A, B]], C]"
+    ) should be(
       output(
         """def de(f: Callable[[A], C], g: Callable[[B], C]) -> Callable[[Union[A, B]], C]:
           |    return lambda e: f(e) if type(e) is A else g(e)""".stripMargin
