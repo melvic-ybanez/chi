@@ -21,7 +21,7 @@ object Generate {
 
     implicit val localFnName: String = name
 
-    val unknownTypes = Proposition.filter(proposition) {
+    val unknownTypes = Proposition.filter(Signature.fullProposition(signature)) {
       case PUnit => false
       case atom @ Atom(value) =>
         !typeParams.map(Identifier).contains(atom) && !Language.builtInTypes(language).contains(value)

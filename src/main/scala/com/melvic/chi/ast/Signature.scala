@@ -1,7 +1,7 @@
 package com.melvic.chi.ast
 
 import com.melvic.chi.ast.Proof.Variable
-import com.melvic.chi.ast.Proposition.{Atom, Identifier, PUnit}
+import com.melvic.chi.ast.Proposition._
 import com.melvic.chi.env.Env
 import com.melvic.chi.output.IsoResult
 
@@ -13,6 +13,16 @@ final case class Signature(
 )
 
 object Signature {
+
+  /**
+    * Constructs a proposition with the named parameters as the conjunction antecedent
+    * and the return type as the consequent
+    */
+  def fullProposition(signature: Signature): Proposition = {
+    val Signature(_, _, params, returnType) = signature
+    Implication(Conjunction(params.map(_.proposition)), returnType)
+  }
+
   def isomorphic(signature: Signature, signature1: Signature): IsoResult = {
     val proposition = Proposition.normalize(Proposition.fromSignature(signature))
     val proposition1 = Proposition.normalize(Proposition.fromSignature(signature1))
