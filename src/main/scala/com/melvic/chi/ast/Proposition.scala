@@ -22,33 +22,29 @@ object Proposition {
   final case class Identifier(value: String) extends Atom
 
   /**
-    * Logical conjunction. We are using a list for the components, instead of modeling
-    * them as a pair or as a Cons list (with a head and a tail), because we want to
-    * easily distinguished a flat tuple from a nested one (which is very important during
-    * stringification.)
-    */
+   * Logical conjunction. We are using a list for the components, instead of modeling them as a pair or as a
+   * Cons list (with a head and a tail), because we want to easily distinguished a flat tuple from a nested
+   * one (which is very important during stringification.)
+   */
   final case class Conjunction(components: List[Proposition]) extends Proposition
 
   /**
-    * Logical disjunction. Note that we may also end up supporting a list of components, just
-    * like with conjunction, in the future (when adding support for languages that allow primitive
-    * union types)
-    */
+   * Logical disjunction. Note that we may also end up supporting a list of components, just like with
+   * conjunction, in the future (when adding support for languages that allow primitive union types)
+   */
   final case class Disjunction(left: Proposition, right: Proposition) extends Proposition
 
   final case class Implication(antecedent: Proposition, consequent: Proposition) extends Proposition
 
   /**
-    * Like [[Disjunction]], but with all the components flattened. This is the dual of [[Conjunction]].
-    */
+   * Like [[Disjunction]], but with all the components flattened. This is the dual of [[Conjunction]].
+   */
   final case class Union(components: List[Proposition]) extends Proposition
 
   /**
-    * Combines the parameter types, if any, with the return type to
-    * form the full proposition of the signature.
-    * For example:
-    * `def foo[A, B](a: A, b: B): A` should return the proposition `(A, B) => A`
-    */
+   * Combines the parameter types, if any, with the return type to form the full proposition of the signature.
+   * For example: `def foo[A, B](a: A, b: B): A` should return the proposition `(A, B) => A`
+   */
   def fromSignature(signature: Signature): Proposition = {
     val out = signature.returnType
     signature.params match {
@@ -59,16 +55,15 @@ object Proposition {
   }
 
   /**
-    * Renames the atoms in the proposition. This is needed to check isomorphism
-    * between two propositions with different names for the variables.
-    */
+   * Renames the atoms in the proposition. This is needed to check isomorphism between two propositions with
+   * different names for the variables.
+   */
   def rename(proposition: Proposition, atoms: List[Atom], newAtoms: List[Atom]): Proposition =
-    atoms.zip(newAtoms).foldLeft(proposition) {
-      case (acc, (atom, newAtom)) =>
-        map(acc) {
-          case `atom` => newAtom
-          case atom   => atom
-        }
+    atoms.zip(newAtoms).foldLeft(proposition) { case (acc, (atom, newAtom)) =>
+      map(acc) {
+        case `atom` => newAtom
+        case atom   => atom
+      }
     }
 
   def fold[A](proposition: Proposition, init: A)(f: (A, Atom) => A): A =
@@ -117,9 +112,9 @@ object Proposition {
     }
 
   /**
-    * Combine antecedents in a nested implication such that
-    * A => B => C becomes (A, B) => C. This is useful for computing isomorphisms.
-    */
+   * Combine antecedents in a nested implication such that A => B => C becomes (A, B) => C. This is useful for
+   * computing isomorphisms.
+   */
   def normalize(proposition: Proposition): Proposition =
     proposition match {
       case Implication(in, Implication(in1, out)) =>
@@ -173,9 +168,9 @@ object Proposition {
   object Union {
 
     /**
-      * Creates a union by recursively visiting the components of a disjunction
-      * and storing each of them into the component list of the resulting union
-      */
+     * Creates a union by recursively visiting the components of a disjunction and storing each of them into
+     * the component list of the resulting union
+     */
     def fromDisjunction(disjunction: Disjunction): Union = {
       def recurse(disjunction: Disjunction, components: List[Proposition]): List[Proposition] =
         disjunction match {

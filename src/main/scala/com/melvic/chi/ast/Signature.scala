@@ -15,9 +15,9 @@ final case class Signature(
 object Signature {
 
   /**
-    * Constructs a proposition with the named parameters as the conjunction antecedent
-    * and the return type as the consequent
-    */
+   * Constructs a proposition with the named parameters as the conjunction antecedent and the return type as
+   * the consequent
+   */
   def fullProposition(signature: Signature): Proposition = {
     val Signature(_, _, params, returnType) = signature
     Implication(Conjunction(params.map(_.proposition)), returnType)
@@ -39,10 +39,9 @@ object Signature {
     val typeArgs = {
       val env = Env.fromList((atoms ++ atoms1).map(atom => Variable(atom.value, atom)))
       val min = math.min(atoms.length, atoms.length)
-      val (renamedAtoms, _) = (0 until min).foldLeft((List.empty[Atom], env)) {
-        case ((acc, env), atom) =>
-          val atomName = Env.generateName("A")(env)
-          (Identifier(atomName) :: acc, Env.addProof(Variable(atomName, PUnit))(env))
+      val (renamedAtoms, _) = (0 until min).foldLeft((List.empty[Atom], env)) { case ((acc, env), atom) =>
+        val atomName = Env.generateName("A")(env)
+        (Identifier(atomName) :: acc, Env.addProof(Variable(atomName, PUnit))(env))
       }
       renamedAtoms
     }
