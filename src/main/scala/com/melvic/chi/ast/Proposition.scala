@@ -19,6 +19,7 @@ object Proposition {
   }
 
   case object PUnit extends PUnit
+
   final case class Identifier(value: String) extends Atom
 
   /**
@@ -28,11 +29,24 @@ object Proposition {
    */
   final case class Conjunction(components: List[Proposition]) extends Proposition
 
+  object Conjunction {
+    def of(proposition: Proposition*): Conjunction =
+      Conjunction(proposition.toList)
+  }
+
   /**
    * Logical disjunction. Note that we may also end up supporting a list of components, just like with
    * conjunction, in the future (when adding support for languages that allow primitive union types)
    */
   final case class Disjunction(left: Proposition, right: Proposition) extends Proposition
+
+  object Disjunction {
+    def fromList(left: Proposition, right: Proposition, rest: List[Proposition]): Disjunction =
+      rest match {
+        case Nil          => Disjunction(left, right)
+        case head :: rest => Disjunction(left, fromList(right, head, rest))
+      }
+  }
 
   final case class Implication(antecedent: Proposition, consequent: Proposition) extends Proposition
 
@@ -40,6 +54,26 @@ object Proposition {
    * Like [[Disjunction]], but with all the components flattened. This is the dual of [[Conjunction]].
    */
   final case class Union(components: List[Proposition]) extends Proposition
+
+  object Union {
+
+    /**
+     * Creates a union by recursively visiting the components of a disjunction and storing each of them into
+     * the component list of the resulting union
+     */
+    def fromDisjunction(disjunction: Disjunction): Union = {
+      def recurse(disjunction: Disjunction, components: List[Proposition]): List[Proposition] =
+        disjunction match {
+          case Disjunction(left: Disjunction, right: Disjunction) =>
+            recurse(right, recurse(left, components))
+          case Disjunction(left: Disjunction, right) => recurse(left, right :: components)
+          case Disjunction(left, right: Disjunction) => recurse(right, left :: components)
+          case Disjunction(left, right)              => left :: right :: components
+        }
+
+      Union(recurse(disjunction, Nil))
+    }
+  }
 
   /**
    * Combines the parameter types, if any, with the return type to form the full proposition of the signature.
@@ -163,33 +197,5 @@ object Proposition {
       case (Implication(in, out), Implication(in1, out1)) => isomorphic(out, out1) && isomorphic(in, in1)
       case (p: Proposition, p1: Proposition)              => p == p1
     }
-  }
-
-  object Union {
-
-    /**
-     * Creates a union by recursively visiting the components of a disjunction and storing each of them into
-     * the component list of the resulting union
-     */
-    def fromDisjunction(disjunction: Disjunction): Union = {
-      def recurse(disjunction: Disjunction, components: List[Proposition]): List[Proposition] =
-        disjunction match {
-          case Disjunction(left: Disjunction, right: Disjunction) =>
-            recurse(right, recurse(left, components))
-          case Disjunction(left: Disjunction, right) => recurse(left, right :: components)
-          case Disjunction(left, right: Disjunction) => recurse(right, left :: components)
-          case Disjunction(left, right)              => left :: right :: components
-        }
-
-      Union(recurse(disjunction, Nil))
-    }
-  }
-
-  object Disjunction {
-    def fromList(left: Proposition, right: Proposition, rest: List[Proposition]): Disjunction =
-      rest match {
-        case Nil          => Disjunction(left, right)
-        case head :: rest => Disjunction(left, fromList(right, head, rest))
-      }
   }
 }

@@ -1,8 +1,8 @@
 package com.melvic.chi.output
 
-import com.melvic.chi.ast.Proof.Variable
 import com.melvic.chi.ast.{Definition, Proposition}
 import com.melvic.chi.config.Preferences
+import com.melvic.chi.output.Show.DefaultCSVSeparator
 import com.melvic.chi.parsers.Language
 
 trait Show { show =>
@@ -22,47 +22,40 @@ trait Show { show =>
 
   def makeDef(signature: String, body: String): String
 
-  def definition: DefLayout = {
-    case Definition(signature, body, language) =>
-      val signatureLayout = show.signature(signature)
-      val signatureLayoutPretty =
-        if (maxLineWidth(signatureLayout) > Preferences.maxColumn) prettySignature(signature)
-        else signatureLayout
+  def definition: DefLayout = { case Definition(signature, body, _) =>
+    val signatureLayout = show.signature(signature)
+    val signatureLayoutPretty =
+      if (maxLineWidth(signatureLayout) > Preferences.maxColumn) prettySignature(signature)
+      else signatureLayout
 
-      val appliedBodyLayouts = bodyLayouts
-        .map(f => f(body))
-      val bodyLayout = appliedBodyLayouts
-        .find(maxLineWidth(_) <= Preferences.maxColumn)
-        .getOrElse(appliedBodyLayouts.last)
-      makeDef(signatureLayoutPretty, bodyLayout)
+    val appliedBodyLayouts = bodyLayouts
+      .map(f => f(body))
+    val bodyLayout = appliedBodyLayouts
+      .find(maxLineWidth(_) <= Preferences.maxColumn)
+      .getOrElse(appliedBodyLayouts.last)
+    makeDef(signatureLayoutPretty, bodyLayout)
   }
 
   def maxLineWidth(layout: String): Int = layout.split("\n").maxBy(_.length).length
-
-  def paramsList(params: List[Variable], split: Boolean): String = {
-    val vars = params.map {
-      case Variable(name, proposition) =>
-        s"$name: ${show.proposition(proposition)}"
-    }
-    s"(${Show.splitParams(vars, split, indentWidth)})"
-  }
 
   def nestWithIndent(doc: String, i: Int): String =
     doc.replace(line, line + (" " * i))
 
   def nest(doc: String): String = nestWithIndent(doc, indentWidth)
 
-  def propositionCSV(components: List[Proposition]): String =
-    csv(components)(show.proposition)
+  def propositionCSV(components: List[Proposition], separator: String = DefaultCSVSeparator): String =
+    csv(components, separator)(show.proposition)
 
-  def csv[A](components: List[A])(f: A => String): String =
-    Show.toCSV(components.map(f))
+  def csv[A](components: List[A], separator: String = DefaultCSVSeparator)(f: A => String): String =
+    Show.toCSV(components.map(f), separator)
 
   def formatParams(format: Boolean): (String, Int) =
     if (format) (line, indentWidth) else ("", 0)
 }
 
 object Show {
+  val DefaultCSVSeparator = ", "
+
   def fromLanguage(language: Language, functionName: String)(implicit prefs: Preferences): Show =
     language match {
       case Language.Java    => new ShowJava
@@ -80,6 +73,6 @@ object Show {
     s"$prefix${params.mkString(separator)}$suffix"
   }
 
-  def toCSV[A](items: List[A], separator: String = ", "): String =
+  def toCSV[A](items: List[A], separator: String = DefaultCSVSeparator): String =
     items.mkString(separator)
 }

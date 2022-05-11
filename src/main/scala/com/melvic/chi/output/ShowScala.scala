@@ -6,9 +6,7 @@ import com.melvic.chi.ast.{Proof, Proposition, Signature}
 import com.melvic.chi.config.Preferences
 import com.melvic.chi.output.ShowScala._
 
-class ShowScala(implicit val prefs: Preferences) extends Show { show =>
-  def signature: SignatureLayout = signatureWithSplit(false)
-
+class ShowScala(implicit val prefs: Preferences) extends Show with ScalaLike with ParamsInParens { show =>
   def proof(proof: Proof)(implicit formats: List[Format]): String =
     proof match {
       case TUnit             => "()"
@@ -57,8 +55,6 @@ class ShowScala(implicit val prefs: Preferences) extends Show { show =>
 
   def oneLine: ProofLayout = show.proof(_)(Nil)
 
-  override def prettySignature: SignatureLayout = signatureWithSplit(true)
-
   def withFormattedRightMostLambda: ProofLayout = show.proof(_)(FormatRightMostLambda :: Nil)
 
   def withFormattedLambda: ProofLayout =
@@ -72,9 +68,9 @@ class ShowScala(implicit val prefs: Preferences) extends Show { show =>
 
   override def proposition(proposition: Proposition) =
     proposition match {
-      case Atom(value)                         => value
-      case Conjunction(components)             => "(" + propositionCSV(components) + ")"
-      case Disjunction(left, right)            => s"Either[${show.proposition(left)}, ${show.proposition(right)}]"
+      case Atom(value)              => value
+      case Conjunction(components)  => "(" + propositionCSV(components) + ")"
+      case Disjunction(left, right) => s"Either[${show.proposition(left)}, ${show.proposition(right)}]"
       case Implication(impl: Implication, out) => s"(${show.proposition(impl)}) => ${show.proposition(out)}"
       case Implication(antecedent, consequent) =>
         s"${show.proposition(antecedent)} => ${show.proposition(consequent)}"
@@ -88,7 +84,7 @@ class ShowScala(implicit val prefs: Preferences) extends Show { show =>
       }
       val paramsString = params match {
         case Nil    => ""
-        case params => paramsList(params, split)
+        case params => paramList(params, split)
       }
 
       s"def $name$typeParamsString$paramsString: ${show.proposition(returnType)} ="

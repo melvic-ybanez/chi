@@ -1,6 +1,7 @@
 package com.melvic.chi.parsers
 
-import com.melvic.chi.ast.Proposition.{Conjunction, Disjunction, Implication}
+import com.melvic.chi.ast.Proof.Variable
+import com.melvic.chi.ast.Proposition.{Conjunction, Disjunction, Identifier, Implication}
 import com.melvic.chi.ast.{Proposition, Signature}
 
 object TypescriptParser extends LanguageParser with NamedParams {
@@ -29,15 +30,20 @@ object TypescriptParser extends LanguageParser with NamedParams {
   }
 
   /**
+   * The antecedent of a Typescript implication can only be a list of name-type pairs.
+   *
    * Example:
    * {{{
    * (foo: string, bar: number) => string
    * }}}
    */
   val implication: Parser[Implication] = paramList ~ ("=>" ~> proposition) ^^ {
-    case (param :: Nil) ~ returnType => Implication(param.proposition, returnType)
+    case (Variable(name, proposition) :: Nil) ~ returnType =>
+      Implication(Conjunction.of(Identifier(name), proposition), returnType)
     case params ~ returnType =>
-      val paramTypes = Conjunction(params.map(_.proposition))
-      Implication(paramTypes, returnType)
+      val paramTypes = params.map { case Variable(name, proposition) =>
+        Conjunction.of(Identifier(name), proposition)
+      }
+      Implication(Conjunction(paramTypes), returnType)
   }
 }

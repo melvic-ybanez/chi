@@ -4,12 +4,8 @@ import com.melvic.chi.ast.Proposition._
 import com.melvic.chi.ast.{Proof, Proposition, Signature}
 import com.melvic.chi.config.Preferences
 
-class ShowPython(implicit val prefs: Preferences) extends Show { show =>
+class ShowPython(implicit val prefs: Preferences) extends Show with ScalaLike with ParamsInParens { show =>
   override def bodyLayouts = proof :: Nil
-
-  override def signature = signatureWithSplit(false)
-
-  override def prettySignature = signatureWithSplit(true)
 
   override def proposition(proposition: Proposition) =
     proposition match {
@@ -60,10 +56,9 @@ class ShowPython(implicit val prefs: Preferences) extends Show { show =>
   override def makeDef(signature: String, body: String) =
     signature + nest(line + "return " + body)
 
-  def signatureWithSplit(split: Boolean): SignatureLayout = {
-    case Signature(name, _, params, returnType) =>
-      val paramsString = paramsList(params, split)
+  def signatureWithSplit(split: Boolean): SignatureLayout = { case Signature(name, _, params, returnType) =>
+    val paramsString = paramList(params, split)
 
-      s"def $name$paramsString -> ${show.proposition(returnType)}:"
+    s"def $name$paramsString -> ${show.proposition(returnType)}:"
   }
 }
