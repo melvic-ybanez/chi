@@ -49,4 +49,94 @@ class TSFunctionsSpec extends BaseSpec {
       )
     )
   }
+
+  "conjunction" should "depend on the proofs of its components" in {
+    generateAndShowWithInfo("function foo<A, B>(a: A, f: (b: B) => [A, B], b: B): [A, B]") should be(
+      output(
+        """function foo<A, B>(a: A, f: (b: B) => [A, B], b: B): [A, B]  {
+          |    return [a, b];
+          |}""".stripMargin
+      )
+    )
+  }
+
+  "union" should "default to left when the evaluation succeeds" in {
+    generateAndShowWithInfo("function left(str: string): string | string") should be(
+      output(
+        """function left(str: string): string | string  {
+          |    return str;
+          |}""".stripMargin
+      )
+    )
+  }
+
+  "all assumptions" should "be considered" in {
+    generateAndShowWithInfo("\nfunction foo<A, B, C>(f: (a: A) => C, g: (b: B) => C): (b: B) => C") should be(
+      output(
+        """function foo<A, B, C>(f: (a: A) => C, g: (b: B) => C): (b: B) => C  {
+          |    return (b: B) => g(b);
+          |}""".stripMargin
+      )
+    )
+  }
+
+  "implication" should "evaluate its antecedent recursively" in {
+    generateAndShowWithInfo("function foo<A, B, C>(f: (a: A) => B, g: (h: (a: A) => B) => C): C") should be(
+      output(
+        """function foo<A, B, C>(f: (a: A) => B, g: (h: (a: A) => B) => C): C  {
+          |    return g((a: A) => f(a));
+          |}""".stripMargin
+      )
+    )
+  }
+
+  "disjunction elimination" should "work as formalized in propositional logic" in {
+    generateAndShowWithInfo(
+      """function foo(
+        |	f: (s: string) => boolean,
+        |	g: (n: number) => boolean
+        |): (either: string | number) => boolean""".stripMargin
+    ) should be(
+      output(
+        """function foo(
+          |    f: (s: string) => boolean,
+          |    g: (n: number) => boolean
+          |): (either: string | number) => boolean  {
+          |    return (e: string | number) => (() => {
+          |        if (typeof(e) === 'string')
+          |            return f(e)
+          |        else return g(e)
+          |    })();
+          |}""".stripMargin
+      )
+    )
+
+    generateAndShowWithInfo(
+      """function foo(
+        |	u: string | number | boolean,
+        |	f: (s: string) => boolean,
+        |	g: (n: number) => boolean,
+        |	h: (b: boolean) => boolean
+        |): boolean""".stripMargin
+    ) should be(
+      output(
+        """function foo(
+          |    u: number | boolean | string,
+          |    f: (s: string) => boolean,
+          |    g: (n: number) => boolean,
+          |    h: (b: boolean) => boolean
+          |): boolean  {
+          |    return (() => {
+          |        if (typeof(u) === 'string')
+          |            return f(u)
+          |        else return (() => {
+          |            if (typeof(u) === 'number')
+          |                return g(u)
+          |            else return u
+          |        })()
+          |    })();
+          |}""".stripMargin
+      )
+    )
+  }
 }
