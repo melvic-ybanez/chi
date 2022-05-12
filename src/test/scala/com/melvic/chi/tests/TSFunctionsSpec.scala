@@ -39,4 +39,14 @@ class TSFunctionsSpec extends BaseSpec {
       )
     )
   }
+
+  "compose" should "apply the first function after the second" in {
+    generateAndShowWithInfo("function compose<A, B, C>(f: (b: B) => C, g: (a: A) => B): (a: A) => C") should be(
+      output(
+        """function compose<A, B, C>(f: (b: B) => C, g: (a: A) => B): (a: A) => C  {
+          |    return (a: A) => f(g(a));
+          |}""".stripMargin
+      )
+    )
+  }
 }

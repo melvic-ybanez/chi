@@ -47,7 +47,7 @@ object TypescriptParser extends LanguageParser with NamedParams {
    * (foo: string, bar: number) => string
    * }}}
    */
-  val implication: Parser[Implication] = paramList ~ ("=>" ~> proposition) ^^ {
+  lazy val implication: PackratParser[Implication] = paramList ~ ("=>" ~> proposition) ^^ {
     case ((variable: Variable) :: Nil) ~ returnType =>
       Implication(Labeled.fromVariable(variable), returnType)
     case params ~ returnType =>

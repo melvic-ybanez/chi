@@ -6,8 +6,8 @@ import com.melvic.chi.ast.{Proof, Proposition}
 import com.melvic.chi.parsers.AssumptionParser
 
 /**
-  * The set of assumptions and discharged formulae.
-  */
+ * The set of assumptions and discharged formulae.
+ */
 final case class Env(proofs: List[Proof])
 
 object Env {
@@ -40,34 +40,36 @@ object Env {
     fromList(env.proofs ++ proofs)
 
   /**
-    * Assigns a variable to the proposition and registers it into the environment
-    */
+   * Assigns a variable to the proposition and registers it into the environment
+   */
   def register(proposition: Proposition)(implicit env: Env): (Proof, Env) =
     proposition match {
-      case Atom(value) => registerSingle(value.toLowerCase.head.toString, proposition)
+      case Atom(value)             => registerSingle(value.toLowerCase.head.toString, proposition)
+      case Labeled(_, proposition) => register(proposition)
       case Conjunction(components) =>
-        val (ids, newEnv) = components.foldLeft(List.empty[Proof], env) {
-          case ((ids, env), component) =>
-            val (id, newEnv) = register(component)(env)
-            (id :: ids, newEnv)
+        val (ids, newEnv) = components.foldLeft(List.empty[Proof], env) { case ((ids, env), component) =>
+          val (id, newEnv) = register(component)(env)
+          (id :: ids, newEnv)
         }
         (Proof.Conjunction(ids.reverse), newEnv)
       case Disjunction(_, _) => registerSingle("e", proposition)
       case Implication(_, _) => registerSingle("f", proposition)
     }
 
-  def registerSingle(base: String, proposition: Proposition)(
-      implicit env: Env
+  def registerSingle(base: String, proposition: Proposition)(implicit
+      env: Env
   ): (Proof, Env) = {
     val variable = Variable(generateName(base), proposition)
     (variable, Env.addProof(variable))
   }
 
   /**
-    * Generates a variable name
-    * @param base the base or root name of the variable
-    * @param count used as a suffix to distinguish variables with the same base
-    */
+   * Generates a variable name
+   * @param base
+   *   the base or root name of the variable
+   * @param count
+   *   used as a suffix to distinguish variables with the same base
+   */
   def generateName(base: String, count: Int = 0)(implicit env: Env): String = {
     val name = base + (if (count == 0) "" else count.toString)
     val nameOpt = env.proofs.find {
@@ -75,20 +77,18 @@ object Env {
       case _                   => false
     }
     nameOpt
-      .map {
-        case Variable(name, _) =>
-          if (name.startsWith("z")) generateName(base, count + 1)
-          else generateName((base.head + 1).toChar.toString, count)
+      .map { case Variable(name, _) =>
+        if (name.startsWith("z")) generateName(base, count + 1)
+        else generateName((base.head + 1).toChar.toString, count)
       }
       .getOrElse(name)
   }
 
   def fetchAssumptions(definitions: List[String])(implicit env: Env): Env =
-    definitions.foldLeft(env) {
-      case (env, definition) =>
-        AssumptionParser
-          .parseAssumption(definition)
-          .map(Env.addProof(_)(env))
-          .getOrElse(env)
+    definitions.foldLeft(env) { case (env, definition) =>
+      AssumptionParser
+        .parseAssumption(definition)
+        .map(Env.addProof(_)(env))
+        .getOrElse(env)
     }
 }
