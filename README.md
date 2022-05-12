@@ -10,7 +10,7 @@ This program started as a proof-of-concept to see the mechanical nature of the p
 deriving function implementations when the types involved serve as logical propositions under the Curry-Howard Isomorphism.
 
 Chi takes in a function signature and generates the function implementation. At 
-the time of this writing, Chi supports Java, Haskell, Python, and Scala. 
+the time of this writing, Chi supports **Scala**, **Java**, **Haskell**, **Python**, and **Typescript**. 
 
 Chi can also check if two functions are isomorphic. See the [Isomorphism](#isomorphism) section for more details on this.
 
