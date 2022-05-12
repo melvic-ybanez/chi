@@ -36,7 +36,7 @@ class ShowTypescript(implicit val prefs: Preferences)
     case PRight(proof)            => show.proof(proof)
     case Match(name, ec @ EitherCases(Abstraction(_: Variable, _), Abstraction(_: Variable, _))) =>
       Utils.showMatchUnion(name, ec, show.proof) { (lType, leftResult, rightResult) =>
-        val leftCondition = nest(s"if (typeof(${show.proof(name)}) === '${show.proposition(lType)}') ${line}return $leftResult")
+        val leftCondition = nest(s"if (typeof(${show.proof(name)}) === '${show.proposition(lType)}')${line}return $leftResult")
         val rightCondition = "else return " + rightResult
         val blockContent = leftCondition + line + rightCondition
         val block = nest(s"{$line$blockContent") + line + "}"
