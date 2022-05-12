@@ -139,4 +139,22 @@ class TSFunctionsSpec extends BaseSpec {
       )
     )
   }
+
+  "component of a product consequent" should "be accessible if the function is applied" in {
+    generateAndShowWithInfo("function foo<A, B, C>(f: (a: A) => [C, B], a: A): B") should be(
+      output(
+        """function foo<A, B, C>(f: (a: A) => [C, B], a: A): B  {
+          |    return f(a)[1];
+          |}""".stripMargin
+      )
+    )
+
+    generateAndShowWithInfo("function foo<A, B>(f: (a: A) => [A, B]): [(a: A) => A, (a: A) => B]") should be(
+      output(
+        """function foo<A, B>(f: (a: A) => [A, B]): [(a: A) => A, (a: A) => B]  {
+          |    return [(a: A) => a, (a: A) => f(a)[1]];
+          |}""".stripMargin
+      )
+    )
+  }
 }

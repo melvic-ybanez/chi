@@ -2,7 +2,7 @@ package com.melvic.chi.output.show
 
 import com.melvic.chi.ast.Proof.{Conjunction => PConjunction, _}
 import com.melvic.chi.ast.Proposition._
-import com.melvic.chi.ast.{Proposition, Signature}
+import com.melvic.chi.ast.{Proof, Proposition, Signature}
 import com.melvic.chi.config.Preferences
 import com.melvic.chi.output.{ParamsInParens, ProofLayout, SignatureLayout}
 
@@ -36,7 +36,8 @@ class ShowTypescript(implicit val prefs: Preferences)
     case PRight(proof)            => show.proof(proof)
     case Match(name, ec @ EitherCases(Abstraction(_: Variable, _), Abstraction(_: Variable, _))) =>
       Utils.showMatchUnion(name, ec, show.proof) { (lType, leftResult, rightResult) =>
-        val leftCondition = nest(s"if (typeof(${show.proof(name)}) === '${show.proposition(lType)}')${line}return $leftResult")
+        val leftCondition =
+          nest(s"if (typeof(${show.proof(name)}) === '${show.proposition(lType)}')${line}return $leftResult")
         val rightCondition = "else return " + rightResult
         val blockContent = leftCondition + line + rightCondition
         val block = nest(s"{$line$blockContent") + line + "}"
@@ -62,6 +63,7 @@ class ShowTypescript(implicit val prefs: Preferences)
     case Infix(left, right) =>
       s"${show.proof(left)}.${show.proof(right)}"
     case Indexed(proof, index) => s"${show.proof(proof)}[${index - 1}]"
+    case _ => Show.error
   }
 
   def signatureWithSplit(split: Boolean): SignatureLayout = {

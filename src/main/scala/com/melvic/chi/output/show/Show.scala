@@ -77,4 +77,6 @@ object Show {
 
   def toCSV[A](items: List[A], separator: String = DefaultCSVSeparator): String =
     items.mkString(separator)
+
+  def error: String = "??? /* <error: \"unable to render\"> */"
 }
