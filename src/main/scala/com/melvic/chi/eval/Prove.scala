@@ -20,11 +20,10 @@ object Prove {
           .map(PLeft)
           .orElse(Prove.proposition(right).map(PRight))
       case Implication(antecedent, consequent) => implication(antecedent, consequent)
+      case Labeled(_, proposition)             => Prove.proposition(proposition)
     }
 
-  def implication(antecedent: Proposition, consequent: Proposition)(
-      implicit env: Env
-  ): Result[Proof] = {
+  def implication(antecedent: Proposition, consequent: Proposition)(implicit env: Env): Result[Proof] = {
     val (term, newEnv) = Env.register(antecedent)
     Prove.proposition(consequent)(newEnv).map(Abstraction(term, _))
   }
@@ -40,19 +39,18 @@ object Prove {
     val implicationOpt = Env.filterByConsequent(atom).headOption
     implicationOpt
       .toRight(Fault.cannotProve(atom))
-      .flatMap {
-        case variable @ Variable(_, Implication(antecedent, consequent)) =>
-          val newEnv = Env.without(variable)
-          applyRecurse(atom, variable, antecedent, consequent, newEnv) {
-            case (`atom`, application) => Result.success(application)
-          }.orElse(Prove.atom(atom)(newEnv))
+      .flatMap { case variable @ Variable(_, Implication(antecedent, consequent)) =>
+        val newEnv = Env.without(variable)
+        applyRecurse(atom, variable, antecedent, consequent, newEnv) { case (`atom`, application) =>
+          Result.success(application)
+        }.orElse(Prove.atom(atom)(newEnv))
       }
   }
 
   /**
-    * Recursively apply the function to get to the rightmost proposition.
-    * This is in case the function is curried and requires multiple applications.
-    */
+   * Recursively apply the function to get to the rightmost proposition. This is in case the function is
+   * curried and requires multiple applications.
+   */
   private def applyRecurse(atom: Atom, function: Proof, in: Proposition, out: Proposition, env: Env)(
       f: (Proposition, Application) => Result[Proof]
   ): Result[Proof] =
@@ -69,33 +67,32 @@ object Prove {
   def atomFromProduct(atom: Atom)(implicit env: Env): Result[Proof] =
     findAndThen(atom, { case Variable(_, _: Conjunction) => true }) {
       case variable @ Variable(name, conjunction: Conjunction) =>
-        Prove.proposition(Implication(conjunction, atom))(Env.without(variable)).map(Match(name, _))
+        Prove
+          .proposition(Implication(conjunction, atom))(Env.without(variable))
+          .map(Match(Variable.fromName(name), _))
     }
 
   def atomFromProductConsequent(atom: Atom)(implicit env: Env): Result[Proof] = {
-    val predicate: PartialFunction[Proof, Boolean] = {
-      case Variable(_, function: Implication) =>
-        Proposition.rightMostOf(function) match {
-          case Conjunction(components) =>
-            def find(components: List[Proposition]): Boolean =
-              components.exists {
-                case Conjunction(cs) => find(cs)
-                case `atom`          => true
-                case _               => false
-              }
+    val predicate: PartialFunction[Proof, Boolean] = { case Variable(_, function: Implication) =>
+      Proposition.rightMostOf(function) match {
+        case Conjunction(components) =>
+          def find(components: List[Proposition]): Boolean =
+            components.exists {
+              case Conjunction(cs) => find(cs)
+              case `atom`          => true
+              case _               => false
+            }
 
-            find(components)
-          case _ => false
-        }
+          find(components)
+        case _ => false
+      }
     }
 
-    findAndThen(atom, predicate) {
-      case variable @ Variable(_, Implication(in, out)) =>
-        val newEnv = Env.without(variable)
-        applyRecurse(atom, variable, in, out, newEnv) {
-          case (Conjunction(components), application) =>
-            atomFromProductComponents(atom, application, components)
-        }.orElse(Prove.atom(atom)(newEnv))
+    findAndThen(atom, predicate) { case variable @ Variable(_, Implication(in, out)) =>
+      val newEnv = Env.without(variable)
+      applyRecurse(atom, variable, in, out, newEnv) { case (Conjunction(components), application) =>
+        atomFromProductComponents(atom, application, components)
+      }.orElse(Prove.atom(atom)(newEnv))
     }
   }
 
@@ -130,9 +127,8 @@ object Prove {
     Env.find(predicate).toRight(Fault.cannotProve(atom)).flatMap(f)
 
   /**
-    * Finds proof for the components and use them to construct the proof for the
-    * conjunction.
-    */
+   * Finds proof for the components and use them to construct the proof for the conjunction.
+   */
   def fromConjunction(conjunction: Conjunction)(implicit env: Env): Result[Proof] = {
     def recurse(result: List[Proof], components: List[Proposition]): Result[List[Proof]] =
       components match {
@@ -146,14 +142,10 @@ object Prove {
   }
 
   /**
-    * Provides proof for the consequent of the implication. This is based on the
-    * following rule for implication-elimination:
-    *   A
-    *   A => B
-    * ---------- (=>-E)
-    *     B
-    * In programming, it means applying the function to the argument.
-    */
+   * Provides proof for the consequent of the implication. This is based on the following rule for
+   * implication-elimination: A A => B
+   * ---------- (=>-E) B In programming, it means applying the function to the argument.
+   */
   def implicationElimination(function: Proof, argument: Proof): Application =
     argument match {
       case TUnit                    => Application(function, Nil)
@@ -161,13 +153,13 @@ object Prove {
       case param                    => Application(function, List(param))
     }
 
-  def withEither(name: String, disjunction: Disjunction, consequent: Proposition)(
-      implicit env: Env
+  def withEither(name: String, disjunction: Disjunction, consequent: Proposition)(implicit
+      env: Env
   ): Result[Proof] = {
 
     /**
-      * Proves the consequent by assuming that the given component is in the environment.
-      */
+     * Proves the consequent by assuming that the given component is in the environment.
+     */
     def proveWithComponent(component: Proposition): Result[(Proof, Proof)] = {
       val (proofId, newEnv) = Env.register(component)
       proposition(consequent)(newEnv).map((proofId, _))
@@ -176,14 +168,12 @@ object Prove {
     val Disjunction(left, right) = disjunction
 
     // Check if we can prove the consequent with both components
-    proveWithComponent(left).flatMap {
-      case (leftIn, leftOut) =>
-        proveWithComponent(right).flatMap {
-          case (rightIn, rightOut) =>
-            val left = Abstraction(leftIn, leftOut)
-            val right = Abstraction(rightIn, rightOut)
-            Result.success(Match(name, EitherCases(left, right)))
-        }
+    proveWithComponent(left).flatMap { case (leftIn, leftOut) =>
+      proveWithComponent(right).flatMap { case (rightIn, rightOut) =>
+        val left = Abstraction(leftIn, leftOut)
+        val right = Abstraction(rightIn, rightOut)
+        Result.success(Match(Variable.fromName(name), EitherCases(left, right)))
+      }
     }
   }
 }

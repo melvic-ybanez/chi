@@ -3,6 +3,7 @@ package com.melvic.chi.output
 import com.melvic.chi.ast.Proof.Variable
 import com.melvic.chi.ast.{Definition, Signature}
 import com.melvic.chi.config.Preferences
+import com.melvic.chi.output.show.{Show, ShowAssumption}
 import com.melvic.chi.parsers.Language
 
 object Result {
@@ -23,15 +24,14 @@ object Result {
   def showCodeWith(
       result: Result[Definition]
   )(f: (String, Language) => String)(implicit preferences: Preferences): String =
-    show(result) {
-      case code @ Definition(Signature(functionName, _, _, _), _, language) =>
-        val show = Show.fromLanguage(language, functionName)
-        f(show.definition(code), language)
+    show(result) { case code @ Definition(Signature(functionName, _, _, _), _, language) =>
+      val show = Show.fromLanguage(language, functionName)
+      f(show.definition(code), language)
     }
 
   /**
-    * Shows only the code part (e.g. no information about the detected programming language)
-    */
+   * Shows only the code part (e.g. no information about the detected programming language)
+   */
   def showCode(result: Result[Definition])(implicit preferences: Preferences): String =
     showCodeWith(result)((code, _) => code)
 

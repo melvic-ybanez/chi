@@ -21,6 +21,12 @@ object ChiTokenMaker {
     val tokens = new TokenMap(false)
 
     val reservedWords = List(
+      AssumptionParser.AssumeOperator,
+      Language.Java.displayName,
+      Language.Scala.displayName,
+      Language.Haskell.displayName,
+      Language.Python.displayName,
+      Language.Typescript.displayName,
       "def",
       "case",
       "match",
@@ -42,35 +48,10 @@ object ChiTokenMaker {
       "of",
       "isinstance",
       "lambda",
-      AssumptionParser.AssumeOperator,
-      Language.Java.displayName,
-      Language.Scala.displayName,
-      Language.Haskell.displayName,
-      Language.Python.displayName,
+      "function"
     )
     val functions = List("identity", "const", "compose", "andThen", "apply", "_1", "_2", "_3")
-    val dataTypes = List(
-      "int",
-      "str",
-      "bool",
-      "complex",
-      "Int",
-      "Integer",
-      "float",
-      "Float",
-      "double",
-      "Double",
-      "char",
-      "Char",
-      "Character",
-      "String",
-      "List",
-      "byte",
-      "short",
-      "Byte",
-      "Short",
-      "long",
-      "Long",
+    val dataTypes = Language.allBuiltInTypes ++ List(
       "Function",
       "BiFunction",
       "Either",

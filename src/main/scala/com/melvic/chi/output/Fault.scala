@@ -3,6 +3,7 @@ package com.melvic.chi.output
 import com.melvic.chi.ast.Proposition
 import com.melvic.chi.ast.Proposition.Atom
 import com.melvic.chi.config.Preferences
+import com.melvic.chi.output.show.Show
 import com.melvic.chi.parsers.Language
 
 sealed trait Fault

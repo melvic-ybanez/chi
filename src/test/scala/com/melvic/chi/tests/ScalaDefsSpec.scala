@@ -3,7 +3,7 @@ package com.melvic.chi.tests
 import com.melvic.chi.eval.generateAndShowWithInfo
 import com.melvic.chi.parsers.Language
 
-class ScalaDefSpec extends BaseSpec {
+class ScalaDefsSpec extends BaseSpec {
   val language = Language.Scala
 
   def test(input: String, outputBody: String) =
@@ -77,7 +77,7 @@ class ScalaDefSpec extends BaseSpec {
     "def foo[A, B, C]: (B => C) => (A => C) => B => C" := "f => g => f"
   }
 
-  "implication" should "evaluate it's antecedent recursive" in {
+  "implication" should "evaluate its antecedent recursively" in {
     "def foo[A, B, C]: (A => B) => ((A => B) => C) => C" := "f => g => g(f)"
   }
 

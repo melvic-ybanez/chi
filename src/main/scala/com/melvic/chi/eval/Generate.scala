@@ -24,7 +24,7 @@ object Generate {
     val unknownTypes = Proposition.filter(Signature.fullProposition(signature)) {
       case PUnit => false
       case atom @ Atom(value) =>
-        !typeParams.map(Identifier).contains(atom) && !Language.builtInTypes(language).contains(value)
+        !typeParams.map(Identifier).contains(atom) && !language.builtInTypes.contains(value)
     }
 
     if (unknownTypes.nonEmpty) Result.fail(UnknownPropositions(unknownTypes))

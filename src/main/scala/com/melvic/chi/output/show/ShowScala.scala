@@ -1,14 +1,13 @@
-package com.melvic.chi.output
+package com.melvic.chi.output.show
 
 import com.melvic.chi.ast.Proof.{Conjunction => _, _}
 import com.melvic.chi.ast.Proposition._
 import com.melvic.chi.ast.{Proof, Proposition, Signature}
 import com.melvic.chi.config.Preferences
-import com.melvic.chi.output.ShowScala._
+import com.melvic.chi.output.show.ShowScala._
+import com.melvic.chi.output.{ParamsInParens, ProofLayout, SignatureLayout}
 
-class ShowScala(implicit val prefs: Preferences) extends Show { show =>
-  def signature: SignatureLayout = signatureWithSplit(false)
-
+class ShowScala(implicit val prefs: Preferences) extends Show with ScalaLike with ParamsInParens { show =>
   def proof(proof: Proof)(implicit formats: List[Format]): String =
     proof match {
       case TUnit             => "()"
@@ -26,7 +25,7 @@ class ShowScala(implicit val prefs: Preferences) extends Show { show =>
         val rightCase = s"case Right(${show.proof(rightIn)}) => ${show.proof(rightOut)}"
         "{" + nest(line + leftCase + line + rightCase) + line + "}"
       case Match(name, term: Proof) =>
-        s"$name match ${show.proof(term)}"
+        s"${show.proof(name)} match ${show.proof(term)}"
       case Abstraction(in, out: Abstraction) if Format.has(FormatRightMostLambda) =>
         s"${show.proof(in)} => ${show.proof(out)}"
       case Abstraction(params: Proof.Conjunction, out) =>
@@ -57,8 +56,6 @@ class ShowScala(implicit val prefs: Preferences) extends Show { show =>
 
   def oneLine: ProofLayout = show.proof(_)(Nil)
 
-  override def prettySignature: SignatureLayout = signatureWithSplit(true)
-
   def withFormattedRightMostLambda: ProofLayout = show.proof(_)(FormatRightMostLambda :: Nil)
 
   def withFormattedLambda: ProofLayout =
@@ -72,9 +69,9 @@ class ShowScala(implicit val prefs: Preferences) extends Show { show =>
 
   override def proposition(proposition: Proposition) =
     proposition match {
-      case Atom(value)                         => value
-      case Conjunction(components)             => "(" + propositionCSV(components) + ")"
-      case Disjunction(left, right)            => s"Either[${show.proposition(left)}, ${show.proposition(right)}]"
+      case Atom(value)              => value
+      case Conjunction(components)  => "(" + propositionCSV(components) + ")"
+      case Disjunction(left, right) => s"Either[${show.proposition(left)}, ${show.proposition(right)}]"
       case Implication(impl: Implication, out) => s"(${show.proposition(impl)}) => ${show.proposition(out)}"
       case Implication(antecedent, consequent) =>
         s"${show.proposition(antecedent)} => ${show.proposition(consequent)}"
@@ -88,7 +85,7 @@ class ShowScala(implicit val prefs: Preferences) extends Show { show =>
       }
       val paramsString = params match {
         case Nil    => ""
-        case params => paramsList(params, split)
+        case params => paramList(params, split)
       }
 
       s"def $name$typeParamsString$paramsString: ${show.proposition(returnType)} ="

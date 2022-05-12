@@ -29,7 +29,7 @@ object Transform {
       // e.g. `a => f(a)` becomes `f`
       case Abstraction(in, Application(function, param :: Nil)) if param == in =>
         Transform(function).whenWith(scalaPrefs.pointFree)(transformScala)
-      case f @ Abstraction(Variable(inName, _), Match(name, proof)) if inName == name =>
+      case f @ Abstraction(Variable(inName, _), Match(Variable(name, _), proof)) if inName == name =>
         Transform(f).when(scalaPrefs.simplifyMatch)(transformScala(proof))
       // e.g. `a => g(f(a))` becomes `g.compose(f)`
       case fg @ Abstraction(in, Application(f, Application(g, out :: Nil) :: Nil)) if in == out =>

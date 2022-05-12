@@ -1,15 +1,13 @@
-package com.melvic.chi.output
+package com.melvic.chi.output.show
+
 import com.melvic.chi.ast.Proof.{EitherCases, Conjunction => PConjunction, _}
 import com.melvic.chi.ast.Proposition._
 import com.melvic.chi.ast.{Proof, Proposition, Signature}
 import com.melvic.chi.config.Preferences
+import com.melvic.chi.output.{ParamsInParens, ProofLayout, SignatureLayout}
 
-class ShowPython(implicit val prefs: Preferences) extends Show { show =>
+class ShowPython(implicit val prefs: Preferences) extends Show with ScalaLike with ParamsInParens { show =>
   override def bodyLayouts = proof :: Nil
-
-  override def signature = signatureWithSplit(false)
-
-  override def prettySignature = signatureWithSplit(true)
 
   override def proposition(proposition: Proposition) =
     proposition match {
@@ -29,17 +27,10 @@ class ShowPython(implicit val prefs: Preferences) extends Show { show =>
     case PLeft(proof)             => show.proof(proof)
     case PRight(proof)            => show.proof(proof)
     case Match(name, ec @ EitherCases(Abstraction(_: Variable, _), Abstraction(_: Variable, _))) =>
-      val newVars = Variable.fromName(name) :: Nil
-      val EitherCases(
-        Abstraction(Variable(lName, lType), left),
-        Abstraction(Variable(rName, rType), right)
-      ) = ec
-
-      val leftResult = show.proof(Proof.rename(left, Variable.fromName(lName) :: Nil, newVars))
-      val rightResult = show.proof(Proof.rename(right, Variable.fromName(rName) :: Nil, newVars))
-
-      s"$leftResult if type($name) is ${show.proposition(lType)} else $rightResult"
-    case Match(name, function @ Abstraction(_: PConjunction, _)) =>
+      Utils.showMatchUnion(name, ec, show.proof)((lType, leftResult, rightResult) =>
+        s"$leftResult if type(${show.proof(name)}) is ${show.proposition(lType)} else $rightResult"
+      )
+    case Match(Variable(name, _), function @ Abstraction(_: PConjunction, _)) =>
       show.proof(Application.ofUnary(function, Variable.fromName("*" + name)))
     case Abstraction(PConjunction(Nil), out)        => s"lambda: ${show.proof(out)}"
     case Abstraction(PConjunction(components), out) => s"lambda ${bodyCSV(components)}: ${show.proof(out)}"
@@ -60,10 +51,9 @@ class ShowPython(implicit val prefs: Preferences) extends Show { show =>
   override def makeDef(signature: String, body: String) =
     signature + nest(line + "return " + body)
 
-  def signatureWithSplit(split: Boolean): SignatureLayout = {
-    case Signature(name, _, params, returnType) =>
-      val paramsString = paramsList(params, split)
+  def signatureWithSplit(split: Boolean): SignatureLayout = { case Signature(name, _, params, returnType) =>
+    val paramsString = paramList(params, split)
 
-      s"def $name$paramsString -> ${show.proposition(returnType)}:"
+    s"def $name$paramsString -> ${show.proposition(returnType)}:"
   }
 }
