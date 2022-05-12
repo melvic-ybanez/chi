@@ -3,7 +3,7 @@ package com.melvic.chi.tests
 import com.melvic.chi.eval.generateAndShowWithInfo
 import com.melvic.chi.parsers.Language
 
-class ScalaDefSpec extends BaseSpec {
+class ScalaDefsSpec extends BaseSpec {
   val language = Language.Scala
 
   def test(input: String, outputBody: String) =

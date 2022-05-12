@@ -3,7 +3,7 @@ package com.melvic.chi.tests
 import com.melvic.chi.eval.{Generate, generateAndShowWithInfo}
 import com.melvic.chi.parsers.Language
 
-class PythonDefSpec extends BaseSpec {
+class PythonDefsSpec extends BaseSpec {
   override val language = Language.Python
 
   def input(typeVars: List[String], input: String): String =

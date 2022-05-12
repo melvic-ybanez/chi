@@ -44,7 +44,8 @@ class ShowTypescript(implicit val prefs: Preferences)
       }
     case Match(name, Abstraction(PConjunction(components), body)) =>
       val destructure = s"const [${csv(components)(show.proof)}] = ${show.proof(name)}"
-      val blockContent = "return " + destructure + line + show.proof(body)
+      val comment = "// Note: This is verbose for compatibility reasons"
+      val blockContent = comment + line + destructure + line + "return " + show.proof(body)
       val block = nest(s"{$line$blockContent") + line + "}"
       s"(() => $block)()"
     case Abstraction(Variable(name, paramType), out) =>
