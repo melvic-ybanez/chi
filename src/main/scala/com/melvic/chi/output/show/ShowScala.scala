@@ -1,10 +1,11 @@
-package com.melvic.chi.output
+package com.melvic.chi.output.show
 
 import com.melvic.chi.ast.Proof.{Conjunction => _, _}
 import com.melvic.chi.ast.Proposition._
 import com.melvic.chi.ast.{Proof, Proposition, Signature}
 import com.melvic.chi.config.Preferences
-import com.melvic.chi.output.ShowScala._
+import com.melvic.chi.output.show.ShowScala._
+import com.melvic.chi.output.{ParamsInParens, ProofLayout, SignatureLayout}
 
 class ShowScala(implicit val prefs: Preferences) extends Show with ScalaLike with ParamsInParens { show =>
   def proof(proof: Proof)(implicit formats: List[Format]): String =

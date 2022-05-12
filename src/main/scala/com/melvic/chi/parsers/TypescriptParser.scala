@@ -1,7 +1,7 @@
 package com.melvic.chi.parsers
 
 import com.melvic.chi.ast.Proof.Variable
-import com.melvic.chi.ast.Proposition.{Conjunction, Disjunction, Identifier, Implication}
+import com.melvic.chi.ast.Proposition.{Atom, Conjunction, Disjunction, Identifier, Implication, Labeled}
 import com.melvic.chi.ast.{Proposition, Signature}
 
 object TypescriptParser extends LanguageParser with NamedParams {
@@ -38,12 +38,10 @@ object TypescriptParser extends LanguageParser with NamedParams {
    * }}}
    */
   val implication: Parser[Implication] = paramList ~ ("=>" ~> proposition) ^^ {
-    case (Variable(name, proposition) :: Nil) ~ returnType =>
-      Implication(Conjunction.of(Identifier(name), proposition), returnType)
+    case ((variable: Variable) :: Nil) ~ returnType =>
+      Implication(Labeled.fromVariable(variable), returnType)
     case params ~ returnType =>
-      val paramTypes = params.map { case Variable(name, proposition) =>
-        Conjunction.of(Identifier(name), proposition)
-      }
+      val paramTypes = params.map(Labeled.fromVariable)
       Implication(Conjunction(paramTypes), returnType)
   }
 }

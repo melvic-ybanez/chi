@@ -1,5 +1,7 @@
 package com.melvic.chi.ast
 
+import com.melvic.chi.ast.Proof.Variable
+
 import scala.annotation.tailrec
 
 sealed trait Proposition
@@ -28,11 +30,6 @@ object Proposition {
    * one (which is very important during stringification.)
    */
   final case class Conjunction(components: List[Proposition]) extends Proposition
-
-  object Conjunction {
-    def of(proposition: Proposition*): Conjunction =
-      Conjunction(proposition.toList)
-  }
 
   /**
    * Logical disjunction. Note that we may also end up supporting a list of components, just like with
@@ -76,6 +73,16 @@ object Proposition {
   }
 
   /**
+   * This is used for propositions that have labels (e.g. parameters of a Typescript lambda type)
+   */
+  final case class Labeled(name: String, proposition: Proposition) extends Proposition
+
+  object Labeled {
+    def fromVariable(variable: Variable): Labeled =
+      Labeled(variable.name, variable.proposition)
+  }
+
+  /**
    * Combines the parameter types, if any, with the return type to form the full proposition of the signature.
    * For example: `def foo[A, B](a: A, b: B): A` should return the proposition `(A, B) => A`
    */
@@ -102,7 +109,8 @@ object Proposition {
 
   def fold[A](proposition: Proposition, init: A)(f: (A, Atom) => A): A =
     proposition match {
-      case atom: Atom => f(init, atom)
+      case atom: Atom              => f(init, atom)
+      case Labeled(_, proposition) => fold(proposition, init)(f)
       case Conjunction(components) =>
         components.foldLeft(init) { (acc, proposition) =>
           fold(proposition, acc)(f)

@@ -1,10 +1,12 @@
-package com.melvic.chi.output
+package com.melvic.chi.output.show
+
 import com.melvic.chi.ast.Proof.{Abstraction, Application, Variable}
 import com.melvic.chi.ast.Proposition.{Atom, Conjunction, Implication}
 import com.melvic.chi.ast.{Proof, Proposition, Signature}
 import com.melvic.chi.config.Preferences
+import com.melvic.chi.output.{ProofLayout, SignatureLayout}
 
-class ShowJava(implicit val prefs: Preferences) extends Show { show =>
+class ShowJava(implicit val prefs: Preferences) extends Show with CLike { show =>
   override def signature = signatureWithSplit(false)
 
   override def prettySignature = signatureWithSplit(true)
@@ -49,14 +51,4 @@ class ShowJava(implicit val prefs: Preferences) extends Show { show =>
       s"$functionString.apply(${Show.toCSV(params.map(show.proof))})"
     case _ => ""
   }
-
-  def bodyWithBraces: ProofLayout =
-    proof => "{" + nest(line + "return " + show.proof(proof)) + ";" + line + "}"
-
-  override def bodyLayouts: List[ProofLayout] = bodyWithBraces :: Nil
-
-  override def indentWidth = 4
-
-  override def makeDef(signature: String, body: String) =
-    signature + " " + body
 }

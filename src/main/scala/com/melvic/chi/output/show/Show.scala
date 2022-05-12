@@ -1,8 +1,9 @@
-package com.melvic.chi.output
+package com.melvic.chi.output.show
 
 import com.melvic.chi.ast.{Definition, Proposition}
 import com.melvic.chi.config.Preferences
-import com.melvic.chi.output.Show.DefaultCSVSeparator
+import com.melvic.chi.output.show.Show.DefaultCSVSeparator
+import com.melvic.chi.output.{DefLayout, ProofLayout, SignatureLayout}
 import com.melvic.chi.parsers.Language
 
 trait Show { show =>
@@ -58,10 +59,11 @@ object Show {
 
   def fromLanguage(language: Language, functionName: String)(implicit prefs: Preferences): Show =
     language match {
-      case Language.Java    => new ShowJava
-      case Language.Haskell => new ShowHaskell(functionName)
-      case Language.Python  => new ShowPython
-      case _                => new ShowScala
+      case Language.Java       => new ShowJava
+      case Language.Haskell    => new ShowHaskell(functionName)
+      case Language.Python     => new ShowPython
+      case Language.Typescript => new ShowTypescript
+      case _                   => new ShowScala
     }
 
   def splitParams(params: List[String], split: Boolean, indent: Int = 2) = {

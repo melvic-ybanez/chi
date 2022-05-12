@@ -1,8 +1,10 @@
-package com.melvic.chi.output
+package com.melvic.chi.output.show
+
 import com.melvic.chi.ast.Proof.{Conjunction => PConjunction, _}
 import com.melvic.chi.ast.Proposition.{Atom, Conjunction, Disjunction, Implication}
 import com.melvic.chi.ast.{Proof, Proposition}
 import com.melvic.chi.config.Preferences
+import com.melvic.chi.output.{ProofLayout, SignatureLayout}
 
 class ShowHaskell(functionName: String)(implicit val prefs: Preferences) extends Show { show =>
   override def signature: SignatureLayout =
@@ -10,9 +12,9 @@ class ShowHaskell(functionName: String)(implicit val prefs: Preferences) extends
 
   override def proposition(proposition: Proposition) =
     proposition match {
-      case Atom(value)                         => value
-      case Conjunction(components)             => "(" + Show.toCSV(components.map(show.proposition)) + ")"
-      case Disjunction(left, right)            => s"Either ${show.proposition(left)} ${show.proposition(right)}"
+      case Atom(value)              => value
+      case Conjunction(components)  => "(" + Show.toCSV(components.map(show.proposition)) + ")"
+      case Disjunction(left, right) => s"Either ${show.proposition(left)} ${show.proposition(right)}"
       case Implication(impl: Implication, out) => s"(${show.proposition(impl)}) -> ${show.proposition(out)}"
       case Implication(in, out)                => s"${show.proposition(in)} -> ${show.proposition(out)}"
     }
@@ -29,11 +31,11 @@ class ShowHaskell(functionName: String)(implicit val prefs: Preferences) extends
   override def bodyLayouts: List[ProofLayout] = proof :: Nil
 
   /**
-    * Like [[show.proof]], but without the function name
-    */
+   * Like [[show.proof]], but without the function name
+   */
   def namelessBody(proof: Proof): String = {
-    def showLambda: Abstraction => String = {
-      case Abstraction(in, out) => s"\\${namelessBody(in)} -> ${namelessBody(out)}"
+    def showLambda: Abstraction => String = { case Abstraction(in, out) =>
+      s"\\${namelessBody(in)} -> ${namelessBody(out)}"
     }
 
     proof match {

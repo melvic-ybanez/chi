@@ -1,4 +1,4 @@
-package com.melvic.chi.output
+package com.melvic.chi.output.show
 
 import com.melvic.chi.ast.Proof.Variable
 

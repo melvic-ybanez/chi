@@ -1,8 +1,10 @@
-package com.melvic.chi.output
+package com.melvic.chi.output.show
+
 import com.melvic.chi.ast.Proof.{EitherCases, Conjunction => PConjunction, _}
 import com.melvic.chi.ast.Proposition._
 import com.melvic.chi.ast.{Proof, Proposition, Signature}
 import com.melvic.chi.config.Preferences
+import com.melvic.chi.output.{ParamsInParens, ProofLayout, SignatureLayout}
 
 class ShowPython(implicit val prefs: Preferences) extends Show with ScalaLike with ParamsInParens { show =>
   override def bodyLayouts = proof :: Nil
@@ -25,16 +27,9 @@ class ShowPython(implicit val prefs: Preferences) extends Show with ScalaLike wi
     case PLeft(proof)             => show.proof(proof)
     case PRight(proof)            => show.proof(proof)
     case Match(name, ec @ EitherCases(Abstraction(_: Variable, _), Abstraction(_: Variable, _))) =>
-      val newVars = Variable.fromName(name) :: Nil
-      val EitherCases(
-        Abstraction(Variable(lName, lType), left),
-        Abstraction(Variable(rName, rType), right)
-      ) = ec
-
-      val leftResult = show.proof(Proof.rename(left, Variable.fromName(lName) :: Nil, newVars))
-      val rightResult = show.proof(Proof.rename(right, Variable.fromName(rName) :: Nil, newVars))
-
-      s"$leftResult if type($name) is ${show.proposition(lType)} else $rightResult"
+      Utils.showMatchUnion(name, ec, show.proof)((lType, leftResult, _, rightResult) =>
+        s"$leftResult if type($name) is ${show.proposition(lType)} else $rightResult"
+      )
     case Match(name, function @ Abstraction(_: PConjunction, _)) =>
       show.proof(Application.ofUnary(function, Variable.fromName("*" + name)))
     case Abstraction(PConjunction(Nil), out)        => s"lambda: ${show.proof(out)}"
