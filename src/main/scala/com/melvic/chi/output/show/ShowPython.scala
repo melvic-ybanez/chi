@@ -27,10 +27,10 @@ class ShowPython(implicit val prefs: Preferences) extends Show with ScalaLike wi
     case PLeft(proof)             => show.proof(proof)
     case PRight(proof)            => show.proof(proof)
     case Match(name, ec @ EitherCases(Abstraction(_: Variable, _), Abstraction(_: Variable, _))) =>
-      Utils.showMatchUnion(name, ec, show.proof)((lType, leftResult, _, rightResult) =>
-        s"$leftResult if type($name) is ${show.proposition(lType)} else $rightResult"
+      Utils.showMatchUnion(name, ec, show.proof)((lType, leftResult, rightResult) =>
+        s"$leftResult if type(${show.proof(name)}) is ${show.proposition(lType)} else $rightResult"
       )
-    case Match(name, function @ Abstraction(_: PConjunction, _)) =>
+    case Match(Variable(name, _), function @ Abstraction(_: PConjunction, _)) =>
       show.proof(Application.ofUnary(function, Variable.fromName("*" + name)))
     case Abstraction(PConjunction(Nil), out)        => s"lambda: ${show.proof(out)}"
     case Abstraction(PConjunction(components), out) => s"lambda ${bodyCSV(components)}: ${show.proof(out)}"

@@ -25,7 +25,7 @@ class ShowScala(implicit val prefs: Preferences) extends Show with ScalaLike wit
         val rightCase = s"case Right(${show.proof(rightIn)}) => ${show.proof(rightOut)}"
         "{" + nest(line + leftCase + line + rightCase) + line + "}"
       case Match(name, term: Proof) =>
-        s"$name match ${show.proof(term)}"
+        s"${show.proof(name)} match ${show.proof(term)}"
       case Abstraction(in, out: Abstraction) if Format.has(FormatRightMostLambda) =>
         s"${show.proof(in)} => ${show.proof(out)}"
       case Abstraction(params: Proof.Conjunction, out) =>

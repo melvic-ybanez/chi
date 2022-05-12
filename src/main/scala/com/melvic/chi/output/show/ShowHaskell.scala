@@ -55,7 +55,7 @@ class ShowHaskell(functionName: String)(implicit val prefs: Preferences) extends
         s"$leftCase$line$rightCase"
       case Match(name, term: Proof) =>
         val cases = nest(line + namelessBody(term))
-        s"case $name of$cases"
+        s"case ${namelessBody(name)} of$cases"
       case Abstraction(in, out: Abstraction) => s"${namelessBody(in)} ${namelessBody(out)}"
       case Abstraction(in, out)              => s"${namelessBody(in)} = ${namelessBody(out)}"
       case Application(function, params) =>

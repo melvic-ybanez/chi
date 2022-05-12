@@ -35,17 +35,15 @@ class ShowTypescript(implicit val prefs: Preferences)
     case PLeft(proof)             => show.proof(proof)
     case PRight(proof)            => show.proof(proof)
     case Match(name, ec @ EitherCases(Abstraction(_: Variable, _), Abstraction(_: Variable, _))) =>
-      Utils.showMatchUnion(name, ec, show.proof) { (lType, leftResult, rType, rightResult) =>
-        def condition(code: String, componentType: Proposition) =
-          nest(s"if (typeof($name) == '$componentType') ${line}return $code") + line
-        val leftCondition = condition(leftResult, lType)
-        val rightCondition = "else " + condition(rightResult, rType)
+      Utils.showMatchUnion(name, ec, show.proof) { (lType, leftResult, rightResult) =>
+        val leftCondition = nest(s"if (typeof(${show.proof(name)}) === '${show.proposition(lType)}') ${line}return $leftResult")
+        val rightCondition = "else return " + rightResult
         val blockContent = leftCondition + line + rightCondition
         val block = nest(s"{$line$blockContent") + line + "}"
         s"(() => $block)()"
       }
     case Match(name, Abstraction(PConjunction(components), body)) =>
-      val destructure = s"const [${csv(components)(show.proof)}] = $name"
+      val destructure = s"const [${csv(components)(show.proof)}] = ${show.proof(name)}"
       val blockContent = "return " + destructure + line + show.proof(body)
       val block = nest(s"{$line$blockContent") + line + "}"
       s"(() => $block)()"

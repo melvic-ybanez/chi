@@ -14,19 +14,19 @@ object Proof {
   final case class PLeft(proof: Proof) extends Proof
 
   /**
-    * A pair of abstractions. This is used when there are two ways to construct a proof
-    * (e.g. Scala's Either pattern match)
-    */
+   * A pair of abstractions. This is used when there are two ways to construct a proof (e.g. Scala's Either
+   * pattern match)
+   */
   final case class EitherCases(left: Abstraction, right: Abstraction) extends Proof
 
-  final case class Match(name: String, proof: Proof) extends Proof
+  final case class Match(name: Variable, proof: Proof) extends Proof
 
   final case class Abstraction(domain: Proof, codomain: Proof) extends Proof
 
   /**
-    * Function application. The first parameter is a proof by itself, rather than a function
-    * name as a string, in order to support invokations of curried functions (e.g `f(a)(b)`)
-    */
+   * Function application. The first parameter is a proof by itself, rather than a function name as a string,
+   * in order to support invokations of curried functions (e.g `f(a)(b)`)
+   */
   final case class Application(function: Proof, params: List[Proof]) extends Proof
 
   final case class Infix(left: Proof, right: Proof) extends Proof
@@ -34,12 +34,11 @@ object Proof {
   final case class Indexed(function: Proof, index: Int) extends Proof
 
   def rename(proof: Proof, vars: List[Variable], newVars: List[Variable]): Proof =
-    vars.zip(newVars).foldLeft(proof) {
-      case (acc, (Variable(name, _), newVar)) =>
-        map(acc) {
-          case Variable(`name`, _) => newVar
-          case variable            => variable
-        }
+    vars.zip(newVars).foldLeft(proof) { case (acc, (Variable(name, _), newVar)) =>
+      map(acc) {
+        case Variable(`name`, _) => newVar
+        case variable            => variable
+      }
     }
 
   def map(proof: Proof)(f: Variable => Proof): Proof =
@@ -50,6 +49,16 @@ object Proof {
       case PRight(proof)                 => PRight(map(proof)(f))
       case Abstraction(in, out)          => Abstraction(map(in)(f), map(out)(f))
       case Application(function, params) => Application(map(function)(f), params.map(map(_)(f)))
+      case Match(name, proof)            => Match(map(name)(f) match { case v: Variable => v }, map(proof)(f))
+      case EitherCases(left, right) =>
+        EitherCases(
+          map(left)(f) match {
+            case abstraction: Abstraction => abstraction
+          },
+          map(right)(f) match {
+            case abstraction: Abstraction => abstraction
+          }
+        )
     }
 
   def fold[A](proof: Proof, init: A)(f: (A, Variable) => A): A =

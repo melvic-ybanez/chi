@@ -67,7 +67,9 @@ object Prove {
   def atomFromProduct(atom: Atom)(implicit env: Env): Result[Proof] =
     findAndThen(atom, { case Variable(_, _: Conjunction) => true }) {
       case variable @ Variable(name, conjunction: Conjunction) =>
-        Prove.proposition(Implication(conjunction, atom))(Env.without(variable)).map(Match(name, _))
+        Prove
+          .proposition(Implication(conjunction, atom))(Env.without(variable))
+          .map(Match(Variable.fromName(name), _))
     }
 
   def atomFromProductConsequent(atom: Atom)(implicit env: Env): Result[Proof] = {
@@ -170,7 +172,7 @@ object Prove {
       proveWithComponent(right).flatMap { case (rightIn, rightOut) =>
         val left = Abstraction(leftIn, leftOut)
         val right = Abstraction(rightIn, rightOut)
-        Result.success(Match(name, EitherCases(left, right)))
+        Result.success(Match(Variable.fromName(name), EitherCases(left, right)))
       }
     }
   }
