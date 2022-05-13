@@ -13,7 +13,7 @@ object Language {
   }
 
   case object Scala extends Language {
-    override val builtInTypes = List("Char", "Byte", "Short", "Int", "Long", "Float", "Double", "String")
+    override val builtInTypes = List("Char", "Byte", "Short", "Int", "Long", "Float", "Double", "String", "Boolean")
   }
 
   case object Haskell extends Language {

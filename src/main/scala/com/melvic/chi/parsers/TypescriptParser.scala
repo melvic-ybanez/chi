@@ -1,10 +1,8 @@
 package com.melvic.chi.parsers
 
 import com.melvic.chi.ast.Proof.Variable
-import com.melvic.chi.ast.Proposition.{Atom, Conjunction, Disjunction, Identifier, Implication, Labeled}
+import com.melvic.chi.ast.Proposition.{Conjunction, Disjunction, Implication, Labeled}
 import com.melvic.chi.ast.{Proposition, Signature}
-
-import scala.util.matching.Regex
 
 object TypescriptParser extends LanguageParser with NamedParams {
   override val language = Language.Typescript
@@ -22,22 +20,15 @@ object TypescriptParser extends LanguageParser with NamedParams {
       Signature(name, typeParams.getOrElse(Nil), paramsList, proposition)
     }
 
-  lazy val complex: PackratParser[Proposition] = implication | conjunction | disjunction
-
   override lazy val proposition: PackratParser[Proposition] =
-    complex | identifier
+    implication | disjunction | conjunction | identifier
 
   val conjunction: Parser[Conjunction] = "[" ~> repsep(proposition, ",") <~ "]" ^^ { Conjunction }
 
-  val disjunction: Parser[Disjunction] = {
-    // for now, disallow union of non-built-in types
-    val validComponents = regex(new Regex(Language.Typescript.builtInTypes.mkString("|"))) ^^ { Identifier }
-
-    val proposition = complex | validComponents
-    proposition ~ rep1("|" ~> proposition) ^^ {
-      case left ~ (right :: rest) => Disjunction.fromList(left, right, rest)
+  val disjunction: Parser[Disjunction] =
+    proposition ~ rep1("|" ~> proposition) ^^ { case left ~ (right :: rest) =>
+      Disjunction.fromList(left, right, rest)
     }
-  }
 
   /**
    * The antecedent of a Typescript implication can only be a list of name-type pairs.
