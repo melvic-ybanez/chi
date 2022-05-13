@@ -16,10 +16,13 @@ Chi can also check if two functions are isomorphic. See the [Isomorphism](#isomo
 
 ### Contents
 1. [Installation](#installation)
-2. [Running](#running-chi)
-3. [More Examples](#more-examples)
-4. [Isomorphisms](#isomorphism)
-5. [Assumptions](#assumptions)
+1. [Running](#running-chi)
+1. [More Examples](#more-examples)
+    * [Scala vs Haskell](#scala-and-haskell)
+    * [Python](#python-examples)
+    * [Typescript](#typescript-examples)
+1. [Isomorphisms](#isomorphism)
+1. [Assumptions](#assumptions)
 
 # Installation
 The simplest way to install Chi is to download the distribution from the
@@ -111,15 +114,22 @@ Bye!
 
 ### More Examples
 
+#### Scala and Haskell
+
 For the Pure FP enthusiasts, here's Scala vs Haskell:
 
 <img width="1792" alt="Screen Shot 2022-04-21 at 8 49 17 PM" src="https://user-images.githubusercontent.com/4519785/164462291-ea3b7d4f-a91d-45df-a223-a4b32d69025e.png">
 
 Note that in the last example above, the extra info like `"Detected Language"` are gone. Chi provides an option to hide it. Just go to `Preferences > Editor` and toggle "Show extra output information". 
 
-#### Python support:
+#### Python examples:
 
 <img width="1792" alt="Screen Shot 2022-05-03 at 11 49 38 PM" src="https://user-images.githubusercontent.com/4519785/166741934-ce3413ed-8352-4df3-a403-97c438ec14a7.png">
+
+#### Typescript examples
+
+<img width="1792" alt="Screen Shot 2022-05-14 at 2 44 18 AM" src="https://user-images.githubusercontent.com/4519785/168347802-1bdc236f-77bd-4844-8e80-65bb3d03943e.png">
+
 
 
 #### Named Parameters
@@ -161,7 +171,7 @@ def foo(f: (String => Int), g: (Float => Int)): (Either[String, Float] => Int) =
 For Java though, you need to use boxed types.
 
 #### Supported Languages
-As mentioned above, Chi supports Java, Haskell, Python and Scala. You only need
+As mentioned above, Chi supports Scala, Java, Haskell, Python and Typescript. You only need
 to input the signature and Chi will automatically detect the language used
 (though it will prioritize Scala syntax)
 
