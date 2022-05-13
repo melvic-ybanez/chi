@@ -1,6 +1,7 @@
 package com.melvic.chi.output.show
 
-import com.melvic.chi.ast.{Definition, Proposition}
+import com.melvic.chi.ast.Proof.{Abstraction, Conjunction, EitherCases, Variable}
+import com.melvic.chi.ast.{Definition, Proof, Proposition}
 import com.melvic.chi.config.Preferences
 import com.melvic.chi.output.show.Show.DefaultCSVSeparator
 import com.melvic.chi.output.{DefLayout, ProofLayout, SignatureLayout}
@@ -78,5 +79,20 @@ object Show {
   def toCSV[A](items: List[A], separator: String = DefaultCSVSeparator): String =
     items.mkString(separator)
 
-  def error: String = "??? /* <error: \"unable to render\"> */"
+  def error(reason: String = "unable to render"): String =
+    "??? " + message("error", reason)
+
+  def warning(reason: String): String =
+    message("warning", reason)
+
+  def message(label: String, reason: String): String =
+    s"""/* $label: "$reason" */"""
+
+  def useUnionNameInBranch(branch: Abstraction, unionName: Variable): Proof = {
+    val Abstraction(in, out) = branch
+    in match {
+      case Variable(targetName, _) => Proof.rename(out, Variable.fromName(targetName) :: Nil, unionName :: Nil)
+      case _                       => out
+    }
+  }
 }

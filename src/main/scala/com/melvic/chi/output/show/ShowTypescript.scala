@@ -2,9 +2,10 @@ package com.melvic.chi.output.show
 
 import com.melvic.chi.ast.Proof.{Conjunction => PConjunction, _}
 import com.melvic.chi.ast.Proposition._
-import com.melvic.chi.ast.{Proof, Proposition, Signature}
+import com.melvic.chi.ast.{Proposition, Signature}
 import com.melvic.chi.config.Preferences
 import com.melvic.chi.output.{ParamsInParens, ProofLayout, SignatureLayout}
+import com.melvic.chi.parsers.Language
 
 class ShowTypescript(implicit val prefs: Preferences)
     extends Show
@@ -34,21 +35,40 @@ class ShowTypescript(implicit val prefs: Preferences)
     case PConjunction(components) => "[" + csv(components)(show.proof) + "]"
     case PLeft(proof)             => show.proof(proof)
     case PRight(proof)            => show.proof(proof)
-    case Match(name, ec @ EitherCases(Abstraction(_: Variable, _), Abstraction(_: Variable, _))) =>
-      Utils.showMatchUnion(name, ec, show.proof) { (lType, leftResult, rightResult) =>
-        val leftCondition =
-          nest(s"if (typeof(${show.proof(name)}) === '${show.proposition(lType)}')${line}return $leftResult")
-        val rightCondition = "else return " + rightResult
-        val blockContent = leftCondition + line + rightCondition
-        val block = nest(s"{$line$blockContent") + line + "}"
-        s"(() => $block)()"
+    case Match(name, EitherCases(left @ Abstraction(Variable(_, lType), _), right)) =>
+      val ifBranch = {
+        val ifBody = show.proof(Show.useUnionNameInBranch(left, name))
+        val predicate = s"typeof(${show.proof(name)}) === \"${show.proposition(lType)}\""
+        val condition = lType match {
+          case Atom(typeName) =>
+            if (Language.Typescript.builtInTypes.contains(typeName)) predicate
+            else nest(Show.error(s"Typescript support does not$line include unions of non-builtin types"))
+          case _ => predicate
+        }
+        nest(s"if ($condition)${line}return $ifBody")
       }
+      val elseBranch = "else return " + show.proof(Show.useUnionNameInBranch(right, name))
+      show.ifElse(ifBranch, elseBranch)
+    case Match(name, EitherCases(Abstraction(PConjunction(lInComps), lOut), right)) =>
+      val ifBranch = {
+        val nameString = show.proof(name)
+        val destructure = s"const [${csv(lInComps)(show.proof)}] = $nameString"
+        val condition = {
+          val warning = nest(
+            Show.warning("You might need to do" + line + "extra checks for the types of the components")
+          )
+          s"if ($nameString instanceof Array $warning)"
+        }
+        val ifBody = show.proof(lOut)
+        nest(condition + " {" + line + destructure + line + "return " + ifBody)
+      }
+      val elseBranch = "} else return " + show.proof(Show.useUnionNameInBranch(right, name))
+      show.ifElse(ifBranch, elseBranch)
     case Match(name, Abstraction(PConjunction(components), body)) =>
       val destructure = s"const [${csv(components)(show.proof)}] = ${show.proof(name)}"
       val comment = "// Note: This is verbose for compatibility reasons"
       val blockContent = comment + line + destructure + line + "return " + show.proof(body)
-      val block = nest(s"{$line$blockContent") + line + "}"
-      s"(() => $block)()"
+      show.invokedLambda(blockContent)
     case Abstraction(Variable(name, paramType), out) =>
       s"($name: ${show.proposition(paramType)}) => ${show.proof(out)}"
     case Abstraction(PConjunction(components), out) =>
@@ -63,7 +83,7 @@ class ShowTypescript(implicit val prefs: Preferences)
     case Infix(left, right) =>
       s"${show.proof(left)}.${show.proof(right)}"
     case Indexed(proof, index) => s"${show.proof(proof)}[${index - 1}]"
-    case _ => Show.error
+    case _                     => Show.error()
   }
 
   def signatureWithSplit(split: Boolean): SignatureLayout = {
@@ -74,6 +94,14 @@ class ShowTypescript(implicit val prefs: Preferences)
       }
       val paramsString = paramList(params, split)
 
-      s"function $name$typeParamsString$paramsString: ${show.proposition(returnType)} "
+      s"function $name$typeParamsString$paramsString: ${show.proposition(returnType)}"
+  }
+
+  private def ifElse(ifBranch: String, elseBranch: String): String =
+    invokedLambda(ifBranch + line + elseBranch)
+
+  private def invokedLambda(blockContent: String): String = {
+    val block = nest(s"{$line$blockContent") + line + "}"
+    s"(() => $block)()"
   }
 }

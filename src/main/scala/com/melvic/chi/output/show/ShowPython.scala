@@ -26,10 +26,10 @@ class ShowPython(implicit val prefs: Preferences) extends Show with ScalaLike wi
     case PConjunction(components) => s"(${bodyCSV(components)})"
     case PLeft(proof)             => show.proof(proof)
     case PRight(proof)            => show.proof(proof)
-    case Match(name, ec @ EitherCases(Abstraction(_: Variable, _), Abstraction(_: Variable, _))) =>
-      Utils.showMatchUnion(name, ec, show.proof)((lType, leftResult, rightResult) =>
-        s"$leftResult if type(${show.proof(name)}) is ${show.proposition(lType)} else $rightResult"
-      )
+    case Match(name, EitherCases(left @ Abstraction(Variable(_, lType), _), right)) =>
+      val ifBody = show.proof(Show.useUnionNameInBranch(left, name))
+      val elseBody = show.proof(Show.useUnionNameInBranch(right, name))
+      s"$ifBody if type(${show.proof(name)}) is ${show.proposition(lType)} else $elseBody"
     case Match(Variable(name, _), function @ Abstraction(_: PConjunction, _)) =>
       show.proof(Application.ofUnary(function, Variable.fromName("*" + name)))
     case Abstraction(PConjunction(Nil), out)        => s"lambda: ${show.proof(out)}"
